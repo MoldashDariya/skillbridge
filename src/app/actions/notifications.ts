@@ -1,0 +1,84 @@
+"use server"
+
+import { createAdminClient } from "@/lib/supabase/admin"
+
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
+
+async function sendMessage(chatId: string, text: string) {
+  if (!BOT_TOKEN || !chatId) return
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  })
+}
+
+export async function notifyEmployerOnApplication(internshipId: string, studentId: string) {
+  const db = createAdminClient()
+
+  const [internshipRes, studentRes] = await Promise.all([
+    db.from("internships").select("title, employers(user_id)").eq("id", internshipId).single(),
+    db.from("students").select("user_id").eq("id", studentId).single(),
+  ])
+
+  const employerUserId = (internshipRes.data?.employers as { user_id: string } | null)?.user_id
+  const studentUserId = studentRes.data?.user_id
+  const internshipTitle = internshipRes.data?.title ?? "Практика"
+  if (!employerUserId || !studentUserId) return
+
+  const [employerProfRes, studentProfRes] = await Promise.all([
+    db.from("profiles").select("telegram_chat_id").eq("user_id", employerUserId).single(),
+    db.from("profiles").select("first_name, last_name").eq("user_id", studentUserId).single(),
+  ])
+
+  const chatId = employerProfRes.data?.telegram_chat_id
+  const sp = studentProfRes.data
+  const studentName = sp
+    ? [sp.first_name, sp.last_name].filter(Boolean).join(" ") || "Студент"
+    : "Студент"
+
+  if (chatId) {
+    await sendMessage(chatId, `🔔 Новая заявка на <b>${internshipTitle}</b> от <b>${studentName}</b>`)
+  }
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  accepted: "Принят ✅",
+  rejected: "Отклонено ❌",
+  pending: "На рассмотрении 🕐",
+}
+
+export async function notifyStudentOnStatusChange(applicationId: string, newStatus: string) {
+  const db = createAdminClient()
+
+  const { data: app } = await db
+    .from("applications")
+    .select("student_id, internships(title)")
+    .eq("id", applicationId)
+    .single()
+
+  if (!app) return
+
+  const internshipTitle = (app.internships as { title: string } | null)?.title ?? "Практика"
+
+  const { data: student } = await db
+    .from("students")
+    .select("user_id")
+    .eq("id", app.student_id)
+    .single()
+
+  if (!student) return
+
+  const { data: profile } = await db
+    .from("profiles")
+    .select("telegram_chat_id")
+    .eq("user_id", student.user_id)
+    .single()
+
+  const chatId = profile?.telegram_chat_id
+  const statusLabel = STATUS_LABELS[newStatus] ?? newStatus
+
+  if (chatId) {
+    await sendMessage(chatId, `✅ Ваша заявка на <b>${internshipTitle}</b> переведена в статус: <b>${statusLabel}</b>`)
+  }
+}

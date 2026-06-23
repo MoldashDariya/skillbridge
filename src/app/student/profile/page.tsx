@@ -1,0 +1,122 @@
+import { redirect } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
+import { createClient } from "@/lib/supabase/server"
+import { ProfileForm } from "./_components/profile-form"
+import { PortfolioUploader } from "./_components/portfolio-uploader"
+import type { Database } from "@/types/supabase"
+
+export const metadata = { title: "Профиль — SkillBridge KZ" }
+
+type PortfolioItem = Database["public"]["Tables"]["portfolio_items"]["Row"]
+
+export default async function StudentProfilePage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect("/auth")
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, first_name, last_name, phone, city")
+    .eq("user_id", user.id)
+    .single()
+
+  if (!profile) redirect("/auth")
+  if (profile.role !== "student") redirect("/")
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, college_name, specialty, course_year, bio, skills")
+    .eq("user_id", user.id)
+    .single()
+
+  if (!student) redirect("/student")
+
+  const { data: portfolioItemsRaw } = await supabase
+    .from("portfolio_items")
+    .select("*")
+    .eq("student_id", student.id)
+    .order("created_at", { ascending: false })
+
+  const portfolioItems = (portfolioItemsRaw ?? []) as PortfolioItem[]
+
+  const initialFormValues = {
+    first_name: profile.first_name ?? "",
+    last_name: profile.last_name ?? "",
+    phone: profile.phone ?? "",
+    city: profile.city ?? "",
+    college_name: student.college_name ?? "",
+    specialty: student.specialty ?? "",
+    course_year: student.course_year?.toString() ?? "",
+    bio: student.bio ?? "",
+    skills: (student.skills ?? []).join(", "),
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-neutral-200 bg-white shadow-sm">
+        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+              <span className="text-white text-[10px] font-heading font-bold">SK</span>
+            </div>
+            <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
+          </div>
+          <Link
+            href="/student"
+            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-700 transition-colors font-heading tracking-widest uppercase"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Назад
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-10">
+        {/* Page title */}
+        <div className="mb-10 stagger-1 relative pl-4">
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
+          <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-1">
+            Личный кабинет
+          </p>
+          <h1 className="text-2xl font-heading font-extrabold leading-tight text-neutral-900">
+            Мой профиль
+          </h1>
+          <p className="text-sm text-neutral-400 mt-0.5">{user.email}</p>
+        </div>
+
+        {/* Profile form */}
+        <section className="stagger-2 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-[3px] h-5 bg-amber-500 rounded-full" />
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Личные данные</h2>
+          </div>
+          <ProfileForm
+            userId={user.id}
+            studentId={student.id}
+            initial={initialFormValues}
+          />
+        </section>
+
+        {/* Portfolio */}
+        <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-[3px] h-5 bg-amber-500 rounded-full" />
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Портфолио</h2>
+            {portfolioItems.length > 0 && (
+              <span className="ml-auto text-xs text-neutral-400">{portfolioItems.length} работ</span>
+            )}
+          </div>
+          <PortfolioUploader
+            userId={user.id}
+            studentId={student.id}
+            items={portfolioItems}
+          />
+        </section>
+      </main>
+    </div>
+  )
+}

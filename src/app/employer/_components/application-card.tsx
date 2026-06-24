@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { MessageSquare, Check, X, Clock, UserRound, Briefcase } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { notifyStudentOnStatusChange } from "@/app/actions/notifications"
 import { StudentPortfolioDialog } from "./student-portfolio-dialog"
+import { ApplicationChatDialog } from "@/components/application-chat-dialog"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
@@ -26,9 +26,11 @@ type Props = {
   message: string | null
   status: string | null
   appliedAt: string | null
+  currentUserId: string
+  currentUserName: string
 }
 
-export function ApplicationCard({ id, internshipTitle, studentName, studentId, college, specialty, message, status: initialStatus, appliedAt }: Props) {
+export function ApplicationCard({ id, internshipTitle, studentName, studentId, college, specialty, message, status: initialStatus, appliedAt, currentUserId, currentUserName }: Props) {
   const [status, setStatus] = useState(initialStatus)
   const [loading, setLoading] = useState<string | null>(null)
   const router = useRouter()
@@ -80,13 +82,12 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-neutral-400">{date}</span>
           {studentId && <StudentPortfolioDialog studentId={studentId} studentName={studentName} />}
-          <Link
-            href={`/employer/applications/${id}`}
-            className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-500 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all"
-          >
-            <MessageSquare className="w-3 h-3" />
-            Написать
-          </Link>
+          <ApplicationChatDialog
+            applicationId={id}
+            currentUserId={currentUserId}
+            currentUserName={currentUserName}
+            otherUserName={studentName}
+          />
         </div>
 
         <div className="flex gap-1.5">

@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { BookOpen, Briefcase, LayoutGrid, MessageSquare, FileText } from "lucide-react"
+import { BookOpen, Briefcase, LayoutGrid, FileText } from "lucide-react"
 import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
+import { StudentApplicationRow } from "./_components/application-row"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
 import type { Database } from "@/types/supabase"
 
@@ -15,15 +16,7 @@ type InternshipWithEmployer = InternshipRow & {
   employers: { company_name: string } | null
 }
 type ApplicationWithInternship = ApplicationRow & {
-  internships: { title: string } | null
-}
-
-const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
-  at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
-  rejected:     { label: "Отклонено",        cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
+  internships: { title: string; employers: { company_name: string } | null } | null
 }
 
 const SECTIONS = [
@@ -31,34 +24,6 @@ const SECTIONS = [
   { icon: LayoutGrid, title: "Портфолио", desc: "Загрузите фотографии ваших работ", href: "/student/profile" },
   { icon: Briefcase, title: "Места практики", desc: "Найдите подходящее место и подайте заявку", href: "#internships" },
 ]
-
-function ApplicationRow({ item }: { item: ApplicationWithInternship }) {
-  const badge = STATUS_CONFIG[item.status ?? "pending"] ?? STATUS_CONFIG.pending
-  const date = item.created_at ? new Date(item.created_at).toLocaleDateString("ru-RU", {
-    day: "numeric",
-    month: "short",
-  }) : ""
-
-  return (
-    <Link
-      href={`/student/applications/${item.id}`}
-      className="flex items-center justify-between gap-4 py-3.5 border-b border-neutral-100 last:border-0 hover:bg-blue-50/40 -mx-3 px-3 rounded-lg transition-colors group"
-    >
-      <div className="min-w-0">
-        <p className="font-heading font-bold text-[13px] truncate text-neutral-900 group-hover:text-blue-800 transition-colors">
-          {item.internships?.title ?? "Место практики"}
-        </p>
-        <p className="text-[11px] text-neutral-400 mt-0.5">{date}</p>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <span className={`text-[10px] font-heading font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border ${badge.cls}`}>
-          {badge.label}
-        </span>
-        <MessageSquare className="w-3.5 h-3.5 text-neutral-300 group-hover:text-blue-400 transition-colors" />
-      </div>
-    </Link>
-  )
-}
 
 export default async function StudentDashboard() {
   const supabase = await createClient()
@@ -95,7 +60,7 @@ export default async function StudentDashboard() {
   const { data: applicationsRaw } = student
     ? await supabase
         .from("applications")
-        .select("*, internships(title)")
+        .select("*, internships(title, employers(company_name))")
         .eq("student_id", student.id)
         .order("created_at", { ascending: false })
     : { data: [] as ApplicationWithInternship[] }
@@ -229,7 +194,12 @@ export default async function StudentDashboard() {
           ) : (
             <div className="rounded-xl border border-neutral-200 bg-white px-5 shadow-sm">
               {applications.map((item) => (
-                <ApplicationRow key={item.id} item={item} />
+                <StudentApplicationRow
+                  key={item.id}
+                  item={item}
+                  currentUserId={user.id}
+                  currentUserName={name ?? user.email ?? "Студент"}
+                />
               ))}
             </div>
           )}

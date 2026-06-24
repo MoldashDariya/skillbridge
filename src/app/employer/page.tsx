@@ -221,6 +221,8 @@ export default async function EmployerDashboard() {
                     message={app.message}
                     status={app.status}
                     appliedAt={app.created_at}
+                    currentUserId={user.id}
+                    currentUserName={companyName}
                   />
                 )
               })}

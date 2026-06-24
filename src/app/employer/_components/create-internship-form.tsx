@@ -27,7 +27,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-const inputCls = "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
+const inputCls = "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
 const labelCls = "block text-[11px] font-heading font-bold tracking-[0.18em] text-neutral-500 uppercase mb-1.5"
 
 function FieldError({ message }: { message?: string }) {
@@ -65,14 +65,14 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-1.5 text-xs font-heading font-bold tracking-widest uppercase text-amber-600 hover:text-amber-700 border border-amber-300 hover:border-amber-400 hover:bg-amber-50 rounded-lg px-3 py-1.5 transition-all">
+        <button className="flex items-center gap-1.5 text-xs font-heading font-bold tracking-widest uppercase text-blue-700 hover:text-blue-800 border border-blue-300 hover:border-blue-400 hover:bg-blue-50 rounded-lg px-3 py-1.5 transition-all">
           <Plus className="w-3.5 h-3.5" />
           Добавить
         </button>
       </DialogTrigger>
 
       <DialogContent className="max-w-lg bg-white border-neutral-200 shadow-xl max-h-[90vh] overflow-y-auto">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 rounded-t-xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 rounded-t-xl" />
 
         <DialogHeader className="pt-2">
           <DialogTitle className="font-heading text-[17px] font-bold tracking-wide text-neutral-900">Новое место практики</DialogTitle>
@@ -130,7 +130,7 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
           <div>
             <label className={labelCls}>Описание</label>
             <textarea
-              className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-neutral-400 shadow-sm"
+              className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 shadow-sm"
               placeholder="Расскажите о задачах стажёра..."
               {...register("description")}
             />
@@ -139,7 +139,7 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
           <div>
             <label className={labelCls}>Требования</label>
             <textarea
-              className="w-full min-h-[60px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-neutral-400 shadow-sm"
+              className="w-full min-h-[60px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 shadow-sm"
               placeholder="Базовые знания HTML/CSS, желание учиться..."
               {...register("requirements")}
             />
@@ -154,7 +154,7 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1 h-10 border-neutral-200 hover:border-neutral-300 bg-white text-neutral-500 hover:text-neutral-700 font-heading text-xs tracking-widest uppercase">
               Отмена
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="flex-1 h-10 bg-amber-500 hover:bg-amber-400 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all shadow-sm shadow-amber-500/25">
+            <Button type="submit" disabled={isSubmitting} className="flex-1 h-10 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all shadow-sm shadow-blue-600/25">
               {isSubmitting ? "Сохранение..." : "Опубликовать"}
             </Button>
           </div>

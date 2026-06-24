@@ -60,7 +60,7 @@ export default async function StudentProfilePage() {
       <header className="border-b border-neutral-200 bg-white shadow-sm">
         <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
@@ -78,8 +78,8 @@ export default async function StudentProfilePage() {
       <main className="max-w-3xl mx-auto px-6 py-10">
         {/* Page title */}
         <div className="mb-10 stagger-1 relative pl-4">
-          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-1">
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
             Личный кабинет
           </p>
           <h1 className="text-2xl font-heading font-extrabold leading-tight text-neutral-900">
@@ -91,7 +91,7 @@ export default async function StudentProfilePage() {
         {/* Profile form */}
         <section className="stagger-2 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-[3px] h-5 bg-amber-500 rounded-full" />
+            <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
             <h2 className="font-heading font-bold text-[16px] text-neutral-900">Личные данные</h2>
           </div>
           <ProfileForm
@@ -104,7 +104,7 @@ export default async function StudentProfilePage() {
         {/* Portfolio */}
         <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-[3px] h-5 bg-amber-500 rounded-full" />
+            <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
             <h2 className="font-heading font-bold text-[16px] text-neutral-900">Портфолио</h2>
             {portfolioItems.length > 0 && (
               <span className="ml-auto text-xs text-neutral-400">{portfolioItems.length} работ</span>

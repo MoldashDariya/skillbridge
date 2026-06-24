@@ -25,11 +25,11 @@ export function InternshipCard({ item }: { item: Internship }) {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
       >
         <div className="flex items-start justify-between gap-2 mb-3">
           <p className="font-heading font-bold text-[15px] leading-snug text-neutral-900">{item.title}</p>
-          <span className={`shrink-0 text-[10px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${item.status === "active" ? "text-amber-600 border-amber-300 bg-amber-50" : "text-neutral-500 border-neutral-200 bg-neutral-50"}`}>
+          <span className={`shrink-0 text-[10px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${item.status === "active" ? "text-blue-700 border-blue-300 bg-blue-50" : "text-neutral-500 border-neutral-200 bg-neutral-50"}`}>
             {item.status === "active" ? "Активна" : "Закрыта"}
           </span>
         </div>
@@ -47,10 +47,10 @@ export function InternshipCard({ item }: { item: Internship }) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 rounded-t-xl" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 rounded-t-xl" />
           <DialogHeader className="pt-2">
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-[10px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${item.status === "active" ? "text-amber-600 border-amber-300 bg-amber-50" : "text-neutral-500 border-neutral-200 bg-neutral-50"}`}>
+              <span className={`text-[10px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${item.status === "active" ? "text-blue-700 border-blue-300 bg-blue-50" : "text-neutral-500 border-neutral-200 bg-neutral-50"}`}>
                 {item.status === "active" ? "Активна" : "Закрыта"}
               </span>
             </div>

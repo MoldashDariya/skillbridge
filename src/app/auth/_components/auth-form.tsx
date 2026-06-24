@@ -32,26 +32,21 @@ const registerSchema = z
   .object({
     email: z.string().email("Неверный формат email"),
     password: z.string().min(6, "Минимум 6 символов"),
-    role: z.enum(["student", "employer", "college_admin"], {
+    role: z.enum(["student", "employer"], {
       message: "Выберите роль",
     }),
     companyName: z.string().optional(),
-    collegeName: z.string().optional(),
   })
   .refine(
     (d) => d.role !== "employer" || (d.companyName && d.companyName.trim().length > 0),
     { message: "Укажите название компании", path: ["companyName"] }
-  )
-  .refine(
-    (d) => d.role !== "college_admin" || (d.collegeName && d.collegeName.trim().length > 0),
-    { message: "Укажите название колледжа", path: ["collegeName"] }
   )
 
 type LoginValues = z.infer<typeof loginSchema>
 type RegisterValues = z.infer<typeof registerSchema>
 
 const inputCls =
-  "h-11 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 rounded-md text-[15px] placeholder:text-neutral-400 transition-colors shadow-sm"
+  "h-11 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[15px] placeholder:text-neutral-400 transition-colors shadow-sm"
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -119,7 +114,7 @@ function LoginForm() {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11 bg-amber-500 hover:bg-amber-400 text-white font-heading font-bold text-sm tracking-widest uppercase rounded-md transition-all hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-amber-500/25"
+          className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-sm tracking-widest uppercase rounded-md transition-all hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-blue-600/25"
         >
           {isSubmitting ? "Вход..." : "Войти"}
         </Button>
@@ -153,7 +148,6 @@ function RegisterForm() {
         data: {
           role: values.role,
           company_name: values.companyName ?? "",
-          college_name: values.collegeName ?? "",
         },
       },
     })
@@ -204,7 +198,6 @@ function RegisterForm() {
               onValueChange={(v) => {
                 field.onChange(v)
                 resetField("companyName")
-                resetField("collegeName")
               }}
               value={field.value ?? ""}
             >
@@ -214,7 +207,6 @@ function RegisterForm() {
               <SelectContent className="bg-white border-neutral-200 shadow-lg">
                 <SelectItem value="student">Студент</SelectItem>
                 <SelectItem value="employer">Работодатель</SelectItem>
-                <SelectItem value="college_admin">Администратор колледжа</SelectItem>
               </SelectContent>
             </Select>
           )}
@@ -230,15 +222,6 @@ function RegisterForm() {
           <FieldError message={errors.companyName?.message} />
         </div>
       )}
-      {selectedRole === "college_admin" && (
-        <div className="animate-slide-up">
-          <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">
-            Колледж
-          </label>
-          <Input className={inputCls} {...register("collegeName")} />
-          <FieldError message={errors.collegeName?.message} />
-        </div>
-      )}
       {serverError && (
         <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
           {serverError}
@@ -248,7 +231,7 @@ function RegisterForm() {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11 bg-amber-500 hover:bg-amber-400 text-white font-heading font-bold text-sm tracking-widest uppercase rounded-md transition-all hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-amber-500/25"
+          className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-sm tracking-widest uppercase rounded-md transition-all hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-blue-600/25"
         >
           {isSubmitting ? "Регистрация..." : "Зарегистрироваться"}
         </Button>
@@ -265,12 +248,12 @@ export default function AuthForm() {
       <div className="w-full max-w-[390px] animate-slide-up">
         <div className="rounded-2xl border border-neutral-200 bg-white overflow-hidden shadow-xl shadow-neutral-300/40">
           {/* Vivid amber top bar */}
-          <div className="h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400" />
+          <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500" />
 
           <div className="px-8 pt-8 pb-9">
             {/* Brand */}
             <div className="flex items-center gap-3 mb-7 stagger-1">
-              <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-amber-500/30">
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-blue-600/30">
                 <span className="text-white text-[11px] font-heading font-bold tracking-tight">SK</span>
               </div>
               <div>
@@ -291,7 +274,7 @@ export default function AuthForm() {
                   className={cn(
                     "pb-2.5 mr-6 text-xs font-heading font-bold tracking-[0.12em] uppercase transition-all border-b-2 -mb-px",
                     tab === t
-                      ? "text-amber-500 border-amber-500"
+                      ? "text-blue-600 border-blue-600"
                       : "text-neutral-400 border-transparent hover:text-neutral-600"
                   )}
                 >

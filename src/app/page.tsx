@@ -13,12 +13,12 @@ const STEPS = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-amber-400">
+    <div className="min-h-screen bg-blue-400">
       {/* Nav */}
       <nav className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 bg-neutral-900 rounded-md flex items-center justify-center">
-            <span className="text-amber-400 text-[9px] font-heading font-bold">SK</span>
+            <span className="text-blue-400 text-[9px] font-heading font-bold">SK</span>
           </div>
           <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
         </div>
@@ -76,8 +76,8 @@ export default function HomePage() {
       <section className="bg-white py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="relative pl-4 mb-12">
-            <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-400 rounded-full" />
-            <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-1">
+            <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-400 rounded-full" />
+            <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
               Принцип работы
             </p>
             <h2 className="text-2xl font-heading font-extrabold text-neutral-900">Как это работает</h2>
@@ -87,11 +87,11 @@ export default function HomePage() {
             {STEPS.map(({ icon: Icon, n, title, body }) => (
               <div
                 key={n}
-                className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-200"
+                className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200"
               >
-                <p className="text-[10px] font-heading font-bold text-amber-400 tracking-widest mb-3">{n}</p>
-                <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mb-3 group-hover:bg-amber-100 transition-colors">
-                  <Icon className="w-4 h-4 text-amber-500" />
+                <p className="text-[10px] font-heading font-bold text-blue-400 tracking-widest mb-3">{n}</p>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
+                  <Icon className="w-4 h-4 text-blue-600" />
                 </div>
                 <p className="font-heading font-bold text-[13px] leading-snug text-neutral-900 mb-1">{title}</p>
                 <p className="text-[11px] text-neutral-500 leading-relaxed">{body}</p>
@@ -102,7 +102,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer CTA */}
-      <div className="bg-amber-400 py-14">
+      <div className="bg-blue-400 py-14">
         <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-heading font-extrabold text-[18px] text-neutral-900 mb-1">Готовы начать?</p>

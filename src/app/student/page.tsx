@@ -19,7 +19,7 @@ type ApplicationWithInternship = ApplicationRow & {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
@@ -42,10 +42,10 @@ function ApplicationRow({ item }: { item: ApplicationWithInternship }) {
   return (
     <Link
       href={`/student/applications/${item.id}`}
-      className="flex items-center justify-between gap-4 py-3.5 border-b border-neutral-100 last:border-0 hover:bg-amber-50/40 -mx-3 px-3 rounded-lg transition-colors group"
+      className="flex items-center justify-between gap-4 py-3.5 border-b border-neutral-100 last:border-0 hover:bg-blue-50/40 -mx-3 px-3 rounded-lg transition-colors group"
     >
       <div className="min-w-0">
-        <p className="font-heading font-bold text-[13px] truncate text-neutral-900 group-hover:text-amber-700 transition-colors">
+        <p className="font-heading font-bold text-[13px] truncate text-neutral-900 group-hover:text-blue-800 transition-colors">
           {item.internships?.title ?? "Место практики"}
         </p>
         <p className="text-[11px] text-neutral-400 mt-0.5">{date}</p>
@@ -54,7 +54,7 @@ function ApplicationRow({ item }: { item: ApplicationWithInternship }) {
         <span className={`text-[10px] font-heading font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border ${badge.cls}`}>
           {badge.label}
         </span>
-        <MessageSquare className="w-3.5 h-3.5 text-neutral-300 group-hover:text-amber-400 transition-colors" />
+        <MessageSquare className="w-3.5 h-3.5 text-neutral-300 group-hover:text-blue-400 transition-colors" />
       </div>
     </Link>
   )
@@ -120,7 +120,7 @@ export default async function StudentDashboard() {
       <header className="border-b border-neutral-200 bg-white shadow-sm">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
@@ -140,8 +140,8 @@ export default async function StudentDashboard() {
 
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-12 stagger-1 relative pl-4">
-          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-2">
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">
             Личный кабинет
           </p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">
@@ -160,10 +160,10 @@ export default async function StudentDashboard() {
             <Link
               key={title}
               href={href}
-              className={`group rounded-xl border border-neutral-200 bg-white p-6 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-200 stagger-${i + 2}`}
+              className={`group rounded-xl border border-neutral-200 bg-white p-6 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 stagger-${i + 2}`}
             >
-              <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mb-4 group-hover:bg-amber-100 transition-colors">
-                <Icon className="w-4 h-4 text-amber-500" />
+              <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                <Icon className="w-4 h-4 text-blue-600" />
               </div>
               <p className="font-heading font-bold text-[15px] mb-1 text-neutral-900">{title}</p>
               <p className="text-xs text-neutral-500 leading-relaxed">{desc}</p>
@@ -175,7 +175,7 @@ export default async function StudentDashboard() {
         <div className="mb-12 stagger-5">
           <div className="flex items-center justify-between mb-5">
             <div className="relative pl-4">
-              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
                 Доступные практики
               </p>
@@ -187,8 +187,8 @@ export default async function StudentDashboard() {
 
           {internships.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center">
-              <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-3">
-                <FileText className="w-5 h-5 text-amber-400" />
+              <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-5 h-5 text-blue-400" />
               </div>
               <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Пока нет открытых практик</p>
               <p className="text-xs text-neutral-400">Работодатели ещё не добавили места практики</p>
@@ -210,7 +210,7 @@ export default async function StudentDashboard() {
         {/* Мои заявки */}
         <div className="stagger-6">
           <div className="relative pl-4 mb-5">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
               Мои заявки
             </p>

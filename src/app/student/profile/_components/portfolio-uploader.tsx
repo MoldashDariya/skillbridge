@@ -20,7 +20,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const inputCls =
-  "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
+  "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
 const labelCls =
   "block text-[11px] font-heading font-bold tracking-[0.18em] text-neutral-500 uppercase mb-1.5"
 
@@ -140,22 +140,22 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
   return (
     <div className="space-y-6">
       {/* Upload form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="rounded-xl border border-dashed border-amber-300 bg-amber-50/40 p-5 space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="rounded-xl border border-dashed border-blue-300 bg-blue-50/40 p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-[11px] font-heading font-bold tracking-widest text-amber-600 uppercase">Добавить работу</p>
+          <p className="text-[11px] font-heading font-bold tracking-widest text-blue-700 uppercase">Добавить работу</p>
           {/* Image / Video toggle */}
           <div className="flex rounded-lg border border-neutral-200 bg-white overflow-hidden">
             <button
               type="button"
               onClick={() => switchMode("image")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "image" ? "bg-amber-500 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "image" ? "bg-blue-600 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
             >
               <Image className="w-3 h-3" />Фото
             </button>
             <button
               type="button"
               onClick={() => switchMode("video")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "video" ? "bg-amber-500 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "video" ? "bg-blue-600 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
             >
               <Video className="w-3 h-3" />Видео
             </button>
@@ -165,7 +165,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
         {/* Drop zone */}
         <div
           onClick={() => fileRef.current?.click()}
-          className="cursor-pointer rounded-lg border border-neutral-200 bg-white hover:border-amber-400 transition-colors overflow-hidden"
+          className="cursor-pointer rounded-lg border border-neutral-200 bg-white hover:border-blue-400 transition-colors overflow-hidden"
         >
           {preview ? (
             uploadMode === "video" || fileType === "video" ? (
@@ -174,7 +174,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
               <img src={preview} alt="preview" className="w-full h-48 object-cover" />
             )
           ) : (
-            <div className="h-32 flex flex-col items-center justify-center gap-2 text-neutral-400 hover:text-amber-500 transition-colors">
+            <div className="h-32 flex flex-col items-center justify-center gap-2 text-neutral-400 hover:text-blue-600 transition-colors">
               {uploadMode === "video" ? <Video className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
               <span className="text-xs font-heading tracking-widests uppercase">
                 {uploadMode === "video" ? "Выберите видео (MP4, WebM)" : "Выберите изображение"}
@@ -203,7 +203,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
         <Button
           type="submit"
           disabled={isSubmitting || !file}
-          className="h-9 px-5 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-white font-heading font-bold text-xs tracking-widests uppercase shadow-sm shadow-amber-500/25 transition-all"
+          className="h-9 px-5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-heading font-bold text-xs tracking-widests uppercase shadow-sm shadow-blue-600/25 transition-all"
         >
           {isSubmitting ? (
             <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Загрузка...</>

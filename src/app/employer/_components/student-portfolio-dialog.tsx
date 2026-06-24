@@ -33,7 +33,7 @@ type ApplicationItem = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении", cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении", cls: "text-blue-700 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",          cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   rejected:     { label: "Отклонено",       cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
@@ -88,7 +88,7 @@ export function StudentPortfolioDialog({ studentId, studentName }: Props) {
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-amber-200 text-amber-600 hover:border-amber-400 hover:bg-amber-50 transition-all">
+        <button className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-blue-200 text-blue-700 hover:border-blue-400 hover:bg-blue-50 transition-all">
           <Eye className="w-3 h-3" />
           Профиль
         </button>
@@ -100,8 +100,8 @@ export function StudentPortfolioDialog({ studentId, studentName }: Props) {
           </DialogTitle>
           {student?.college_name && (
             <div className="flex items-center gap-1.5 mt-1">
-              <GraduationCap className="w-3.5 h-3.5 text-amber-500" />
-              <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.18em] uppercase">
+              <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
+              <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.18em] uppercase">
                 {[student.college_name, student.specialty].filter(Boolean).join(" · ")}
               </p>
             </div>
@@ -110,7 +110,7 @@ export function StudentPortfolioDialog({ studentId, studentName }: Props) {
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
           </div>
         ) : (
           <div className="space-y-6 pt-2">
@@ -128,7 +128,7 @@ export function StudentPortfolioDialog({ studentId, studentName }: Props) {
                 <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-2">Навыки</p>
                 <div className="flex flex-wrap gap-1.5">
                   {student.skills.map((skill) => (
-                    <span key={skill} className="text-[11px] font-heading font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1">
+                    <span key={skill} className="text-[11px] font-heading font-bold text-blue-800 bg-blue-50 border border-blue-200 rounded-md px-2.5 py-1">
                       {skill}
                     </span>
                   ))}

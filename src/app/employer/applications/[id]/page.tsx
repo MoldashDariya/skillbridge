@@ -5,7 +5,7 @@ import { ArrowLeft, GraduationCap } from "lucide-react"
 import { ChatThread } from "@/components/chat-thread"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
@@ -70,7 +70,7 @@ export default async function EmployerApplicationChat({ params }: { params: Prom
           </Link>
           <div className="w-px h-4 bg-neutral-200" />
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-heading font-bold text-amber-500 tracking-widests uppercase truncate">
+            <p className="text-[11px] font-heading font-bold text-blue-600 tracking-widests uppercase truncate">
               {internship?.title ?? "Место практики"}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">

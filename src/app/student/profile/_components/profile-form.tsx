@@ -31,7 +31,7 @@ type Props = {
 }
 
 const inputCls =
-  "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
+  "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
 const labelCls =
   "block text-[11px] font-heading font-bold tracking-[0.18em] text-neutral-500 uppercase mb-1.5"
 
@@ -140,7 +140,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
         <div className="mb-4">
           <label className={labelCls}>О себе</label>
           <textarea
-            className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-neutral-400 shadow-sm transition-colors"
+            className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 shadow-sm transition-colors"
             placeholder="Коротко о себе и своих целях..."
             {...register("bio")}
           />
@@ -170,7 +170,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-10 px-6 bg-amber-500 hover:bg-amber-400 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-amber-500/25"
+          className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/25"
         >
           {isSubmitting ? (
             <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Сохранение...</>

@@ -108,12 +108,12 @@ export function ChatThread({ applicationId, currentUserId, currentUserName, othe
               return (
                 <div key={msg.id} className={`flex mb-2 ${isMine ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[72%] ${isMine ? "items-end" : "items-start"} flex flex-col`}>
-                    <span className={`text-[10px] font-heading font-bold tracking-widests uppercase mb-1 ${isMine ? "text-amber-500" : "text-neutral-400"}`}>
+                    <span className={`text-[10px] font-heading font-bold tracking-widests uppercase mb-1 ${isMine ? "text-blue-600" : "text-neutral-400"}`}>
                       {isMine ? currentUserName : otherUserName}
                     </span>
                     <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                       isMine
-                        ? "bg-amber-500 text-white rounded-br-sm"
+                        ? "bg-blue-600 text-white rounded-br-sm"
                         : "bg-neutral-100 text-neutral-800 rounded-bl-sm"
                     }`}>
                       {msg.content}
@@ -139,13 +139,13 @@ export function ChatThread({ applicationId, currentUserId, currentUserName, othe
               onKeyDown={handleKeyDown}
               placeholder="Написать сообщение... (Enter — отправить)"
               rows={1}
-              className="flex-1 resize-none rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:border-amber-400 focus:bg-white transition-colors max-h-32 overflow-y-auto"
+              className="flex-1 resize-none rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:border-blue-400 focus:bg-white transition-colors max-h-32 overflow-y-auto"
               style={{ minHeight: "44px" }}
             />
             <button
               onClick={send}
               disabled={sending || !text.trim()}
-              className="h-11 w-11 shrink-0 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 transition-all flex items-center justify-center shadow-sm shadow-amber-500/25"
+              className="h-11 w-11 shrink-0 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 transition-all flex items-center justify-center shadow-sm shadow-blue-600/25"
             >
               {sending ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Send className="w-4 h-4 text-white" />}
             </button>

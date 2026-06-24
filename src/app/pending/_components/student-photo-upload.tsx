@@ -48,7 +48,7 @@ export function StudentPhotoUpload({ userId, initialPhotoUrl }: { userId: string
         {/* Preview */}
         <div
           onClick={() => fileRef.current?.click()}
-          className="relative w-20 h-20 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 flex items-center justify-center cursor-pointer hover:border-amber-400 hover:bg-amber-50/40 transition-all overflow-hidden shrink-0"
+          className="relative w-20 h-20 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition-all overflow-hidden shrink-0"
         >
           {photoUrl ? (
             <img src={photoUrl} alt="Фото профиля" className="w-full h-full object-cover" />
@@ -57,7 +57,7 @@ export function StudentPhotoUpload({ userId, initialPhotoUrl }: { userId: string
           )}
           {uploading && (
             <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-              <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+              <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
             </div>
           )}
         </div>
@@ -69,13 +69,13 @@ export function StudentPhotoUpload({ userId, initialPhotoUrl }: { userId: string
               <span className="text-xs font-heading font-bold tracking-widest uppercase">Фото загружено</span>
             </div>
           ) : (
-            <p className="text-xs text-amber-600 font-heading font-bold tracking-widest uppercase mb-2">Фото не загружено</p>
+            <p className="text-xs text-blue-700 font-heading font-bold tracking-widest uppercase mb-2">Фото не загружено</p>
           )}
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
-            className="text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50 transition-all disabled:opacity-50"
+            className="text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:border-blue-400 hover:text-blue-700 hover:bg-blue-50 transition-all disabled:opacity-50"
           >
             {photoUrl ? "Заменить фото" : "Выбрать фото"}
           </button>

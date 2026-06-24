@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { ArrowLeft, GraduationCap, Briefcase, ImageOff, Video, MessageSquare } from "lucide-react"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
@@ -75,7 +75,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
           </Link>
           <div className="w-px h-4 bg-neutral-200" />
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
@@ -93,17 +93,17 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
               className="w-16 h-16 rounded-2xl object-cover border border-neutral-200 shadow-sm shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
-              <GraduationCap className="w-7 h-7 text-amber-400" />
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
+              <GraduationCap className="w-7 h-7 text-blue-400" />
             </div>
           )}
           <div className="relative pl-4">
-            <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
-            <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-1">Профиль студента</p>
+            <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+            <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">Профиль студента</p>
             <h1 className="text-2xl font-heading font-extrabold text-neutral-900">{studentName}</h1>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
               {student.college_name && (
-                <span className="text-[11px] font-heading font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2 py-0.5">
+                <span className="text-[11px] font-heading font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-0.5">
                   {student.college_name}
                 </span>
               )}
@@ -131,7 +131,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
                 <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-2">Навыки</p>
                 <div className="flex flex-wrap gap-1.5">
                   {student.skills.map((skill: string) => (
-                    <span key={skill} className="text-[11px] font-heading font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1">
+                    <span key={skill} className="text-[11px] font-heading font-bold text-blue-800 bg-blue-50 border border-blue-200 rounded-md px-2.5 py-1">
                       {skill}
                     </span>
                   ))}
@@ -144,7 +144,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
         {/* Applications */}
         <section>
           <div className="relative pl-4 mb-4">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <div className="flex items-center gap-2">
               <Briefcase className="w-3.5 h-3.5 text-neutral-400" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
@@ -181,7 +181,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
                       </span>
                       <Link
                         href={`/admin/applications/${app.id}`}
-                        className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 hover:text-amber-600 transition-colors"
+                        className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 hover:text-blue-700 transition-colors"
                       >
                         <MessageSquare className="w-3 h-3" />
                         Переписка
@@ -197,7 +197,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
         {/* Photo portfolio */}
         <section>
           <div className="relative pl-4 mb-4">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
               Фото работы
               {photoItems.length > 0 && <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">— {photoItems.length}</span>}
@@ -237,7 +237,7 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
         {/* Video portfolio */}
         <section>
           <div className="relative pl-4 mb-4">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <div className="flex items-center gap-2">
               <Video className="w-3.5 h-3.5 text-neutral-400" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">

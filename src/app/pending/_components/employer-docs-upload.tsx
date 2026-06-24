@@ -72,7 +72,7 @@ export function EmployerDocsUpload({ userId, initialDocs }: { userId: string; in
             <div key={url} className="flex items-center gap-2 rounded-lg border border-neutral-100 bg-neutral-50 px-3 py-2">
               <FileText className="w-4 h-4 text-neutral-400 shrink-0" />
               <span className="text-xs text-neutral-600 truncate flex-1">{fileName(url)}</span>
-              <a href={url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-amber-500 transition-colors">
+              <a href={url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-blue-600 transition-colors">
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <button type="button" onClick={() => removeDoc(url)} className="text-neutral-300 hover:text-red-400 transition-colors">
@@ -88,7 +88,7 @@ export function EmployerDocsUpload({ userId, initialDocs }: { userId: string; in
         type="button"
         onClick={() => fileRef.current?.click()}
         disabled={uploading}
-        className="flex items-center gap-2 text-[11px] font-heading font-bold tracking-widests uppercase px-4 py-2.5 rounded-lg border border-dashed border-neutral-300 bg-white text-neutral-500 hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50 transition-all w-full justify-center disabled:opacity-50"
+        className="flex items-center gap-2 text-[11px] font-heading font-bold tracking-widests uppercase px-4 py-2.5 rounded-lg border border-dashed border-neutral-300 bg-white text-neutral-500 hover:border-blue-400 hover:text-blue-700 hover:bg-blue-50 transition-all w-full justify-center disabled:opacity-50"
       >
         {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
         {uploading ? "Загрузка..." : "Добавить документ"}

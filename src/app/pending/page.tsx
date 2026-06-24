@@ -55,18 +55,18 @@ export default async function PendingPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-[460px]">
         <div className="rounded-2xl border border-neutral-200 bg-white shadow-xl shadow-neutral-200/60 overflow-hidden">
-          <div className={`h-1 ${isRejected ? "bg-gradient-to-r from-red-500 to-rose-400" : "bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400"}`} />
+          <div className={`h-1 ${isRejected ? "bg-gradient-to-r from-red-500 to-rose-400" : "bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500"}`} />
 
           <div className="px-8 pt-8 pb-8">
             {/* Header */}
             <div className="flex items-start gap-4 mb-6">
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isRejected ? "bg-red-50 border border-red-200" : "bg-amber-50 border border-amber-200"}`}>
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isRejected ? "bg-red-50 border border-red-200" : "bg-blue-50 border border-blue-200"}`}>
                 {isRejected
                   ? <XCircle className="w-5 h-5 text-red-400" />
-                  : <Clock className="w-5 h-5 text-amber-500" />}
+                  : <Clock className="w-5 h-5 text-blue-600" />}
               </div>
               <div>
-                <p className={`text-[11px] font-heading font-bold tracking-[0.2em] uppercase mb-1 ${isRejected ? "text-red-400" : "text-amber-500"}`}>
+                <p className={`text-[11px] font-heading font-bold tracking-[0.2em] uppercase mb-1 ${isRejected ? "text-red-400" : "text-blue-600"}`}>
                   {isRejected ? "Заявка отклонена" : "На рассмотрении"}
                 </p>
                 <h1 className="text-[19px] font-heading font-extrabold text-neutral-900 leading-snug">

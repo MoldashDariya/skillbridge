@@ -11,7 +11,7 @@ import { approveUser, rejectUser } from "./_actions"
 export const metadata = { title: "Кабинет администратора — SkillBridge KZ" }
 
 const APP_STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
@@ -133,7 +133,7 @@ export default async function AdminDashboard() {
       <header className="border-b border-neutral-200 bg-white shadow-sm">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
@@ -151,8 +151,8 @@ export default async function AdminDashboard() {
       <main className="max-w-5xl mx-auto px-6 py-12">
         {/* Title */}
         <div className="mb-10 stagger-1 relative pl-4">
-          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-2">Административная панель</p>
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">Административная панель</p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">{collegeName}</h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
         </div>
@@ -161,8 +161,8 @@ export default async function AdminDashboard() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 stagger-2">
           {METRICS.map(({ icon: Icon, label, value, emerald }) => (
             <div key={label} className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${emerald ? "bg-emerald-50 border border-emerald-200" : "bg-amber-50 border border-amber-200"}`}>
-                <Icon className={`w-4 h-4 ${emerald ? "text-emerald-500" : "text-amber-500"}`} />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${emerald ? "bg-emerald-50 border border-emerald-200" : "bg-blue-50 border border-blue-200"}`}>
+                <Icon className={`w-4 h-4 ${emerald ? "text-emerald-500" : "text-blue-600"}`} />
               </div>
               <p className={`text-[34px] leading-none font-bold tabular-nums mb-1 ${emerald ? "text-emerald-600" : "text-neutral-900"}`}
                  style={{ fontVariantNumeric: "tabular-nums", WebkitFontSmoothing: "antialiased" }}>
@@ -177,10 +177,10 @@ export default async function AdminDashboard() {
         {pendingProfiles.length > 0 && (
           <section className="mb-10 stagger-3">
             <div className="relative pl-4 mb-4">
-              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-500 rounded-full" />
+              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-600 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-700 tracking-[0.2em] uppercase">
                 Ожидают одобрения
-                <span className="ml-2 font-normal normal-case tracking-normal text-amber-500">— {pendingProfiles.length}</span>
+                <span className="ml-2 font-normal normal-case tracking-normal text-blue-600">— {pendingProfiles.length}</span>
               </p>
             </div>
 
@@ -196,7 +196,7 @@ export default async function AdminDashboard() {
 
                 const docs = employer?.document_urls ?? []
                 return (
-                  <div key={p.user_id} className="rounded-xl border border-amber-200 bg-amber-50/40 px-5 py-4">
+                  <div key={p.user_id} className="rounded-xl border border-blue-200 bg-blue-50/40 px-5 py-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
                         {/* Student photo or role icon */}
@@ -204,13 +204,13 @@ export default async function AdminDashboard() {
                           <img
                             src={p.photo_url}
                             alt={name ?? "Студент"}
-                            className="w-10 h-10 rounded-xl object-cover border border-amber-200 shrink-0"
+                            className="w-10 h-10 rounded-xl object-cover border border-blue-200 shrink-0"
                           />
                         ) : (
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isEmployer ? "bg-blue-50 border-blue-200" : "bg-amber-50 border-amber-200"}`}>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${isEmployer ? "bg-blue-50 border-blue-200" : "bg-blue-50 border-blue-200"}`}>
                             {isEmployer
                               ? <Building2 className="w-4 h-4 text-blue-400" />
-                              : <UserCheck className="w-4 h-4 text-amber-500" />}
+                              : <UserCheck className="w-4 h-4 text-blue-600" />}
                           </div>
                         )}
                         <div className="min-w-0">
@@ -228,7 +228,7 @@ export default async function AdminDashboard() {
                           </p>
                           {/* Student: photo status */}
                           {!isEmployer && !p.photo_url && (
-                            <p className="text-[10px] text-amber-500 mt-1 font-heading font-bold tracking-widest uppercase">Фото не загружено</p>
+                            <p className="text-[10px] text-blue-600 mt-1 font-heading font-bold tracking-widest uppercase">Фото не загружено</p>
                           )}
                         </div>
                       </div>
@@ -271,7 +271,7 @@ export default async function AdminDashboard() {
                       </div>
                     )}
                     {isEmployer && docs.length === 0 && (
-                      <p className="text-[10px] text-amber-500 mt-2 font-heading font-bold tracking-widest uppercase">Документы не загружены</p>
+                      <p className="text-[10px] text-blue-600 mt-2 font-heading font-bold tracking-widest uppercase">Документы не загружены</p>
                     )}
                   </div>
                 )
@@ -283,7 +283,7 @@ export default async function AdminDashboard() {
         {/* Students table */}
         <section className="mb-8 stagger-4">
           <div className="relative pl-4 mb-4">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
               Студенты колледжа
               <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">— {totalStudents}</span>
@@ -310,11 +310,11 @@ export default async function AdminDashboard() {
                     const p    = profileMap.get(student.user_id)
                     const name = p ? `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || "—" : "—"
                     return (
-                      <TableRow key={student.id} className="border-neutral-100 hover:bg-amber-50/30 transition-colors">
+                      <TableRow key={student.id} className="border-neutral-100 hover:bg-blue-50/30 transition-colors">
                         <TableCell>
                           <Link
                             href={`/admin/students/${student.id}`}
-                            className="font-heading font-bold text-[13px] text-neutral-900 hover:text-amber-600 transition-colors"
+                            className="font-heading font-bold text-[13px] text-neutral-900 hover:text-blue-700 transition-colors"
                           >
                             {name}
                           </Link>
@@ -340,7 +340,7 @@ export default async function AdminDashboard() {
         {/* Applications table */}
         <section className="stagger-5">
           <div className="relative pl-4 mb-4">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
               Заявки студентов
               <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">— {totalApplications}</span>
@@ -387,7 +387,7 @@ export default async function AdminDashboard() {
                         <TableCell>
                           <Link
                             href={`/admin/applications/${app.id}`}
-                            className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 hover:text-amber-600 transition-colors"
+                            className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 hover:text-blue-700 transition-colors"
                           >
                             <MessageSquare className="w-3 h-3" />
                             Переписка

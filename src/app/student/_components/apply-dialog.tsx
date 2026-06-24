@@ -51,14 +51,14 @@ export function ApplyDialog({ internshipId, internshipTitle, studentId }: {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="w-full h-9 flex items-center justify-center gap-1.5 text-[11px] font-heading font-bold tracking-widest uppercase text-white bg-amber-500 hover:bg-amber-400 rounded-lg transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-amber-500/30">
+        <button className="w-full h-9 flex items-center justify-center gap-1.5 text-[11px] font-heading font-bold tracking-widest uppercase text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/30">
           <Send className="w-3 h-3" />
           Подать заявку
         </button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md bg-white border-neutral-200 shadow-xl">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 rounded-t-xl" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 rounded-t-xl" />
 
         <DialogHeader className="pt-2">
           <DialogTitle className="font-heading text-[16px] font-bold tracking-wide text-neutral-900">
@@ -74,7 +74,7 @@ export function ApplyDialog({ internshipId, internshipTitle, studentId }: {
               <span className="text-neutral-400 normal-case tracking-normal font-normal">(необязательно)</span>
             </label>
             <textarea
-              className="w-full min-h-[110px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-neutral-50 border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-neutral-400"
+              className="w-full min-h-[110px] resize-y rounded-md px-3 py-2 text-[14px] transition-colors bg-neutral-50 border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400"
               placeholder="Расскажите немного о себе и почему вас интересует это место практики..."
               {...register("message")}
             />
@@ -96,7 +96,7 @@ export function ApplyDialog({ internshipId, internshipTitle, studentId }: {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 h-10 bg-amber-500 hover:bg-amber-400 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-amber-500/25"
+              className="flex-1 h-10 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/25"
             >
               {isSubmitting ? "Отправка..." : "Отправить"}
             </Button>

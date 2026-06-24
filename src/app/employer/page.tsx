@@ -80,7 +80,7 @@ export default async function EmployerDashboard() {
       <header className="border-b border-neutral-200 bg-white shadow-sm">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center shadow-sm shadow-amber-500/30">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
@@ -95,8 +95,8 @@ export default async function EmployerDashboard() {
 
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-12 stagger-1 relative pl-4">
-          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-amber-500 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-amber-500 tracking-[0.2em] uppercase mb-2">Кабинет работодателя</p>
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">Кабинет работодателя</p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">{companyName}</h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
           {profile && (
@@ -111,7 +111,7 @@ export default async function EmployerDashboard() {
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="relative pl-4">
-                <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+                <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
                 <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
                   Профиль компании
                 </p>
@@ -160,9 +160,9 @@ export default async function EmployerDashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-14">
           {SECTIONS.map(({ icon: Icon, title, desc }, i) => (
-            <div key={title} className={`group rounded-xl border border-neutral-200 bg-white p-6 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer stagger-${i + 3}`}>
-              <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mb-4 group-hover:bg-amber-100 transition-colors">
-                <Icon className="w-4 h-4 text-amber-500" />
+            <div key={title} className={`group rounded-xl border border-neutral-200 bg-white p-6 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer stagger-${i + 3}`}>
+              <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                <Icon className="w-4 h-4 text-blue-600" />
               </div>
               <p className="font-heading font-bold text-[15px] mb-1 text-neutral-900">{title}</p>
               <p className="text-xs text-neutral-500 leading-relaxed">{desc}</p>
@@ -173,7 +173,7 @@ export default async function EmployerDashboard() {
         <div className="stagger-5">
           <div className="flex items-center justify-between mb-5">
             <div className="relative pl-4">
-              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">Места практики</p>
               {internships && internships.length > 0 && <p className="text-xs text-neutral-400 mt-0.5">{internships.length} {internships.length === 1 ? "запись" : internships.length < 5 ? "записи" : "записей"}</p>}
             </div>
@@ -181,7 +181,7 @@ export default async function EmployerDashboard() {
           </div>
           {!internships || internships.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center">
-              <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-3"><FileText className="w-5 h-5 text-amber-400" /></div>
+              <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3"><FileText className="w-5 h-5 text-blue-400" /></div>
               <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Пока нет мест практики</p>
               <p className="text-xs text-neutral-400">Нажмите «Добавить», чтобы опубликовать первое место</p>
             </div>
@@ -194,13 +194,13 @@ export default async function EmployerDashboard() {
 
         <div className="mt-12 stagger-6">
           <div className="relative pl-4 mb-5">
-            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-amber-400 rounded-full" />
+            <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">Входящие заявки</p>
             {applications.length > 0 && <p className="text-xs text-neutral-400 mt-0.5">{applications.length} {applications.length === 1 ? "заявка" : applications.length < 5 ? "заявки" : "заявок"}</p>}
           </div>
           {applications.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center">
-              <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-3"><Users className="w-5 h-5 text-amber-400" /></div>
+              <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3"><Users className="w-5 h-5 text-blue-400" /></div>
               <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Нет входящих заявок</p>
               <p className="text-xs text-neutral-400">Студенты ещё не подавали заявки</p>
             </div>

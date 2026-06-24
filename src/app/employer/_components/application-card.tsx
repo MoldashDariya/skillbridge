@@ -9,7 +9,7 @@ import { notifyStudentOnStatusChange } from "@/app/actions/notifications"
 import { StudentPortfolioDialog } from "./student-portfolio-dialog"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-amber-600 border-amber-300 bg-amber-50" },
+  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
   accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
@@ -51,8 +51,8 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5 hover:border-amber-300 hover:shadow-sm transition-all">
-      <p className="text-[11px] text-amber-600 font-heading font-bold tracking-widests uppercase mb-1">{internshipTitle}</p>
+    <div className="rounded-xl border border-neutral-200 bg-white p-5 hover:border-blue-300 hover:shadow-sm transition-all">
+      <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widests uppercase mb-1">{internshipTitle}</p>
 
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
@@ -82,7 +82,7 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
           {studentId && <StudentPortfolioDialog studentId={studentId} studentName={studentName} />}
           <Link
             href={`/employer/applications/${id}`}
-            className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-500 hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all"
+            className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-500 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all"
           >
             <MessageSquare className="w-3 h-3" />
             Написать

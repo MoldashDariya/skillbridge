@@ -64,9 +64,9 @@ export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-200 flex flex-col cursor-pointer"
+        className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 flex flex-col cursor-pointer"
       >
-        <p className="text-[11px] text-amber-600 font-heading font-bold tracking-widest uppercase mb-1">
+        <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase mb-1">
           {item.employers?.company_name ?? "Работодатель"}
         </p>
         <p className="font-heading font-bold text-[15px] leading-snug text-neutral-900 mb-3">{item.title}</p>
@@ -91,7 +91,7 @@ export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
             <CheckCircle2 className="w-3.5 h-3.5" /> Заявка подана
           </div>
         ) : (
-          <div className="w-full h-9 flex items-center justify-center text-[11px] font-heading font-bold tracking-widest uppercase text-neutral-400 border border-neutral-200 rounded-lg bg-neutral-50 group-hover:border-amber-300 group-hover:text-amber-600 group-hover:bg-amber-50/60 transition-all">
+          <div className="w-full h-9 flex items-center justify-center text-[11px] font-heading font-bold tracking-widest uppercase text-neutral-400 border border-neutral-200 rounded-lg bg-neutral-50 group-hover:border-blue-300 group-hover:text-blue-700 group-hover:bg-blue-50/60 transition-all">
             Подробнее →
           </div>
         )}
@@ -99,9 +99,9 @@ export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 rounded-t-xl" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 rounded-t-xl" />
           <DialogHeader className="pt-2">
-            <p className="text-[11px] text-amber-600 font-heading font-bold tracking-widest uppercase mb-1">
+            <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase mb-1">
               {item.employers?.company_name ?? "Работодатель"}
             </p>
             <DialogTitle className="font-heading font-extrabold text-[18px] leading-snug text-neutral-900">
@@ -149,14 +149,14 @@ export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={3}
-                    className="w-full resize-none rounded-md px-3 py-2 text-[14px] bg-neutral-50 border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 placeholder:text-neutral-400 transition-colors"
+                    className="w-full resize-none rounded-md px-3 py-2 text-[14px] bg-neutral-50 border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 transition-colors"
                     placeholder="Расскажите о себе и почему вас интересует эта практика..."
                   />
                   {error && <p className="text-xs text-red-500">{error}</p>}
                   <button
                     onClick={handleApply}
                     disabled={submitting}
-                    className="w-full h-10 flex items-center justify-center gap-2 text-[12px] font-heading font-bold tracking-widest uppercase text-white bg-amber-500 hover:bg-amber-400 disabled:opacity-60 rounded-lg transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-amber-500/25"
+                    className="w-full h-10 flex items-center justify-center gap-2 text-[12px] font-heading font-bold tracking-widest uppercase text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 rounded-lg transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/25"
                   >
                     {submitting
                       ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Отправка...</>

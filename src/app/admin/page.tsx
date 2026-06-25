@@ -115,7 +115,7 @@ export default async function AdminDashboard() {
   const totalStudents          = students.length
   const studentsWithPortfolio  = students.filter(s => portfolioStudentIds.has(s.id)).length
   const totalApplications      = applications.length
-  const acceptedApplications   = applications.filter(a => a.status === "accepted").length
+  const acceptedApplications   = applications.filter(a => a.status === "accepted" || a.status === "hired").length
 
   // Per-student application list for the profile dialog
   const studentAppsMap = new Map<string, ApplicationRow[]>()

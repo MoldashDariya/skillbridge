@@ -1,12 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase } from "lucide-react"
+import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase, UserRound } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
@@ -33,23 +32,25 @@ type ApplicationItem = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении", cls: "text-blue-700 border-blue-300 bg-blue-50" },
-  accepted:     { label: "Принят",          cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  rejected:     { label: "Отклонено",       cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
-  at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-50" },
+  pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
+  at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
+  interviewing: { label: "Проходит собеседование", cls: "text-violet-600 border-violet-300 bg-violet-50" },
+  accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  hired:        { label: "Нанят",                  cls: "text-emerald-700 border-emerald-400 bg-emerald-50" },
+  rejected:     { label: "Отклонено",              cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
 }
 
 type Props = {
   studentId: string
   studentName: string
+  studentPhotoUrl?: string | null
 }
 
 function isVideoItem(item: PortfolioItem) {
   return !!item.video_url && !item.image_url
 }
 
-export function StudentPortfolioDialog({ studentId, studentName }: Props) {
+export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl }: Props) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<PortfolioItem[] | null>(null)
@@ -94,19 +95,35 @@ export function StudentPortfolioDialog({ studentId, studentName }: Props) {
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-heading font-extrabold text-[17px] text-neutral-900">
-            {studentName}
-          </DialogTitle>
-          {student?.college_name && (
-            <div className="flex items-center gap-1.5 mt-1">
-              <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
-              <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.18em] uppercase">
-                {[student.college_name, student.specialty].filter(Boolean).join(" · ")}
-              </p>
+        {/* Verification photo — shown immediately, available from parent server query */}
+        <div className="flex items-center gap-3 pb-4 border-b border-neutral-100">
+          {studentPhotoUrl ? (
+            <img
+              src={studentPhotoUrl}
+              alt={studentName}
+              className="w-16 h-16 rounded-xl object-cover border border-neutral-200 shadow-sm shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-xl bg-neutral-50 border border-dashed border-neutral-200 flex items-center justify-center shrink-0">
+              <UserRound className="w-6 h-6 text-neutral-300" />
             </div>
           )}
-        </DialogHeader>
+          <div>
+            <DialogTitle className="font-heading font-extrabold text-[17px] text-neutral-900 leading-tight">
+              {studentName}
+            </DialogTitle>
+            {student?.college_name ? (
+              <div className="flex items-center gap-1.5 mt-1">
+                <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
+                <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.18em] uppercase">
+                  {[student.college_name, student.specialty].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+            ) : (
+              <p className="text-[11px] text-neutral-400 mt-0.5">{studentPhotoUrl ? "Фото верифицировано" : "Фото не загружено"}</p>
+            )}
+          </div>
+        </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-16">

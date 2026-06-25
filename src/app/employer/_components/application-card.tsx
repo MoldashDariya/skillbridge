@@ -9,11 +9,12 @@ import { StudentPortfolioDialog } from "./student-portfolio-dialog"
 import { ApplicationChatDialog } from "@/components/application-chat-dialog"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
-  at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
-  rejected:     { label: "Отклонено",        cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
+  pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
+  at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
+  interviewing: { label: "Проходит собеседование", cls: "text-violet-600 border-violet-300 bg-violet-50" },
+  accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  hired:        { label: "Нанят",                  cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
+  rejected:     { label: "Отклонено",              cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
 }
 
 type Props = {
@@ -21,6 +22,7 @@ type Props = {
   internshipTitle: string
   studentName: string
   studentId: string | null
+  studentPhotoUrl?: string | null
   college: string | null
   specialty: string | null
   message: string | null
@@ -30,7 +32,7 @@ type Props = {
   currentUserName: string
 }
 
-export function ApplicationCard({ id, internshipTitle, studentName, studentId, college, specialty, message, status: initialStatus, appliedAt, currentUserId, currentUserName }: Props) {
+export function ApplicationCard({ id, internshipTitle, studentName, studentId, studentPhotoUrl, college, specialty, message, status: initialStatus, appliedAt, currentUserId, currentUserName }: Props) {
   const [status, setStatus] = useState(initialStatus)
   const [loading, setLoading] = useState<string | null>(null)
   const router = useRouter()
@@ -45,7 +47,7 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
     if (!error) {
       setStatus(newStatus)
       router.refresh()
-      if (newStatus === "accepted" || newStatus === "rejected" || newStatus === "at_interview" || newStatus === "hired") {
+      if (newStatus === "accepted" || newStatus === "rejected" || newStatus === "at_interview" || newStatus === "hired" || newStatus === "interviewing") {
         notifyStudentOnStatusChange(id, newStatus).catch(() => {})
       }
     }
@@ -81,7 +83,7 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-neutral-400">{date}</span>
-          {studentId && <StudentPortfolioDialog studentId={studentId} studentName={studentName} />}
+          {studentId && <StudentPortfolioDialog studentId={studentId} studentName={studentName} studentPhotoUrl={studentPhotoUrl ?? null} />}
           <ApplicationChatDialog
             applicationId={id}
             currentUserId={currentUserId}
@@ -120,6 +122,34 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, c
             </>
           )}
           {status === "at_interview" && (
+            <>
+              <button
+                onClick={() => changeStatus("rejected")}
+                disabled={loading !== null}
+                className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2.5 py-1.5 rounded-lg border border-red-200 text-red-400 hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-40"
+              >
+                <X className="w-3 h-3" />
+                {loading === "rejected" ? "..." : "Отклонить"}
+              </button>
+              <button
+                onClick={() => changeStatus("interviewing")}
+                disabled={loading !== null}
+                className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2.5 py-1.5 rounded-lg bg-violet-50 border border-violet-300 text-violet-600 hover:bg-violet-100 hover:border-violet-400 transition-all disabled:opacity-40"
+              >
+                <UserRound className="w-3 h-3" />
+                {loading === "interviewing" ? "..." : "В процессе"}
+              </button>
+              <button
+                onClick={() => changeStatus("hired")}
+                disabled={loading !== null}
+                className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2.5 py-1.5 rounded-lg bg-emerald-500 border border-emerald-500 text-white hover:bg-emerald-400 transition-all disabled:opacity-40 shadow-sm shadow-emerald-500/25"
+              >
+                <Briefcase className="w-3 h-3" />
+                {loading === "hired" ? "..." : "Нанять"}
+              </button>
+            </>
+          )}
+          {status === "interviewing" && (
             <>
               <button
                 onClick={() => changeStatus("rejected")}

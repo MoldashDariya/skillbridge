@@ -7,15 +7,18 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import { approveUser, rejectUser } from "./_actions"
+import { AdminStudentsTable, type StudentTableRow } from "./_components/admin-students-table"
 
+export const dynamic = "force-dynamic"
 export const metadata = { title: "Кабинет администратора — SkillBridge KZ" }
 
 const APP_STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
-  at_interview: { label: "На собеседовании", cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  accepted:     { label: "Принят",           cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  hired:        { label: "Нанят",            cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
-  rejected:     { label: "Отклонено",        cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
+  pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
+  at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
+  interviewing: { label: "Проходит собеседование", cls: "text-violet-600 border-violet-300 bg-violet-50" },
+  accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  hired:        { label: "Нанят",                  cls: "text-emerald-700 border-emerald-400 bg-emerald-100" },
+  rejected:     { label: "Отклонено",              cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
 }
 
 type ApplicationRow = {
@@ -79,18 +82,18 @@ export default async function AdminDashboard() {
 
   // Students from this college
   const { data: studentsRaw } = await supabase
-    .from("students").select("id, user_id, specialty, course_year").eq("college_name", collegeName)
+    .from("students").select("id, user_id, specialty, course_year, bio, skills").eq("college_name", collegeName)
 
   const students = studentsRaw ?? []
   const studentIds   = students.map(s => s.id)
   const studentUserIds = students.map(s => s.user_id)
 
-  type ProfileRow   = { user_id: string; first_name: string | null; last_name: string | null }
+  type ProfileRow   = { user_id: string; first_name: string | null; last_name: string | null; photo_url: string | null }
   type PortfolioRow = { student_id: string }
 
   const [profilesResult, portfolioResult, applicationsResult] = await Promise.all([
     studentUserIds.length > 0
-      ? supabase.from("profiles").select("user_id, first_name, last_name").in("user_id", studentUserIds)
+      ? supabase.from("profiles").select("user_id, first_name, last_name, photo_url").in("user_id", studentUserIds)
       : Promise.resolve({ data: [] as ProfileRow[] }),
     studentIds.length > 0
       ? supabase.from("portfolio_items").select("student_id").in("student_id", studentIds)
@@ -113,6 +116,42 @@ export default async function AdminDashboard() {
   const studentsWithPortfolio  = students.filter(s => portfolioStudentIds.has(s.id)).length
   const totalApplications      = applications.length
   const acceptedApplications   = applications.filter(a => a.status === "accepted").length
+
+  // Per-student application list for the profile dialog
+  const studentAppsMap = new Map<string, ApplicationRow[]>()
+  for (const app of applications) {
+    const list = studentAppsMap.get(app.student_id) ?? []
+    list.push(app)
+    studentAppsMap.set(app.student_id, list)
+  }
+
+  const studentRows: StudentTableRow[] = students.map((student) => {
+    const prof = profileMap.get(student.user_id)
+    const name = prof ? `${prof.first_name ?? ""} ${prof.last_name ?? ""}`.trim() || "—" : "—"
+    const apps = studentAppsMap.get(student.id) ?? []
+    const statuses = new Set(apps.map(a => a.status))
+    let currentStatus: StudentTableRow["currentStatus"] = "searching"
+    if (statuses.has("accepted") || statuses.has("hired")) currentStatus = "accepted"
+    else if (statuses.has("interviewing") || statuses.has("at_interview")) currentStatus = "interviewing"
+    return {
+      id: student.id,
+      name,
+      specialty: student.specialty ?? null,
+      courseYear: (student as { course_year?: number | null }).course_year ?? null,
+      bio: (student as { bio?: string | null }).bio ?? null,
+      skills: (student as { skills?: string[] | null }).skills ?? null,
+      photoUrl: prof?.photo_url ?? null,
+      hasPortfolio: portfolioStudentIds.has(student.id),
+      currentStatus,
+      applications: apps.map(app => ({
+        id: app.id,
+        status: app.status,
+        createdAt: app.created_at,
+        internshipTitle: app.internships?.title ?? "—",
+        companyName: app.internships?.employers?.company_name ?? "—",
+      })),
+    }
+  })
 
   async function signOut() {
     "use server"
@@ -295,45 +334,7 @@ export default async function AdminDashboard() {
               <p className="text-sm text-neutral-400">Студентов из этого колледжа не зарегистрировано</p>
             </div>
           ) : (
-            <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-neutral-100 bg-neutral-50/60 hover:bg-neutral-50/60">
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widest uppercase">Студент</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Специальность</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Курс</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Портфолио</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {students.map((student) => {
-                    const p    = profileMap.get(student.user_id)
-                    const name = p ? `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || "—" : "—"
-                    return (
-                      <TableRow key={student.id} className="border-neutral-100 hover:bg-blue-50/30 transition-colors">
-                        <TableCell>
-                          <Link
-                            href={`/admin/students/${student.id}`}
-                            className="font-heading font-bold text-[13px] text-neutral-900 hover:text-blue-700 transition-colors"
-                          >
-                            {name}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-[13px] text-neutral-500">{student.specialty ?? "—"}</TableCell>
-                        <TableCell className="text-[13px] text-neutral-500">{student.course_year ?? "—"}</TableCell>
-                        <TableCell>
-                          {portfolioStudentIds.has(student.id) ? (
-                            <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-emerald-600 border border-emerald-300 bg-emerald-50 px-2 py-0.5 rounded-full">Есть</span>
-                          ) : (
-                            <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 border border-neutral-200 bg-neutral-50 px-2 py-0.5 rounded-full">Нет</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <AdminStudentsTable rows={studentRows} />
           )}
         </section>
 

@@ -23,6 +23,12 @@ const ROLE_REDIRECT: Record<string, string> = {
   college_admin: "/admin",
 }
 
+const COLLEGES = [
+  "Талгарский Политехнический",
+  "Талгарский колледж агробизнеса и менеджмента им.М.Бейсебаева",
+  "Шелекский политехнический колледж",
+] as const
+
 const loginSchema = z.object({
   email: z.string().email("Неверный формат email"),
   password: z.string().min(6, "Минимум 6 символов"),
@@ -30,16 +36,23 @@ const loginSchema = z.object({
 
 const registerSchema = z
   .object({
+    firstName: z.string().min(1, "Укажите имя"),
+    lastName: z.string().min(1, "Укажите фамилию"),
     email: z.string().email("Неверный формат email"),
     password: z.string().min(6, "Минимум 6 символов"),
     role: z.enum(["student", "employer"], {
       message: "Выберите роль",
     }),
     companyName: z.string().optional(),
+    collegeName: z.string().optional(),
   })
   .refine(
     (d) => d.role !== "employer" || (d.companyName && d.companyName.trim().length > 0),
     { message: "Укажите название компании", path: ["companyName"] }
+  )
+  .refine(
+    (d) => d.role !== "student" || (d.collegeName && d.collegeName.trim().length > 0),
+    { message: "Выберите колледж", path: ["collegeName"] }
   )
 
 type LoginValues = z.infer<typeof loginSchema>
@@ -147,7 +160,10 @@ function RegisterForm() {
       options: {
         data: {
           role: values.role,
+          first_name: values.firstName.trim(),
+          last_name: values.lastName.trim(),
           company_name: values.companyName ?? "",
+          college_name: values.collegeName ?? "",
         },
       },
     })
@@ -172,6 +188,22 @@ function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 stagger-2">
+        <div>
+          <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">
+            Имя
+          </label>
+          <Input className={inputCls} placeholder="Айгерим" autoComplete="given-name" {...register("firstName")} />
+          <FieldError message={errors.firstName?.message} />
+        </div>
+        <div>
+          <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">
+            Фамилия
+          </label>
+          <Input className={inputCls} placeholder="Бекова" autoComplete="family-name" {...register("lastName")} />
+          <FieldError message={errors.lastName?.message} />
+        </div>
+      </div>
       <div className="stagger-2">
         <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">
           Email
@@ -198,6 +230,7 @@ function RegisterForm() {
               onValueChange={(v) => {
                 field.onChange(v)
                 resetField("companyName")
+                resetField("collegeName")
               }}
               value={field.value ?? ""}
             >
@@ -213,6 +246,30 @@ function RegisterForm() {
         />
         <FieldError message={errors.role?.message} />
       </div>
+      {selectedRole === "student" && (
+        <div className="animate-slide-up">
+          <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">
+            Колледж
+          </label>
+          <Controller
+            control={control}
+            name="collegeName"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <SelectTrigger className={cn(inputCls, "w-full")}>
+                  <SelectValue placeholder="Выберите колледж" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-neutral-200 shadow-lg">
+                  {COLLEGES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          <FieldError message={errors.collegeName?.message} />
+        </div>
+      )}
       {selectedRole === "employer" && (
         <div className="animate-slide-up">
           <label className="block text-xs font-heading font-bold tracking-widest text-neutral-500 uppercase mb-1.5">

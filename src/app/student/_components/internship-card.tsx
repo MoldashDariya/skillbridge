@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { MapPin, Calendar, Users2, CheckCircle2, Send, Loader2 } from "lucide-react"
+import { MapPin, Calendar, Users2, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { notifyEmployerOnApplication } from "@/app/actions/notifications"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -23,9 +23,10 @@ type Props = {
   item: InternshipWithEmployer
   alreadyApplied: boolean
   studentId: string | null
+  hasCollege: boolean
 }
 
-export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
+export function InternshipCard({ item, alreadyApplied, studentId, hasCollege }: Props) {
   const [open, setOpen] = useState(false)
   const [applied, setApplied] = useState(alreadyApplied)
   const [message, setMessage] = useState("")
@@ -139,6 +140,18 @@ export function InternshipCard({ item, alreadyApplied, studentId }: Props) {
               {applied ? (
                 <div className="flex items-center justify-center gap-2 py-3 text-[12px] font-heading font-bold tracking-widest uppercase text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-lg">
                   <CheckCircle2 className="w-4 h-4" /> Заявка подана
+                </div>
+              ) : studentId && !hasCollege ? (
+                <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                  <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[12px] font-heading font-bold text-amber-700">Укажите колледж в профиле</p>
+                    <p className="text-[11px] text-amber-600 mt-0.5">
+                      Перед подачей заявки заполните раздел{" "}
+                      <a href="/student/profile" className="underline underline-offset-2 font-bold">«Мой профиль»</a>
+                      {" "}— выберите ваш колледж.
+                    </p>
+                  </div>
                 </div>
               ) : studentId ? (
                 <div className="space-y-3">

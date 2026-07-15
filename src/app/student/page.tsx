@@ -45,7 +45,7 @@ export default async function StudentDashboard() {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id")
+    .select("id, college_name")
     .eq("user_id", user.id)
     .single()
 
@@ -166,6 +166,7 @@ export default async function StudentDashboard() {
                   item={item}
                   alreadyApplied={appliedIds.has(item.id)}
                   studentId={student?.id ?? null}
+                  hasCollege={!!(student as { college_name?: string | null } | null)?.college_name}
                 />
               ))}
             </div>

@@ -59,11 +59,24 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, s
       <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widests uppercase mb-1">{internshipTitle}</p>
 
       <div className="flex items-start justify-between gap-3 mb-3">
-        <div>
-          <p className="font-heading font-bold text-[15px] leading-snug text-neutral-900">{studentName}</p>
-          {(college || specialty) && (
-            <p className="text-xs text-neutral-500 mt-0.5">{[college, specialty].filter(Boolean).join(" · ")}</p>
+        <div className="flex items-center gap-2.5 min-w-0">
+          {studentPhotoUrl ? (
+            <img
+              src={studentPhotoUrl}
+              alt={studentName}
+              className="w-9 h-9 rounded-lg object-cover border border-neutral-200 shrink-0"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-lg bg-neutral-100 border border-neutral-200 flex items-center justify-center shrink-0">
+              <UserRound className="w-4 h-4 text-neutral-400" />
+            </div>
           )}
+          <div className="min-w-0">
+            <p className="font-heading font-bold text-[15px] leading-snug text-neutral-900">{studentName}</p>
+            {(college || specialty) && (
+              <p className="text-xs text-neutral-500 mt-0.5">{[college, specialty].filter(Boolean).join(" · ")}</p>
+            )}
+          </div>
         </div>
         <span className={`shrink-0 text-[10px] font-heading font-bold tracking-widests uppercase px-2.5 py-1 rounded-full border ${badge.cls}`}>
           {badge.label}

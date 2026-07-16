@@ -21,6 +21,7 @@ type ProfileSummary = {
   user_id: string
   first_name: string | null
   last_name: string | null
+  photo_url: string | null
 }
 
 const SECTIONS = [
@@ -63,7 +64,7 @@ export default async function EmployerDashboard() {
   const studentUserIds = [...new Set(applications.map((a) => a.students?.user_id).filter((id): id is string => !!id))]
 
   const { data: profilesRaw } = studentUserIds.length > 0
-    ? await supabase.from("profiles").select("user_id, first_name, last_name").in("user_id", studentUserIds)
+    ? await supabase.from("profiles").select("user_id, first_name, last_name, photo_url").in("user_id", studentUserIds)
     : { data: [] as ProfileSummary[] }
 
   const profileMap = new Map(((profilesRaw ?? []) as ProfileSummary[]).map((p) => [p.user_id, p]))
@@ -209,6 +210,7 @@ export default async function EmployerDashboard() {
               {applications.map((app) => {
                 const prof = app.students?.user_id ? profileMap.get(app.students.user_id) : null
                 const studentName = prof ? [prof.first_name, prof.last_name].filter(Boolean).join(" ") || "Студент" : "Студент"
+                const studentPhotoUrl = prof?.photo_url ?? null
                 return (
                   <ApplicationCard
                     key={app.id}
@@ -216,6 +218,7 @@ export default async function EmployerDashboard() {
                     internshipTitle={app.internships?.title ?? "Практика"}
                     studentName={studentName}
                     studentId={app.students?.id ?? null}
+                    studentPhotoUrl={studentPhotoUrl}
                     college={app.students?.college_name ?? null}
                     specialty={app.students?.specialty ?? null}
                     message={app.message}

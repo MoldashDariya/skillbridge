@@ -46,7 +46,7 @@ export default async function StudentDashboard() {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, college_name, specialty, course_year")
+    .select("id, college_name, specialty, course_year, skills")
     .eq("user_id", user.id)
     .single()
 
@@ -68,6 +68,20 @@ export default async function StudentDashboard() {
 
   const applications = (applicationsRaw ?? []) as ApplicationWithInternship[]
   const appliedIds = new Set(applications.map((a) => a.internship_id))
+
+  // Employer ratings for internship listings
+  const employerIds = [...new Set((internshipsRaw ?? []).map((i) => i.employer_id))]
+  const { data: ratingsRaw } = employerIds.length > 0
+    ? await supabase.from("employer_reviews").select("employer_id, rating").in("employer_id", employerIds)
+    : { data: [] }
+
+  const ratingAccum = new Map<string, { sum: number; count: number }>()
+  for (const r of (ratingsRaw ?? [])) {
+    const entry = ratingAccum.get(r.employer_id) ?? { sum: 0, count: 0 }
+    entry.sum += r.rating
+    entry.count++
+    ratingAccum.set(r.employer_id, entry)
+  }
 
   // Readiness data
   const [portfolioCountRes, certCountRes] = student
@@ -246,6 +260,12 @@ export default async function StudentDashboard() {
                   alreadyApplied={appliedIds.has(item.id)}
                   studentId={student?.id ?? null}
                   hasCollege={!!(student as { college_name?: string | null } | null)?.college_name}
+                  hasPortfolio={(portfolioCountRes.count ?? 0) > 0}
+                  employerRating={
+                    ratingAccum.has(item.employer_id)
+                      ? { avg: ratingAccum.get(item.employer_id)!.sum / ratingAccum.get(item.employer_id)!.count, count: ratingAccum.get(item.employer_id)!.count }
+                      : null
+                  }
                 />
               ))}
             </div>

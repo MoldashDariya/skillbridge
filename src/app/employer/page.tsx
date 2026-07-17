@@ -54,6 +54,15 @@ export default async function EmployerDashboard() {
     ? await supabase.from("internships").select("*").eq("employer_id", employer.id).order("created_at", { ascending: false })
     : { data: [] as Internship[] }
 
+  const { data: reviewsRaw } = employer
+    ? await supabase.from("employer_reviews").select("rating").eq("employer_id", employer.id)
+    : { data: [] }
+  const reviews = reviewsRaw ?? []
+  const avgRating = reviews.length > 0
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : null
+  const reviewCount = reviews.length
+
   const internshipIds = (internships ?? []).map((i) => i.id)
 
   const { data: applicationsRaw } = internshipIds.length > 0
@@ -130,6 +139,13 @@ export default async function EmployerDashboard() {
               )}
             </div>
 
+            {avgRating !== null && (
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-amber-400 text-base leading-none">★</span>
+                <span className="font-heading font-bold text-[15px] text-neutral-800">{avgRating.toFixed(1)}</span>
+                <span className="text-[12px] text-neutral-400">({reviewCount} {reviewCount === 1 ? "отзыв" : reviewCount < 5 ? "отзыва" : "отзывов"})</span>
+              </div>
+            )}
             {employer?.company_description ? (
               <p className="text-sm text-neutral-600 mb-4 leading-relaxed">{employer.company_description}</p>
             ) : (

@@ -61,6 +61,7 @@ export type Database = {
           message: string | null
           status: string | null
           student_id: string
+          teacher_feedback: string | null
         }
         Insert: {
           created_at?: string | null
@@ -69,6 +70,7 @@ export type Database = {
           message?: string | null
           status?: string | null
           student_id: string
+          teacher_feedback?: string | null
         }
         Update: {
           created_at?: string | null
@@ -77,6 +79,7 @@ export type Database = {
           message?: string | null
           status?: string | null
           student_id?: string
+          teacher_feedback?: string | null
         }
         Relationships: [
           {
@@ -136,6 +139,58 @@ export type Database = {
           specialty?: string
         }
         Relationships: []
+      }
+      employer_reviews: {
+        Row: {
+          application_id: string
+          comment: string | null
+          created_at: string | null
+          employer_id: string
+          id: string
+          rating: number
+          student_id: string
+        }
+        Insert: {
+          application_id: string
+          comment?: string | null
+          created_at?: string | null
+          employer_id: string
+          id?: string
+          rating: number
+          student_id: string
+        }
+        Update: {
+          application_id?: string
+          comment?: string | null
+          created_at?: string | null
+          employer_id?: string
+          id?: string
+          rating?: number
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employer_reviews_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employer_reviews_employer_id_fkey"
+            columns: ["employer_id"]
+            isOneToOne: false
+            referencedRelation: "employers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employer_reviews_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       employers: {
         Row: {

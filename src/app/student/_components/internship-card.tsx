@@ -1,14 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { MapPin, Calendar, Users2, CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react"
+import {
+  MapPin, Calendar, Users2, CheckCircle2, Send, Loader2, AlertCircle,
+  BookOpen, ChevronDown, ChevronUp, Sparkles, XCircle,
+} from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { notifyEmployerOnApplication } from "@/app/actions/notifications"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { analyzeSkillGap } from "@/app/student/_actions"
 import type { Database } from "@/types/supabase"
+import type { GapSkill, SkillGapResult } from "@/app/student/_actions"
 
 type InternshipRow = Database["public"]["Tables"]["internships"]["Row"]
+type CourseRow = { id: string; course_name: string; course_url: string }
+
 export type InternshipWithEmployer = InternshipRow & {
   employers: { company_name: string } | null
 }
@@ -24,20 +31,40 @@ type Props = {
   alreadyApplied: boolean
   studentId: string | null
   hasCollege: boolean
+  hasPortfolio: boolean
+  employerRating?: { avg: number; count: number } | null
 }
 
-export function InternshipCard({ item, alreadyApplied, studentId, hasCollege }: Props) {
+type GapState = null | "loading" | SkillGapResult
+
+export function InternshipCard({ item, alreadyApplied, studentId, hasCollege, hasPortfolio, employerRating }: Props) {
   const [open, setOpen] = useState(false)
   const [applied, setApplied] = useState(alreadyApplied)
   const [message, setMessage] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+
+  const [courses, setCourses] = useState<CourseRow[] | null>(null)
+  const [gapState, setGapState] = useState<GapState>(null)
+  const [expandedSkills, setExpandedSkills] = useState<Set<string>>(new Set())
+
   const router = useRouter()
 
   const format = item.format ? FORMAT_LABEL[item.format] : null
   const deadline = item.deadline
     ? new Date(item.deadline).toLocaleDateString("ru-RU", { day: "numeric", month: "short", year: "numeric" })
     : null
+
+  // Fetch courses when dialog opens
+  useEffect(() => {
+    if (!open || courses !== null || !item.specialty) return
+    createClient()
+      .from("courses")
+      .select("id, course_name, course_url")
+      .ilike("specialty", `%${item.specialty}%`)
+      .limit(2)
+      .then(({ data }) => setCourses(data ?? []))
+  }, [open, item.specialty, courses])
 
   async function handleApply() {
     if (!studentId) return
@@ -61,15 +88,39 @@ export function InternshipCard({ item, alreadyApplied, studentId, hasCollege }: 
     setSubmitting(false)
   }
 
+  async function handleAnalyze() {
+    if (!studentId) return
+    setGapState("loading")
+    const result = await analyzeSkillGap(studentId, item.id)
+    setGapState(result)
+  }
+
+  function toggleSkill(skill: string) {
+    setExpandedSkills(prev => {
+      const next = new Set(prev)
+      next.has(skill) ? next.delete(skill) : next.add(skill)
+      return next
+    })
+  }
+
   return (
     <>
       <div
         onClick={() => setOpen(true)}
         className="group rounded-xl border border-neutral-200 bg-white p-5 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 flex flex-col cursor-pointer"
       >
-        <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase mb-1">
-          {item.employers?.company_name ?? "Работодатель"}
-        </p>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase">
+            {item.employers?.company_name ?? "Работодатель"}
+          </p>
+          {employerRating && (
+            <span className="text-[11px] text-neutral-500 flex items-center gap-0.5 shrink-0">
+              <span className="text-amber-400">★</span>
+              {employerRating.avg.toFixed(1)}
+              <span className="text-neutral-400 ml-0.5">({employerRating.count})</span>
+            </span>
+          )}
+        </div>
         <p className="font-heading font-bold text-[15px] leading-snug text-neutral-900 mb-3">{item.title}</p>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -102,9 +153,18 @@ export function InternshipCard({ item, alreadyApplied, studentId, hasCollege }: 
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-500 rounded-t-xl" />
           <DialogHeader className="pt-2">
-            <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase mb-1">
-              {item.employers?.company_name ?? "Работодатель"}
-            </p>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <p className="text-[11px] text-blue-700 font-heading font-bold tracking-widest uppercase">
+                {item.employers?.company_name ?? "Работодатель"}
+              </p>
+              {employerRating && (
+                <span className="text-[11px] text-neutral-500 flex items-center gap-0.5 shrink-0">
+                  <span className="text-amber-400">★</span>
+                  {employerRating.avg.toFixed(1)}
+                  <span className="text-neutral-400 ml-1">({employerRating.count} {employerRating.count === 1 ? "отзыв" : employerRating.count < 5 ? "отзыва" : "отзывов"})</span>
+                </span>
+              )}
+            </div>
             <DialogTitle className="font-heading font-extrabold text-[18px] leading-snug text-neutral-900">
               {item.title}
             </DialogTitle>
@@ -133,6 +193,105 @@ export function InternshipCard({ item, alreadyApplied, studentId, hasCollege }: 
               <div>
                 <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-1.5">Требования</p>
                 <p className="text-sm text-neutral-600 leading-relaxed">{item.requirements}</p>
+              </div>
+            )}
+
+            {/* Recommended courses */}
+            {courses && courses.length > 0 && (
+              <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+                <p className="text-[11px] font-heading font-bold text-blue-700 tracking-[0.18em] uppercase mb-2 flex items-center gap-1.5">
+                  <BookOpen className="w-3 h-3" />
+                  Рекомендованные курсы
+                </p>
+                <div className="space-y-2">
+                  {courses.map(c => (
+                    <a
+                      key={c.id}
+                      href={c.course_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-[13px] text-blue-700 hover:text-blue-900 hover:underline underline-offset-2 transition-colors"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-blue-400 shrink-0" />
+                      {c.course_name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* AI Skill Gap */}
+            {studentId && (
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.18em] uppercase mb-3 flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-violet-500" />
+                  Чего не хватает
+                </p>
+
+                {gapState === null && (
+                  <button
+                    onClick={handleAnalyze}
+                    className="w-full h-9 flex items-center justify-center gap-2 text-[11px] font-heading font-bold tracking-widest uppercase rounded-lg border border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100 transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    Проверить пробелы в навыках
+                  </button>
+                )}
+
+                {gapState === "loading" && (
+                  <div className="flex items-center gap-2 text-[12px] text-neutral-400 py-2">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-500" />
+                    Анализируем ваш профиль...
+                  </div>
+                )}
+
+                {gapState !== null && gapState !== "loading" && gapState.status === "no_portfolio" && (
+                  <div className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-[12px] text-amber-700">
+                      Заполните портфолио — это поможет AI персонализировать анализ пробелов в навыках.
+                    </p>
+                  </div>
+                )}
+
+                {gapState !== null && gapState !== "loading" && gapState.status === "error" && (
+                  <div className="flex items-center gap-2 text-[12px] text-red-500">
+                    <XCircle className="w-3.5 h-3.5 shrink-0" />
+                    {gapState.message}
+                  </div>
+                )}
+
+                {gapState !== null && gapState !== "loading" && gapState.status === "ok" && (
+                  <div className="space-y-3">
+                    {(gapState.gaps as GapSkill[]).map(gap => (
+                      <div key={gap.skill} className="rounded-lg border border-neutral-200 bg-white overflow-hidden">
+                        <div className="flex items-center justify-between px-3 py-2.5">
+                          <span className="text-[13px] font-heading font-bold text-neutral-800">{gap.skill}</span>
+                          <button
+                            onClick={() => toggleSkill(gap.skill)}
+                            className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-violet-600 hover:text-violet-800 transition-colors shrink-0"
+                          >
+                            Как закрыть
+                            {expandedSkills.has(gap.skill)
+                              ? <ChevronUp className="w-3 h-3" />
+                              : <ChevronDown className="w-3 h-3" />
+                            }
+                          </button>
+                        </div>
+                        {expandedSkills.has(gap.skill) && (
+                          <div className="border-t border-neutral-100 px-3 py-2.5 bg-neutral-50 space-y-1.5">
+                            {gap.plan.map((step, i) => (
+                              <div key={i} className="flex items-start gap-2">
+                                <span className="shrink-0 w-4 h-4 rounded-full bg-violet-100 text-violet-700 text-[9px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                                <p className="text-[12px] text-neutral-600 leading-relaxed">{step}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

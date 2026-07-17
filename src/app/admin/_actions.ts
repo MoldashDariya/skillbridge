@@ -39,3 +39,26 @@ export async function updateStudentPassport(
   await admin.from("students").update(data).eq("id", studentId)
   revalidatePath("/admin")
 }
+
+export async function completeApplication(applicationId: string) {
+  await assertAdmin()
+  const admin = createAdminClient()
+  await admin.from("applications").update({ status: "completed" }).eq("id", applicationId)
+  revalidatePath(`/admin/applications/${applicationId}`)
+  revalidatePath("/admin")
+}
+
+export async function saveTeacherFeedback(
+  applicationId: string,
+  feedback: string
+): Promise<{ error?: string }> {
+  await assertAdmin()
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from("applications")
+    .update({ teacher_feedback: feedback || null })
+    .eq("id", applicationId)
+  if (error) return { error: "Не удалось сохранить отзыв. Попробуйте ещё раз." }
+  revalidatePath(`/admin/applications/${applicationId}`)
+  return {}
+}

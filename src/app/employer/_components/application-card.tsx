@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { MessageSquare, Check, X, Clock, UserRound, Briefcase } from "lucide-react"
+import { MessageSquare, Check, X, Clock, UserRound, Briefcase, CheckCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { notifyStudentOnStatusChange } from "@/app/actions/notifications"
 import { StudentPortfolioDialog } from "./student-portfolio-dialog"
@@ -13,8 +13,9 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
   interviewing: { label: "Проходит собеседование", cls: "text-violet-600 border-violet-300 bg-violet-50" },
   accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  hired:        { label: "Принят",                  cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  hired:        { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
   rejected:     { label: "Отклонено",              cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
+  completed:    { label: "Завершено",              cls: "text-teal-600 border-teal-300 bg-teal-50" },
 }
 
 type Props = {
@@ -182,7 +183,17 @@ export function ApplicationCard({ id, internshipTitle, studentName, studentId, s
               </button>
             </>
           )}
-          {(status === "accepted" || status === "hired" || status === "rejected") && (
+          {(status === "accepted" || status === "hired") && (
+            <button
+              onClick={() => changeStatus("completed")}
+              disabled={loading !== null}
+              className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2.5 py-1.5 rounded-lg bg-teal-50 border border-teal-300 text-teal-600 hover:bg-teal-100 hover:border-teal-400 transition-all disabled:opacity-40"
+            >
+              <CheckCheck className="w-3 h-3" />
+              {loading === "completed" ? "..." : "Завершить"}
+            </button>
+          )}
+          {(status === "rejected") && (
             <button
               onClick={() => changeStatus("pending")}
               disabled={loading !== null}

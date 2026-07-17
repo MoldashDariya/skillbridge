@@ -4,6 +4,34 @@ import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import Anthropic from "@anthropic-ai/sdk"
 
+export async function submitEmployerReview(
+  applicationId: string,
+  employerId: string,
+  rating: number,
+  comment: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Не авторизован" }
+
+  const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).single()
+  if (!student) return { error: "Профиль не найден" }
+
+  const { error } = await supabase.from("employer_reviews").insert({
+    application_id: applicationId,
+    employer_id: employerId,
+    student_id: student.id,
+    rating,
+    comment: comment.trim() || null,
+  })
+
+  if (error) {
+    if (error.code === "23505") return { error: "Отзыв уже оставлен" }
+    return { error: "Ошибка при сохранении отзыва" }
+  }
+  return {}
+}
+
 export type GapSkill = { skill: string; plan: string[] }
 
 export type SkillGapResult =

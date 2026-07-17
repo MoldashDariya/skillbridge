@@ -56,45 +56,6 @@ export type Database = {
           },
         ]
       }
-      messages: {
-        Row: {
-          application_id: string
-          content: string
-          created_at: string
-          id: string
-          sender_id: string
-        }
-        Insert: {
-          application_id: string
-          content: string
-          created_at?: string
-          id?: string
-          sender_id: string
-        }
-        Update: {
-          application_id?: string
-          content?: string
-          created_at?: string
-          id?: string
-          sender_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "applications_internship_id_fkey"
-            columns: ["internship_id"]
-            isOneToOne: false
-            referencedRelation: "internships"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "applications_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       college_admins: {
         Row: {
           college_name: string
@@ -208,6 +169,38 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          application_id: string
+          content: string
+          created_at: string | null
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          application_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          application_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_items: {
         Row: {
           created_at: string | null
@@ -288,35 +281,91 @@ export type Database = {
         }
         Relationships: []
       }
+      student_certificates: {
+        Row: {
+          created_at: string | null
+          file_url: string
+          id: string
+          student_id: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_url: string
+          id?: string
+          student_id: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_url?: string
+          id?: string
+          student_id?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_certificates_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
+          attendance_percent: number | null
+          behance_url: string | null
           bio: string | null
           college_name: string | null
           course_year: number | null
           created_at: string | null
+          dribbble_url: string | null
+          figma_url: string | null
+          github_url: string | null
+          gpa: number | null
+          gpa_verified: boolean
           id: string
+          linkedin_url: string | null
           portfolio_completed: boolean | null
           skills: string[] | null
           specialty: string | null
           user_id: string
         }
         Insert: {
+          attendance_percent?: number | null
+          behance_url?: string | null
           bio?: string | null
           college_name?: string | null
           course_year?: number | null
           created_at?: string | null
+          dribbble_url?: string | null
+          figma_url?: string | null
+          github_url?: string | null
+          gpa?: number | null
+          gpa_verified?: boolean
           id?: string
+          linkedin_url?: string | null
           portfolio_completed?: boolean | null
           skills?: string[] | null
           specialty?: string | null
           user_id: string
         }
         Update: {
+          attendance_percent?: number | null
+          behance_url?: string | null
           bio?: string | null
           college_name?: string | null
           course_year?: number | null
           created_at?: string | null
+          dribbble_url?: string | null
+          figma_url?: string | null
+          github_url?: string | null
+          gpa?: number | null
+          gpa_verified?: boolean
           id?: string
+          linkedin_url?: string | null
           portfolio_completed?: boolean | null
           skills?: string[] | null
           specialty?: string | null
@@ -329,7 +378,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_college_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       user_role: "student" | "employer" | "college_admin"

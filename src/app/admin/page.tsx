@@ -82,7 +82,9 @@ export default async function AdminDashboard() {
 
   // Students from this college
   const { data: studentsRaw } = await supabase
-    .from("students").select("id, user_id, specialty, course_year, bio, skills").eq("college_name", collegeName)
+    .from("students")
+    .select("id, user_id, specialty, course_year, bio, skills, gpa, gpa_verified, attendance_percent, github_url, linkedin_url, behance_url, dribbble_url, figma_url")
+    .eq("college_name", collegeName)
 
   const students = studentsRaw ?? []
   const studentIds   = students.map(s => s.id)
@@ -90,8 +92,9 @@ export default async function AdminDashboard() {
 
   type ProfileRow   = { user_id: string; first_name: string | null; last_name: string | null; photo_url: string | null }
   type PortfolioRow = { student_id: string }
+  type CertRow      = { id: string; student_id: string; file_url: string; title: string | null }
 
-  const [profilesResult, portfolioResult, applicationsResult] = await Promise.all([
+  const [profilesResult, portfolioResult, applicationsResult, certificatesResult] = await Promise.all([
     studentUserIds.length > 0
       ? supabase.from("profiles").select("user_id, first_name, last_name, photo_url").in("user_id", studentUserIds)
       : Promise.resolve({ data: [] as ProfileRow[] }),
@@ -105,12 +108,24 @@ export default async function AdminDashboard() {
           .order("created_at", { ascending: false })
           .limit(50)
       : Promise.resolve({ data: [] as ApplicationRow[] }),
+    studentIds.length > 0
+      ? supabase.from("student_certificates")
+          .select("id, student_id, file_url, title")
+          .in("student_id", studentIds)
+      : Promise.resolve({ data: [] as CertRow[] }),
   ])
 
   const profileMap = new Map((profilesResult.data ?? []).map(p => [p.user_id, p as ProfileRow]))
   const portfolioStudentIds = new Set((portfolioResult.data ?? []).map(p => (p as PortfolioRow).student_id))
   const applications = (applicationsResult.data ?? []) as ApplicationRow[]
   const studentMap   = new Map(students.map(s => [s.id, s]))
+
+  const certsByStudent = new Map<string, CertRow[]>()
+  for (const cert of (certificatesResult.data ?? []) as CertRow[]) {
+    const list = certsByStudent.get(cert.student_id) ?? []
+    list.push(cert)
+    certsByStudent.set(cert.student_id, list)
+  }
 
   const totalStudents          = students.length
   const studentsWithPortfolio  = students.filter(s => portfolioStudentIds.has(s.id)).length
@@ -133,16 +148,35 @@ export default async function AdminDashboard() {
     let currentStatus: StudentTableRow["currentStatus"] = "searching"
     if (statuses.has("accepted") || statuses.has("hired")) currentStatus = "accepted"
     else if (statuses.has("interviewing") || statuses.has("at_interview")) currentStatus = "interviewing"
+    const s = student as {
+      course_year?: number | null; bio?: string | null; skills?: string[] | null
+      gpa?: number | null; gpa_verified?: boolean; attendance_percent?: number | null
+      github_url?: string | null; linkedin_url?: string | null; behance_url?: string | null
+      dribbble_url?: string | null; figma_url?: string | null
+    }
     return {
       id: student.id,
       name,
       specialty: student.specialty ?? null,
-      courseYear: (student as { course_year?: number | null }).course_year ?? null,
-      bio: (student as { bio?: string | null }).bio ?? null,
-      skills: (student as { skills?: string[] | null }).skills ?? null,
+      courseYear: s.course_year ?? null,
+      bio: s.bio ?? null,
+      skills: s.skills ?? null,
       photoUrl: prof?.photo_url ?? null,
       hasPortfolio: portfolioStudentIds.has(student.id),
       currentStatus,
+      gpa: s.gpa ?? null,
+      gpaVerified: s.gpa_verified ?? false,
+      attendancePercent: s.attendance_percent ?? null,
+      links: {
+        github:   s.github_url   ?? null,
+        linkedin: s.linkedin_url ?? null,
+        behance:  s.behance_url  ?? null,
+        dribbble: s.dribbble_url ?? null,
+        figma:    s.figma_url    ?? null,
+      },
+      certificates: (certsByStudent.get(student.id) ?? []).map(c => ({
+        id: c.id, file_url: c.file_url, title: c.title,
+      })),
       applications: apps.map(app => ({
         id: app.id,
         status: app.status,

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { UserRound, GraduationCap, Briefcase } from "lucide-react"
+import { useState, useEffect, useTransition } from "react"
+import { UserRound, GraduationCap, Briefcase, BadgeCheck, FileText, ExternalLink, BarChart2, Loader2 } from "lucide-react"
+import { updateStudentPassport } from "../_actions"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -34,6 +35,11 @@ export type StudentTableRow = {
   photoUrl: string | null
   hasPortfolio: boolean
   currentStatus: "accepted" | "interviewing" | "searching"
+  gpa: number | null
+  gpaVerified: boolean
+  attendancePercent: number | null
+  links: { github: string | null; linkedin: string | null; behance: string | null; dribbble: string | null; figma: string | null }
+  certificates: { id: string; file_url: string; title: string | null }[]
   applications: {
     id: string
     status: string | null
@@ -45,6 +51,29 @@ export type StudentTableRow = {
 
 export function AdminStudentsTable({ rows }: { rows: StudentTableRow[] }) {
   const [selected, setSelected] = useState<StudentTableRow | null>(null)
+  const [gpaVerified, setGpaVerified] = useState(false)
+  const [attendanceInput, setAttendanceInput] = useState("")
+  const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    if (selected) {
+      setGpaVerified(selected.gpaVerified)
+      setAttendanceInput(selected.attendancePercent?.toString() ?? "")
+    }
+  }, [selected])
+
+  function handleToggleGpa(checked: boolean) {
+    if (!selected) return
+    setGpaVerified(checked)
+    startTransition(() => updateStudentPassport(selected.id, { gpa_verified: checked }))
+  }
+
+  function handleSaveAttendance() {
+    if (!selected) return
+    const val = attendanceInput.trim() !== "" ? parseInt(attendanceInput, 10) : null
+    if (val !== null && (isNaN(val) || val < 0 || val > 100)) return
+    startTransition(() => updateStudentPassport(selected.id, { attendance_percent: val }))
+  }
 
   return (
     <>
@@ -145,6 +174,103 @@ export function AdminStudentsTable({ rows }: { rows: StudentTableRow[] }) {
                     </div>
                   </div>
                 )}
+
+                {/* Passport — admin editable */}
+                <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-4">
+                  <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase">Паспорт студента</p>
+
+                  {/* GPA + verified toggle */}
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div>
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1">GPA</p>
+                      <p className="text-[18px] font-bold tabular-nums text-neutral-900 leading-none">
+                        {selected.gpa ?? <span className="text-neutral-300 text-sm">—</span>}
+                      </p>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <div
+                        onClick={() => handleToggleGpa(!gpaVerified)}
+                        className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${gpaVerified ? "bg-emerald-500" : "bg-neutral-200"}`}
+                      >
+                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${gpaVerified ? "translate-x-4" : "translate-x-0.5"}`} />
+                      </div>
+                      <span className="text-xs text-neutral-600 font-heading font-bold flex items-center gap-1">
+                        {gpaVerified && <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />}
+                        {gpaVerified ? "Верифицирован" : "Не верифицирован"}
+                      </span>
+                      {isPending && <Loader2 className="w-3 h-3 animate-spin text-neutral-400" />}
+                    </label>
+                  </div>
+
+                  {/* Attendance */}
+                  <div>
+                    <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5 flex items-center gap-1.5">
+                      <BarChart2 className="w-3 h-3" />
+                      Посещаемость (%)
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={attendanceInput}
+                        onChange={e => setAttendanceInput(e.target.value)}
+                        onBlur={handleSaveAttendance}
+                        placeholder="0–100"
+                        className="h-8 w-24 px-2.5 rounded-md border border-neutral-200 bg-white text-sm text-neutral-800 focus:outline-none focus:border-blue-400 transition-colors"
+                      />
+                      {attendanceInput && <span className="text-xs text-neutral-400">Сохранится при потере фокуса</span>}
+                    </div>
+                  </div>
+
+                  {/* Links */}
+                  {Object.values(selected.links).some(Boolean) && (
+                    <div>
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">Ссылки</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { url: selected.links.github,   label: "GitHub" },
+                          { url: selected.links.linkedin,  label: "LinkedIn" },
+                          { url: selected.links.behance,   label: "Behance" },
+                          { url: selected.links.dribbble,  label: "Dribbble" },
+                          { url: selected.links.figma,     label: "Figma" },
+                        ].filter(l => l.url).map(({ url, label }) => (
+                          <a
+                            key={label}
+                            href={url!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2 py-1 rounded-lg border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5" />
+                            {label}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Certificates */}
+                  {selected.certificates.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">Сертификаты</p>
+                      <div className="space-y-1">
+                        {selected.certificates.map(cert => (
+                          <a
+                            key={cert.id}
+                            href={cert.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-[12px] text-neutral-600 hover:text-blue-700 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                            {cert.title ?? "Сертификат"}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">

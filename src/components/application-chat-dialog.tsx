@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { createClient } from "@/lib/supabase/client"
 import { ChatThread } from "./chat-thread"
 
-type Message = { id: string; content: string; sender_id: string; created_at: string }
+type Message = { id: string; content: string; sender_id: string; created_at: string | null }
 
 type Props = {
   applicationId: string

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { ProfileForm } from "./_components/profile-form"
 import { PortfolioUploader } from "./_components/portfolio-uploader"
+import { PassportSection } from "./_components/passport-section"
 import type { Database } from "@/types/supabase"
 
 export const metadata = { title: "Профиль — SkillBridge KZ" }
@@ -28,19 +29,19 @@ export default async function StudentProfilePage() {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, college_name, specialty, course_year, bio, skills")
+    .select("id, college_name, specialty, course_year, bio, skills, gpa, github_url, linkedin_url, behance_url, dribbble_url, figma_url")
     .eq("user_id", user.id)
     .single()
 
   if (!student) redirect("/student")
 
-  const { data: portfolioItemsRaw } = await supabase
-    .from("portfolio_items")
-    .select("*")
-    .eq("student_id", student.id)
-    .order("created_at", { ascending: false })
+  const [portfolioRes, certRes] = await Promise.all([
+    supabase.from("portfolio_items").select("*").eq("student_id", student.id).order("created_at", { ascending: false }),
+    supabase.from("student_certificates").select("*").eq("student_id", student.id).order("created_at", { ascending: false }),
+  ])
 
-  const portfolioItems = (portfolioItemsRaw ?? []) as PortfolioItem[]
+  const portfolioItems = (portfolioRes.data ?? []) as PortfolioItem[]
+  const certificates = certRes.data ?? []
 
   const initialFormValues = {
     first_name: profile.first_name ?? "",
@@ -52,6 +53,15 @@ export default async function StudentProfilePage() {
     course_year: student.course_year?.toString() ?? "",
     bio: student.bio ?? "",
     skills: (student.skills ?? []).join(", "),
+  }
+
+  const passportInitial = {
+    gpa: student.gpa?.toString() ?? "",
+    github_url: student.github_url ?? "",
+    linkedin_url: student.linkedin_url ?? "",
+    behance_url: student.behance_url ?? "",
+    dribbble_url: student.dribbble_url ?? "",
+    figma_url: student.figma_url ?? "",
   }
 
   return (
@@ -102,7 +112,7 @@ export default async function StudentProfilePage() {
         </section>
 
         {/* Portfolio */}
-        <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
             <h2 className="font-heading font-bold text-[16px] text-neutral-900">Портфолио</h2>
@@ -114,6 +124,20 @@ export default async function StudentProfilePage() {
             userId={user.id}
             studentId={student.id}
             items={portfolioItems}
+          />
+        </section>
+
+        {/* Passport */}
+        <section className="stagger-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Паспорт студента</h2>
+          </div>
+          <PassportSection
+            userId={user.id}
+            studentId={student.id}
+            initial={passportInitial}
+            certificates={certificates}
           />
         </section>
       </main>

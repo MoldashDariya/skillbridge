@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { BookOpen, Briefcase, LayoutGrid, FileText } from "lucide-react"
+import { BookOpen, Briefcase, LayoutGrid, FileText, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
 import { StudentApplicationRow } from "./_components/application-row"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
+import { calculateProfileReadiness } from "@/lib/profile-readiness"
 import type { Database } from "@/types/supabase"
 
 export const metadata = { title: "Кабинет студента — SkillBridge KZ" }
@@ -35,7 +36,7 @@ export default async function StudentDashboard() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, role, first_name, last_name, telegram_chat_id")
+    .select("id, role, first_name, last_name, phone, photo_url, approval_status, telegram_chat_id")
     .eq("user_id", user.id)
     .single()
 
@@ -45,7 +46,7 @@ export default async function StudentDashboard() {
 
   const { data: student } = await supabase
     .from("students")
-    .select("id, college_name")
+    .select("id, college_name, specialty, course_year")
     .eq("user_id", user.id)
     .single()
 
@@ -67,6 +68,26 @@ export default async function StudentDashboard() {
 
   const applications = (applicationsRaw ?? []) as ApplicationWithInternship[]
   const appliedIds = new Set(applications.map((a) => a.internship_id))
+
+  // Readiness data
+  const [portfolioCountRes, certCountRes] = student
+    ? await Promise.all([
+        supabase.from("portfolio_items").select("*", { count: "exact", head: true }).eq("student_id", student.id),
+        supabase.from("student_certificates").select("*", { count: "exact", head: true }).eq("student_id", student.id),
+      ])
+    : [{ count: 0 }, { count: 0 }]
+
+  const hasBasicFields = !!(
+    profile.first_name && profile.last_name && profile.phone &&
+    student?.college_name && student?.specialty && student?.course_year
+  )
+  const readiness = calculateProfileReadiness({
+    photoUrl: profile.photo_url,
+    hasPortfolio: (portfolioCountRes.count ?? 0) > 0,
+    hasCertificates: (certCountRes.count ?? 0) > 0,
+    isApproved: profile.approval_status === "approved",
+    hasBasicFields,
+  })
 
   async function signOut() {
     "use server"
@@ -119,6 +140,64 @@ export default async function StudentDashboard() {
             </div>
           )}
         </div>
+
+        {/* Career Readiness */}
+        <section className="mb-8 stagger-2">
+          <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div className="relative pl-4">
+                <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-600 rounded-full" />
+                <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
+                  Карьерная готовность
+                </p>
+              </div>
+              <span className={`text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1 rounded-full border ${readiness.labelCls}`}>
+                {readiness.label}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-1.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-7 h-2 rounded-full transition-colors ${
+                      i < readiness.score
+                        ? readiness.level === "high" ? "bg-emerald-500"
+                          : readiness.level === "medium" ? "bg-amber-400"
+                          : "bg-neutral-300"
+                        : "bg-neutral-100"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-neutral-400 font-heading tabular-nums">{readiness.score}/5</span>
+            </div>
+
+            {readiness.missing.length === 0 ? (
+              <p className="text-xs text-emerald-600 font-heading font-bold tracking-widests uppercase flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Профиль полностью заполнен
+              </p>
+            ) : (
+              <div className="space-y-1.5">
+                {readiness.missing.map(hint => (
+                  <div key={hint} className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-neutral-200 shrink-0" />
+                    <p className="text-xs text-neutral-500">{hint}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <Link
+              href="/student/profile"
+              className="inline-block mt-3 text-[11px] font-heading font-bold tracking-widests text-blue-600 hover:text-blue-800 uppercase transition-colors"
+            >
+              Заполнить профиль →
+            </Link>
+          </div>
+        </section>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
           {SECTIONS.map(({ icon: Icon, title, desc, href }, i) => (

@@ -8,7 +8,7 @@ type Message = {
   id: string
   content: string
   sender_id: string
-  created_at: string
+  created_at: string | null
 }
 
 type Props = {
@@ -80,7 +80,7 @@ export function ChatThread({ applicationId, currentUserId, currentUserName, othe
   // Group messages by day
   const grouped: { day: string; msgs: Message[] }[] = []
   for (const msg of messages) {
-    const day = formatDay(msg.created_at)
+    const day = formatDay(msg.created_at ?? "")
     const last = grouped[grouped.length - 1]
     if (last?.day === day) last.msgs.push(msg)
     else grouped.push({ day, msgs: [msg] })
@@ -118,7 +118,7 @@ export function ChatThread({ applicationId, currentUserId, currentUserName, othe
                     }`}>
                       {msg.content}
                     </div>
-                    <span className="text-[10px] text-neutral-300 mt-1 px-1">{formatTime(msg.created_at)}</span>
+                    <span className="text-[10px] text-neutral-300 mt-1 px-1">{formatTime(msg.created_at ?? "")}</span>
                   </div>
                 </div>
               )

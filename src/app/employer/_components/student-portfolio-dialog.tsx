@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase, UserRound } from "lucide-react"
+import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase, UserRound, FileText, ExternalLink, BadgeCheck, BarChart2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import {
   Dialog,
@@ -23,6 +23,20 @@ type StudentData = {
   skills: string[] | null
   college_name: string | null
   specialty: string | null
+  gpa: number | null
+  gpa_verified: boolean
+  attendance_percent: number | null
+  github_url: string | null
+  linkedin_url: string | null
+  behance_url: string | null
+  dribbble_url: string | null
+  figma_url: string | null
+}
+
+type CertRow = {
+  id: string
+  file_url: string
+  title: string | null
 }
 
 type ApplicationItem = {
@@ -56,6 +70,7 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
   const [items, setItems] = useState<PortfolioItem[] | null>(null)
   const [student, setStudent] = useState<StudentData | null>(null)
   const [applications, setApplications] = useState<ApplicationItem[] | null>(null)
+  const [certificates, setCertificates] = useState<CertRow[] | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   async function handleOpen(isOpen: boolean) {
@@ -63,22 +78,32 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
     if (isOpen && items === null) {
       setLoading(true)
       const supabase = createClient()
-      const [portfolioRes, studentRes, appRes] = await Promise.all([
+      const [portfolioRes, studentRes, appRes, certRes] = await Promise.all([
         supabase
           .from("portfolio_items")
           .select("id, title, description, image_url, video_url")
           .eq("student_id", studentId)
           .order("created_at", { ascending: false }),
-        supabase.from("students").select("bio, skills, college_name, specialty").eq("id", studentId).single(),
+        supabase
+          .from("students")
+          .select("bio, skills, college_name, specialty, gpa, gpa_verified, attendance_percent, github_url, linkedin_url, behance_url, dribbble_url, figma_url")
+          .eq("id", studentId)
+          .single(),
         supabase
           .from("applications")
           .select("id, status, internships(title, employers(company_name))")
           .eq("student_id", studentId)
           .order("created_at", { ascending: false }),
+        supabase
+          .from("student_certificates")
+          .select("id, file_url, title")
+          .eq("student_id", studentId)
+          .order("created_at", { ascending: false }),
       ])
       setItems(portfolioRes.data ?? [])
-      setStudent(studentRes.data ?? null)
+      setStudent(studentRes.data as StudentData ?? null)
       setApplications(appRes.data as ApplicationItem[] ?? [])
+      setCertificates(certRes.data as CertRow[] ?? [])
       setLoading(false)
     }
   }
@@ -149,6 +174,82 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
                       {skill}
                     </span>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Passport: GPA, attendance, links, certs */}
+            {student && (student.gpa || student.attendance_percent !== null || student.github_url || student.linkedin_url || student.behance_url || student.dribbble_url || student.figma_url || (certificates && certificates.length > 0)) && (
+              <div>
+                <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-2">Паспорт</p>
+                <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-3">
+                  {/* GPA */}
+                  {student.gpa && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-heading font-bold text-neutral-800">GPA: {student.gpa}</span>
+                      {student.gpa_verified && (
+                        <span className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase px-2 py-0.5 rounded-full border text-emerald-600 border-emerald-300 bg-emerald-50">
+                          <BadgeCheck className="w-3 h-3" />
+                          Верифицирован
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {/* Attendance */}
+                  {student.attendance_percent !== null && student.attendance_percent !== undefined && (
+                    <div className="flex items-center gap-2">
+                      <BarChart2 className="w-3.5 h-3.5 text-neutral-400" />
+                      <span className="text-[13px] text-neutral-600">
+                        Посещаемость: <strong>{student.attendance_percent}%</strong>
+                      </span>
+                    </div>
+                  )}
+                  {/* Links */}
+                  {[
+                    { url: student.github_url,   label: "GitHub" },
+                    { url: student.linkedin_url,  label: "LinkedIn" },
+                    { url: student.behance_url,   label: "Behance" },
+                    { url: student.dribbble_url,  label: "Dribbble" },
+                    { url: student.figma_url,     label: "Figma" },
+                  ].some(l => l.url) && (
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { url: student.github_url,   label: "GitHub" },
+                        { url: student.linkedin_url,  label: "LinkedIn" },
+                        { url: student.behance_url,   label: "Behance" },
+                        { url: student.dribbble_url,  label: "Dribbble" },
+                        { url: student.figma_url,     label: "Figma" },
+                      ].filter(l => l.url).map(({ url, label }) => (
+                        <a
+                          key={label}
+                          href={url!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[11px] font-heading font-bold tracking-widests uppercase px-2.5 py-1 rounded-lg border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                        >
+                          <ExternalLink className="w-2.5 h-2.5" />
+                          {label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  {/* Certificates */}
+                  {certificates && certificates.length > 0 && (
+                    <div className="space-y-1.5">
+                      {certificates.map(cert => (
+                        <a
+                          key={cert.id}
+                          href={cert.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-[12px] text-neutral-600 hover:text-blue-700 transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          {cert.title ?? "Сертификат"}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -29,3 +29,13 @@ export async function rejectUser(userId: string) {
   await admin.from("profiles").update({ approval_status: "rejected" }).eq("user_id", userId)
   revalidatePath("/admin")
 }
+
+export async function updateStudentPassport(
+  studentId: string,
+  data: { gpa_verified?: boolean; attendance_percent?: number | null }
+) {
+  await assertAdmin()
+  const admin = createAdminClient()
+  await admin.from("students").update(data).eq("id", studentId)
+  revalidatePath("/admin")
+}

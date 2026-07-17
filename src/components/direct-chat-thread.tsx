@@ -86,7 +86,7 @@ export function DirectChatThread({ threadId, currentUserId, currentUserName, oth
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 min-h-0">
         {messages.length === 0 && (
           <div className="text-center text-neutral-400 text-sm mt-12">
-            <p className="font-heading font-bold tracking-widests uppercase text-[11px] text-neutral-300 mb-1">Нет сообщений</p>
+            <p className="font-heading font-bold tracking-widest uppercase text-[11px] text-neutral-300 mb-1">Нет сообщений</p>
             <p className="text-xs">Начните переписку</p>
           </div>
         )}
@@ -94,7 +94,7 @@ export function DirectChatThread({ threadId, currentUserId, currentUserName, oth
           <div key={day}>
             <div className="flex items-center gap-3 my-4">
               <div className="flex-1 h-px bg-neutral-100" />
-              <span className="text-[10px] text-neutral-400 font-heading font-bold tracking-widests uppercase shrink-0">{day}</span>
+              <span className="text-[10px] text-neutral-400 font-heading font-bold tracking-widest uppercase shrink-0">{day}</span>
               <div className="flex-1 h-px bg-neutral-100" />
             </div>
             {msgs.map((msg) => {
@@ -102,7 +102,7 @@ export function DirectChatThread({ threadId, currentUserId, currentUserName, oth
               return (
                 <div key={msg.id} className={`flex mb-2 ${isMine ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[72%] ${isMine ? "items-end" : "items-start"} flex flex-col`}>
-                    <span className={`text-[10px] font-heading font-bold tracking-widests uppercase mb-1 ${isMine ? "text-blue-600" : "text-neutral-400"}`}>
+                    <span className={`text-[10px] font-heading font-bold tracking-widest uppercase mb-1 ${isMine ? "text-blue-600" : "text-neutral-400"}`}>
                       {isMine ? currentUserName : otherUserName}
                     </span>
                     <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${

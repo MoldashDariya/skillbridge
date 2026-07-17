@@ -56,11 +56,11 @@ export function StudentSearchCard({
   async function toggleSave() {
     setSaving(true)
     if (saved) {
-      await unsaveStudent(employerId, studentId)
-      setSaved(false)
+      const { error } = await unsaveStudent(employerId, studentId)
+      if (!error) setSaved(false)
     } else {
-      await saveStudent(employerId, studentId)
-      setSaved(true)
+      const { error } = await saveStudent(employerId, studentId)
+      if (!error) setSaved(true)
     }
     setSaving(false)
   }

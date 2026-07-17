@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { Building2, FileText, Users, MapPin, Phone, Mail } from "lucide-react"
+import { Building2, FileText, Users, MapPin, Phone, Mail, Search } from "lucide-react"
+import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
 import { CreateInternshipDialog } from "./_components/create-internship-form"
 import { ApplicationCard } from "./_components/application-card"
@@ -25,8 +26,9 @@ type ProfileSummary = {
 }
 
 const SECTIONS = [
-  { icon: FileText, title: "Места практики",   desc: "Добавьте и управляйте вакансиями для студентов" },
-  { icon: Users,    title: "Заявки студентов", desc: "Просматривайте заявки и меняйте их статус" },
+  { icon: FileText, title: "Места практики",   desc: "Добавьте и управляйте вакансиями для студентов", href: null },
+  { icon: Users,    title: "Заявки студентов", desc: "Просматривайте заявки и меняйте их статус",      href: null },
+  { icon: Search,   title: "Поиск студентов",  desc: "Найдите подходящих студентов по специальности",  href: "/employer/search" },
 ]
 
 export default async function EmployerDashboard() {
@@ -175,16 +177,22 @@ export default async function EmployerDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-14">
-          {SECTIONS.map(({ icon: Icon, title, desc }, i) => (
-            <div key={title} className={`group rounded-xl border border-neutral-200 bg-white p-6 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer stagger-${i + 3}`}>
-              <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                <Icon className="w-4 h-4 text-blue-600" />
-              </div>
-              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-900">{title}</p>
-              <p className="text-xs text-neutral-500 leading-relaxed">{desc}</p>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
+          {SECTIONS.map(({ icon: Icon, title, desc, href }, i) => {
+            const cardCls = `group rounded-xl border border-neutral-200 bg-white p-6 hover:border-blue-400 hover:shadow-md hover:shadow-blue-600/10 hover:-translate-y-0.5 transition-all duration-200 stagger-${i + 3}`
+            const inner = (
+              <>
+                <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                  <Icon className="w-4 h-4 text-blue-600" />
+                </div>
+                <p className="font-heading font-bold text-[15px] mb-1 text-neutral-900">{title}</p>
+                <p className="text-xs text-neutral-500 leading-relaxed">{desc}</p>
+              </>
+            )
+            return href
+              ? <Link key={title} href={href} className={cardCls}>{inner}</Link>
+              : <div key={title} className={`${cardCls} cursor-pointer`}>{inner}</div>
+          })}
         </div>
 
         <div className="stagger-5">

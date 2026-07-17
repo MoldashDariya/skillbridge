@@ -2,13 +2,26 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Check, Loader2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const COLLEGES = [
+  "Талгарский Политехнический",
+  "Талгарский колледж агробизнеса и менеджмента им.М.Бейсебаева",
+  "Шелекский политехнический колледж",
+] as const
 
 const schema = z.object({
   first_name: z.string().optional(),
@@ -43,6 +56,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { isSubmitting, errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: initial })
 
@@ -121,7 +135,22 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
           <label className={labelCls}>
             Колледж <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
-          <Input className={inputCls} placeholder="Талгарский политехнический колледж" {...register("college_name")} />
+          <Controller
+            control={control}
+            name="college_name"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <SelectTrigger className={inputCls}>
+                  <SelectValue placeholder="Выберите колледж" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-neutral-200 shadow-lg">
+                  {COLLEGES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.college_name && (
             <p className="text-xs text-red-500 mt-1">{errors.college_name.message}</p>
           )}

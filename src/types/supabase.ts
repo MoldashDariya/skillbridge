@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_skill_gaps: {
+        Row: {
+          created_at: string | null
+          id: string
+          internship_id: string
+          missing_skills: Json
+          student_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          internship_id: string
+          missing_skills?: Json
+          student_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          internship_id?: string
+          missing_skills?: Json
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_skill_gaps_internship_id_fkey"
+            columns: ["internship_id"]
+            isOneToOne: false
+            referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_skill_gaps_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           created_at: string | null
@@ -74,6 +113,27 @@ export type Database = {
           created_at?: string | null
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          course_name: string
+          course_url: string
+          id: string
+          specialty: string
+        }
+        Insert: {
+          course_name: string
+          course_url: string
+          id?: string
+          specialty: string
+        }
+        Update: {
+          course_name?: string
+          course_url?: string
+          id?: string
+          specialty?: string
         }
         Relationships: []
       }

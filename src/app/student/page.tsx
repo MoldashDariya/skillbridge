@@ -4,6 +4,8 @@ import { BookOpen, Briefcase, LayoutGrid, FileText, CheckCircle2, Mic } from "lu
 import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
 import { StudentApplicationRow } from "./_components/application-row"
+import { InterviewHistory } from "./_components/interview-history"
+import type { SimRow } from "./_components/interview-history"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
 import type { Database } from "@/types/supabase"
@@ -84,13 +86,20 @@ export default async function StudentDashboard() {
     ratingAccum.set(r.employer_id, entry)
   }
 
-  // Readiness data
-  const [portfolioCountRes, certCountRes] = student
+  // Readiness data + interview history
+  const [portfolioCountRes, certCountRes, simulationsRes] = student
     ? await Promise.all([
         supabase.from("portfolio_items").select("*", { count: "exact", head: true }).eq("student_id", student.id),
         supabase.from("student_certificates").select("*", { count: "exact", head: true }).eq("student_id", student.id),
+        supabase
+          .from("interview_simulations")
+          .select("id, specialty, average_score, created_at, q_and_a, final_feedback")
+          .eq("student_id", student.id)
+          .order("created_at", { ascending: false }),
       ])
-    : [{ count: 0 }, { count: 0 }]
+    : [{ count: 0 }, { count: 0 }, { data: [] }]
+
+  const simulations = ((simulationsRes as { data: unknown[] | null }).data ?? []) as SimRow[]
 
   const hasBasicFields = !!(
     profile.first_name && profile.last_name && profile.phone &&
@@ -304,6 +313,25 @@ export default async function StudentDashboard() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* История собеседований */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-5">
+            <div className="relative pl-4">
+              <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
+              <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
+                История собеседований
+              </p>
+              {simulations.length > 0 && (
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {simulations.length}{" "}
+                  {simulations.length === 1 ? "сессия" : simulations.length < 5 ? "сессии" : "сессий"}
+                </p>
+              )}
+            </div>
+          </div>
+          <InterviewHistory simulations={simulations} />
         </div>
       </main>
     </div>

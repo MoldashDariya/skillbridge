@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { BookOpen, Briefcase, LayoutGrid, FileText, CheckCircle2 } from "lucide-react"
+import { BookOpen, Briefcase, LayoutGrid, FileText, CheckCircle2, Mic } from "lucide-react"
 import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
 import { StudentApplicationRow } from "./_components/application-row"
@@ -24,6 +24,7 @@ const SECTIONS = [
   { icon: BookOpen, title: "Мой профиль", desc: "Укажите колледж, специальность и навыки", href: "/student/profile" },
   { icon: LayoutGrid, title: "Портфолио", desc: "Загрузите фотографии ваших работ", href: "/student/profile" },
   { icon: Briefcase, title: "Места практики", desc: "Найдите подходящее место и подайте заявку", href: "#internships" },
+  { icon: Mic, title: "Симулятор собеседования", desc: "Потренируйтесь отвечать на вопросы с AI-оценкой", href: "/student/simulator" },
 ]
 
 export default async function StudentDashboard() {

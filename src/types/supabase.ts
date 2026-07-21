@@ -352,6 +352,44 @@ export type Database = {
           },
         ]
       }
+      interview_simulations: {
+        Row: {
+          average_score: number | null
+          created_at: string | null
+          final_feedback: Json | null
+          id: string
+          q_and_a: Json
+          specialty: string
+          student_id: string
+        }
+        Insert: {
+          average_score?: number | null
+          created_at?: string | null
+          final_feedback?: Json | null
+          id?: string
+          q_and_a?: Json
+          specialty: string
+          student_id: string
+        }
+        Update: {
+          average_score?: number | null
+          created_at?: string | null
+          final_feedback?: Json | null
+          id?: string
+          q_and_a?: Json
+          specialty?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_simulations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           application_id: string

@@ -70,3 +70,35 @@ export async function getOrCreateDirectThread(
   if (error) return { error: "Не удалось открыть чат." }
   return { threadId: created.id }
 }
+
+export async function submitStudentReview(
+  applicationId: string,
+  studentId: string,
+  rating: number,
+  comment: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Не авторизован" }
+
+  const { data: employer } = await supabase
+    .from("employers")
+    .select("id")
+    .eq("user_id", user.id)
+    .single()
+  if (!employer) return { error: "Профиль не найден" }
+
+  const { error } = await supabase.from("employer_reviews").insert({
+    application_id: applicationId,
+    employer_id: employer.id,
+    student_id: studentId,
+    rating,
+    comment: comment.trim() || null,
+  })
+
+  if (error) {
+    if (error.code === "23505") return { error: "Отзыв уже оставлен" }
+    return { error: "Ошибка при сохранении отзыва" }
+  }
+  return {}
+}

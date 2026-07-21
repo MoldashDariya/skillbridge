@@ -3,6 +3,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { ArrowLeft, GraduationCap } from "lucide-react"
 import { ChatThread } from "@/components/chat-thread"
+import { StudentReviewForm } from "./_components/student-review-form"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
@@ -54,13 +55,24 @@ export default async function EmployerApplicationChat({ params }: { params: Prom
 
   const employerName = internship?.employers?.company_name ?? "Работодатель"
 
-  const { data: messagesRaw } = await supabase
-    .from("messages")
-    .select("id, content, sender_id, created_at")
-    .eq("application_id", id)
-    .order("created_at", { ascending: true })
+  const [messagesRes, reviewRes] = await Promise.all([
+    supabase
+      .from("messages")
+      .select("id, content, sender_id, created_at")
+      .eq("application_id", id)
+      .order("created_at", { ascending: true }),
+    app.status === "completed" && student
+      ? supabase
+          .from("employer_reviews")
+          .select("rating, comment")
+          .eq("application_id", id)
+          .eq("student_id", student.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ])
 
-  const messages = (messagesRaw ?? []) as { id: string; content: string; sender_id: string; created_at: string }[]
+  const messages = (messagesRes.data ?? []) as { id: string; content: string; sender_id: string; created_at: string }[]
+  const existingReview = reviewRes.data as { rating: number; comment: string | null } | null
   const badge = STATUS_CONFIG[app.status ?? "pending"] ?? STATUS_CONFIG.pending
 
   return (
@@ -96,6 +108,15 @@ export default async function EmployerApplicationChat({ params }: { params: Prom
           otherUserName={studentName}
           initialMessages={messages}
         />
+        {app.status === "completed" && student && (
+          <div className="shrink-0 border-t border-neutral-100 bg-white px-4 py-4">
+            <StudentReviewForm
+              applicationId={id}
+              studentId={student.id}
+              existingReview={existingReview}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

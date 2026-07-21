@@ -45,6 +45,14 @@ type ApplicationItem = {
   internships: { title: string; employers: { company_name: string } | null } | null
 }
 
+type ReviewRow = {
+  id: string
+  rating: number
+  comment: string | null
+  created_at: string | null
+  employers: { company_name: string } | null
+}
+
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
@@ -71,6 +79,7 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
   const [student, setStudent] = useState<StudentData | null>(null)
   const [applications, setApplications] = useState<ApplicationItem[] | null>(null)
   const [certificates, setCertificates] = useState<CertRow[] | null>(null)
+  const [reviews, setReviews] = useState<ReviewRow[] | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   async function handleOpen(isOpen: boolean) {
@@ -78,7 +87,7 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
     if (isOpen && items === null) {
       setLoading(true)
       const supabase = createClient()
-      const [portfolioRes, studentRes, appRes, certRes] = await Promise.all([
+      const [portfolioRes, studentRes, appRes, certRes, reviewsRes] = await Promise.all([
         supabase
           .from("portfolio_items")
           .select("id, title, description, image_url, video_url")
@@ -99,11 +108,17 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
           .select("id, file_url, title")
           .eq("student_id", studentId)
           .order("created_at", { ascending: false }),
+        supabase
+          .from("employer_reviews")
+          .select("id, rating, comment, created_at, employers(company_name)")
+          .eq("student_id", studentId)
+          .order("created_at", { ascending: false }),
       ])
       setItems(portfolioRes.data ?? [])
       setStudent(studentRes.data as StudentData ?? null)
       setApplications(appRes.data as ApplicationItem[] ?? [])
       setCertificates(certRes.data as CertRow[] ?? [])
+      setReviews(reviewsRes.data as ReviewRow[] ?? [])
       setLoading(false)
     }
   }
@@ -278,6 +293,34 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
                       </div>
                     )
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* Employer reviews */}
+            {reviews !== null && reviews.length > 0 && (
+              <div>
+                <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-2">
+                  Отзывы работодателей
+                </p>
+                <div className="space-y-2">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="rounded-xl border border-neutral-100 bg-neutral-50 p-3 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs font-heading font-bold text-neutral-700">
+                          {review.employers?.company_name ?? "Компания"}
+                        </p>
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <span key={s} className={`text-sm leading-none ${s <= review.rating ? "text-amber-400" : "text-neutral-200"}`}>★</span>
+                          ))}
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="text-xs text-neutral-500 italic">«{review.comment}»</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

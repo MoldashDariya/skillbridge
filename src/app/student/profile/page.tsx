@@ -35,13 +35,25 @@ export default async function StudentProfilePage() {
 
   if (!student) redirect("/student")
 
-  const [portfolioRes, certRes] = await Promise.all([
+  const [portfolioRes, certRes, reviewsRes] = await Promise.all([
     supabase.from("portfolio_items").select("*").eq("student_id", student.id).order("created_at", { ascending: false }),
     supabase.from("student_certificates").select("*").eq("student_id", student.id).order("created_at", { ascending: false }),
+    supabase
+      .from("employer_reviews")
+      .select("id, rating, comment, created_at, employers(company_name)")
+      .eq("student_id", student.id)
+      .order("created_at", { ascending: false }),
   ])
 
   const portfolioItems = (portfolioRes.data ?? []) as PortfolioItem[]
   const certificates = certRes.data ?? []
+  const reviews = (reviewsRes.data ?? []) as Array<{
+    id: string
+    rating: number
+    comment: string | null
+    created_at: string | null
+    employers: { company_name: string } | null
+  }>
 
   const initialFormValues = {
     first_name: profile.first_name ?? "",
@@ -138,6 +150,7 @@ export default async function StudentProfilePage() {
             studentId={student.id}
             initial={passportInitial}
             certificates={certificates}
+            reviews={reviews}
           />
         </section>
       </main>

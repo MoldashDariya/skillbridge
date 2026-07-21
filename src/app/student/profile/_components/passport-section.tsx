@@ -29,11 +29,20 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+type ReviewRow = {
+  id: string
+  rating: number
+  comment: string | null
+  created_at: string | null
+  employers: { company_name: string } | null
+}
+
 type Props = {
   userId: string
   studentId: string
   initial: FormValues
   certificates: Certificate[]
+  reviews: ReviewRow[]
 }
 
 const inputCls = "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
@@ -47,7 +56,7 @@ const LINK_FIELDS = [
   { name: "figma_url"    as const, label: "Figma",     placeholder: "https://figma.com/@username" },
 ]
 
-export function PassportSection({ userId, studentId, initial, certificates }: Props) {
+export function PassportSection({ userId, studentId, initial, certificates, reviews }: Props) {
   const [saved, setSaved] = useState(false)
   const [serverError, setServerError] = useState("")
 
@@ -145,6 +154,37 @@ export function PassportSection({ userId, studentId, initial, certificates }: Pr
         <p className={`${labelCls} mb-3`}>Сертификаты</p>
         <CertificateUploader userId={userId} studentId={studentId} items={certificates} />
       </div>
+
+      {/* Employer reviews */}
+      {reviews.length > 0 && (
+        <div className="border-t border-neutral-100 pt-5">
+          <p className={`${labelCls} mb-3`}>Отзывы работодателей</p>
+          <div className="space-y-3">
+            {reviews.map((review) => (
+              <div key={review.id} className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-heading font-bold text-neutral-700">
+                    {review.employers?.company_name ?? "Компания"}
+                  </span>
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} className={`text-base leading-none ${s <= review.rating ? "text-amber-400" : "text-neutral-200"}`}>★</span>
+                    ))}
+                  </div>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-neutral-500 italic leading-relaxed">«{review.comment}»</p>
+                )}
+                {review.created_at && (
+                  <p className="text-[11px] text-neutral-400">
+                    {new Date(review.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

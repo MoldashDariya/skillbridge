@@ -3,7 +3,6 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { ArrowLeft, Building2 } from "lucide-react"
 import { ChatThread } from "@/components/chat-thread"
-import { EmployerReviewForm } from "./_components/employer-review-form"
 
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   pending:      { label: "На рассмотрении",  cls: "text-blue-700 border-blue-300 bg-blue-50" },
@@ -109,13 +108,19 @@ export default async function StudentApplicationChat({ params }: { params: Promi
           otherUserName={employerName}
           initialMessages={messages}
         />
-        {app.status === "completed" && employerId && (
-          <div className="shrink-0 border-t border-neutral-100 bg-white px-4 py-4">
-            <EmployerReviewForm
-              applicationId={id}
-              employerId={employerId}
-              existingReview={existingReview ?? null}
-            />
+        {existingReview && app.status === "completed" && (
+          <div className="shrink-0 border-t border-neutral-100 bg-white px-4 py-4 space-y-2">
+            <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.2em] uppercase">
+              Оценка от работодателя
+            </p>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <span key={s} className={`text-xl leading-none ${s <= existingReview.rating ? "text-amber-400" : "text-neutral-200"}`}>★</span>
+              ))}
+            </div>
+            {existingReview.comment && (
+              <p className="text-sm text-neutral-600 italic">«{existingReview.comment}»</p>
+            )}
           </div>
         )}
       </div>

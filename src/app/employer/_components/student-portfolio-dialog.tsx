@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase, UserRound, FileText, ExternalLink, BadgeCheck, BarChart2 } from "lucide-react"
+import { Eye, Loader2, ImageOff, X, ChevronLeft, ChevronRight, Video, GraduationCap, Briefcase, UserRound, FileText, ExternalLink, BadgeCheck, BarChart2, Mic } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import {
   Dialog,
@@ -9,6 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+} from "@/components/ui/accordion"
 
 type PortfolioItem = {
   id: string
@@ -53,6 +56,19 @@ type ReviewRow = {
   employers: { company_name: string } | null
 }
 
+type QAndAItem = { question: string; answer: string; score: number; explanation: string }
+
+type FinalFeedback = { strengths: string[]; weaknesses: string[]; overall_feedback: string }
+
+type SimRow = {
+  id: string
+  specialty: string
+  average_score: number | null
+  created_at: string | null
+  q_and_a: QAndAItem[]
+  final_feedback: FinalFeedback | null
+}
+
 const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
   at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
@@ -80,6 +96,7 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
   const [applications, setApplications] = useState<ApplicationItem[] | null>(null)
   const [certificates, setCertificates] = useState<CertRow[] | null>(null)
   const [reviews, setReviews] = useState<ReviewRow[] | null>(null)
+  const [simulation, setSimulation] = useState<SimRow | null | undefined>(undefined)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   async function handleOpen(isOpen: boolean) {
@@ -87,7 +104,7 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
     if (isOpen && items === null) {
       setLoading(true)
       const supabase = createClient()
-      const [portfolioRes, studentRes, appRes, certRes, reviewsRes] = await Promise.all([
+      const [portfolioRes, studentRes, appRes, certRes, reviewsRes, simRes] = await Promise.all([
         supabase
           .from("portfolio_items")
           .select("id, title, description, image_url, video_url")
@@ -113,12 +130,20 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
           .select("id, rating, comment, created_at, employers(company_name)")
           .eq("student_id", studentId)
           .order("created_at", { ascending: false }),
+        supabase
+          .from("interview_simulations")
+          .select("id, specialty, average_score, created_at, q_and_a, final_feedback")
+          .eq("student_id", studentId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ])
       setItems(portfolioRes.data ?? [])
       setStudent(studentRes.data as StudentData ?? null)
       setApplications(appRes.data as ApplicationItem[] ?? [])
       setCertificates(certRes.data as CertRow[] ?? [])
       setReviews(reviewsRes.data as ReviewRow[] ?? [])
+      setSimulation((simRes.data as SimRow) ?? null)
       setLoading(false)
     }
   }
@@ -293,6 +318,100 @@ export function StudentPortfolioDialog({ studentId, studentName, studentPhotoUrl
                       </div>
                     )
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* Interview simulation */}
+            {simulation && (
+              <div>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Mic className="w-3.5 h-3.5 text-neutral-400" />
+                  <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase">
+                    Результат симуляции собеседования
+                  </p>
+                </div>
+                <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-heading font-bold text-neutral-700">{simulation.specialty}</p>
+                      {simulation.created_at && (
+                        <p className="text-[11px] text-neutral-400 mt-0.5">
+                          {new Date(simulation.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                      )}
+                    </div>
+                    {simulation.average_score !== null && (
+                      <div className="text-right shrink-0">
+                        <p className="text-2xl font-heading font-extrabold leading-none text-neutral-900">
+                          {Number(simulation.average_score).toFixed(1)}
+                        </p>
+                        <p className="text-[10px] text-neutral-400">/ 10</p>
+                      </div>
+                    )}
+                  </div>
+                  {simulation.final_feedback && (
+                    <div className="border-t border-neutral-100 pt-3 space-y-2">
+                      <p className="text-[10px] font-heading font-bold text-blue-600 tracking-widest uppercase">Итоговый фидбэк</p>
+                      <p className="text-[11px] text-neutral-600 leading-relaxed">{simulation.final_feedback.overall_feedback}</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {simulation.final_feedback.strengths.length > 0 && (
+                          <div>
+                            <p className="text-[9px] font-heading font-bold text-emerald-600 tracking-widest uppercase mb-1">Сильные</p>
+                            <ul className="space-y-0.5">
+                              {simulation.final_feedback.strengths.map((s, i) => (
+                                <li key={i} className="flex items-start gap-1">
+                                  <span className="text-emerald-500 text-[10px] font-bold mt-0.5">✓</span>
+                                  <span className="text-[10px] text-neutral-600">{s}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {simulation.final_feedback.weaknesses.length > 0 && (
+                          <div>
+                            <p className="text-[9px] font-heading font-bold text-red-500 tracking-widest uppercase mb-1">Зоны роста</p>
+                            <ul className="space-y-0.5">
+                              {simulation.final_feedback.weaknesses.map((w, i) => (
+                                <li key={i} className="flex items-start gap-1">
+                                  <span className="text-red-400 text-[10px] font-bold mt-0.5">→</span>
+                                  <span className="text-[10px] text-neutral-600">{w}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {simulation.q_and_a.length > 0 && (
+                    <div className="border-t border-neutral-100 pt-3">
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widest uppercase mb-2">Разбор вопросов</p>
+                      <Accordion type="multiple" className="space-y-1.5">
+                        {simulation.q_and_a.map((item, i) => (
+                          <AccordionItem key={i} value={`q-${i}`}
+                            className="rounded-lg border border-neutral-100 bg-white px-3 overflow-hidden">
+                            <AccordionTrigger className="hover:no-underline py-2">
+                              <div className="flex items-start justify-between gap-2 pr-1 w-full">
+                                <p className="text-[11px] text-neutral-600 leading-snug text-left">{item.question}</p>
+                                <span className={`shrink-0 text-sm font-heading font-bold ${item.score >= 8 ? "text-emerald-500" : item.score >= 5 ? "text-amber-500" : "text-red-500"}`}>
+                                  {item.score}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-1.5 pb-1">
+                                <p className="text-[11px] text-neutral-400 italic">«{item.answer}»</p>
+                                {item.explanation && (
+                                  <p className="text-[11px] text-neutral-500 leading-relaxed bg-neutral-50 rounded p-2">{item.explanation}</p>
+                                )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

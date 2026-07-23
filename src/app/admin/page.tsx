@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table"
 import { approveUser, rejectUser } from "./_actions"
 import { AdminStudentsTable, type StudentTableRow } from "./_components/admin-students-table"
+import { CsvRosterUpload } from "./_components/csv-roster-upload"
 
 export const dynamic = "force-dynamic"
 export const metadata = { title: "Кабинет администратора — SkillBridge KZ" }
@@ -139,6 +140,17 @@ export default async function AdminDashboard() {
     list.push(app)
     studentAppsMap.set(app.student_id, list)
   }
+
+  // Fetch college roster for verification badges
+  const { data: rosterRaw } = await supabase
+    .from("official_college_roster")
+    .select("full_name")
+    .eq("college_name", collegeName)
+
+  function normalizeName(s: string) {
+    return s.toLowerCase().trim().replace(/\s+/g, " ").split(" ").sort().join(" ")
+  }
+  const rosterNames = (rosterRaw ?? []).map(r => normalizeName(r.full_name))
 
   const studentRows: StudentTableRow[] = students.map((student) => {
     const prof = profileMap.get(student.user_id)
@@ -353,8 +365,13 @@ export default async function AdminDashboard() {
           </section>
         )}
 
-        {/* Students table */}
+        {/* CSV roster upload */}
         <section className="mb-8 stagger-4">
+          <CsvRosterUpload />
+        </section>
+
+        {/* Students table */}
+        <section className="mb-8 stagger-5">
           <div className="relative pl-4 mb-4">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
@@ -368,12 +385,12 @@ export default async function AdminDashboard() {
               <p className="text-sm text-neutral-400">Студентов из этого колледжа не зарегистрировано</p>
             </div>
           ) : (
-            <AdminStudentsTable rows={studentRows} />
+            <AdminStudentsTable rows={studentRows} rosterNames={rosterNames} />
           )}
         </section>
 
         {/* Applications table */}
-        <section className="stagger-5">
+        <section className="stagger-6">
           <div className="relative pl-4 mb-4">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">

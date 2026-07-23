@@ -422,6 +422,36 @@ export type Database = {
           },
         ]
       }
+      official_college_roster: {
+        Row: {
+          college_name: string
+          created_at: string | null
+          full_name: string
+          group_name: string | null
+          id: string
+          identifier: string
+          specialty: string | null
+        }
+        Insert: {
+          college_name: string
+          created_at?: string | null
+          full_name: string
+          group_name?: string | null
+          id?: string
+          identifier: string
+          specialty?: string | null
+        }
+        Update: {
+          college_name?: string
+          created_at?: string | null
+          full_name?: string
+          group_name?: string | null
+          id?: string
+          identifier?: string
+          specialty?: string | null
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           created_at: string | null

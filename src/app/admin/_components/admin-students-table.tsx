@@ -49,7 +49,12 @@ export type StudentTableRow = {
   }[]
 }
 
-export function AdminStudentsTable({ rows }: { rows: StudentTableRow[] }) {
+function normalizeName(s: string) {
+  return s.toLowerCase().trim().replace(/\s+/g, " ").split(" ").sort().join(" ")
+}
+
+export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTableRow[]; rosterNames?: string[] }) {
+  const rosterSet = new Set(rosterNames)
   const [selected, setSelected] = useState<StudentTableRow | null>(null)
   const [gpaVerified, setGpaVerified] = useState(false)
   const [attendanceInput, setAttendanceInput] = useState("")
@@ -91,6 +96,7 @@ export function AdminStudentsTable({ rows }: { rows: StudentTableRow[] }) {
           <TableBody>
             {rows.map((row) => {
               const cs = CURRENT_STATUS_CONFIG[row.currentStatus]
+              const isVerified = rosterSet.has(normalizeName(row.name))
               return (
                 <TableRow
                   key={row.id}
@@ -98,9 +104,20 @@ export function AdminStudentsTable({ rows }: { rows: StudentTableRow[] }) {
                   onClick={() => setSelected(row)}
                 >
                   <TableCell>
-                    <span className="font-heading font-bold text-[13px] text-neutral-900">
-                      {row.name}
-                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-heading font-bold text-[13px] text-neutral-900">
+                        {row.name}
+                      </span>
+                      {isVerified ? (
+                        <span className="text-[9px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border border-emerald-300 bg-emerald-50 text-emerald-600 shrink-0">
+                          В реестре
+                        </span>
+                      ) : rosterNames.length > 0 ? (
+                        <span className="text-[9px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border border-amber-300 bg-amber-50 text-amber-600 shrink-0">
+                          Не найден
+                        </span>
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell className="text-[13px] text-neutral-500">{row.specialty ?? "—"}</TableCell>
                   <TableCell className="text-[13px] text-neutral-500">{row.courseYear ?? "—"}</TableCell>

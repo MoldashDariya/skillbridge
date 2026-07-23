@@ -48,6 +48,49 @@ export async function completeApplication(applicationId: string) {
   revalidatePath("/admin")
 }
 
+export type RosterItem = {
+  full_name: string
+  identifier: string
+  specialty?: string | null
+  group_name?: string | null
+}
+
+export async function uploadCollegeRoster(
+  items: RosterItem[]
+): Promise<{ error?: string; count?: number }> {
+  await assertAdmin()
+  if (items.length === 0) return { error: "CSV файл пустой или не содержит данных" }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const admin = createAdminClient()
+  const { data: adminData } = await admin
+    .from("college_admins")
+    .select("college_name")
+    .eq("user_id", user!.id)
+    .single()
+
+  if (!adminData?.college_name) return { error: "Не удалось определить колледж администратора" }
+
+  const rows = items.map(item => ({
+    full_name: item.full_name.trim(),
+    identifier: item.identifier.trim(),
+    specialty: item.specialty?.trim() || null,
+    group_name: item.group_name?.trim() || null,
+    college_name: adminData.college_name,
+  }))
+
+  const { error } = await admin
+    .from("official_college_roster")
+    .upsert(rows, { onConflict: "college_name,identifier" })
+
+  if (error) return { error: "Ошибка при загрузке: " + error.message }
+
+  revalidatePath("/admin")
+  return { count: rows.length }
+}
+
 export async function saveTeacherFeedback(
   applicationId: string,
   feedback: string

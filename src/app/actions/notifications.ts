@@ -1,17 +1,7 @@
 "use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
-
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
-
-async function sendMessage(chatId: string, text: string) {
-  if (!BOT_TOKEN || !chatId) return
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
-  })
-}
+import { sendTelegramMessage } from "@/lib/telegram"
 
 export async function notifyEmployerOnApplication(internshipId: string, studentId: string) {
   const db = createAdminClient()
@@ -38,14 +28,18 @@ export async function notifyEmployerOnApplication(internshipId: string, studentI
     : "Студент"
 
   if (chatId) {
-    await sendMessage(chatId, `🔔 Новая заявка на <b>${internshipTitle}</b> от <b>${studentName}</b>`)
+    await sendTelegramMessage(chatId, `🔔 Новая заявка на <b>${internshipTitle}</b> от <b>${studentName}</b>`)
   }
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  accepted: "Принят ✅",
-  rejected: "Отклонено ❌",
-  pending: "На рассмотрении 🕐",
+  pending:      "На рассмотрении 🕐",
+  at_interview: "Приглашён на собеседование 📅",
+  interviewing: "Проходит собеседование 🎤",
+  accepted:     "Принят ✅",
+  hired:        "Нанят 🎉",
+  rejected:     "Отклонено ❌",
+  completed:    "Стажировка завершена 🏁",
 }
 
 export async function notifyStudentOnStatusChange(applicationId: string, newStatus: string) {
@@ -79,6 +73,49 @@ export async function notifyStudentOnStatusChange(applicationId: string, newStat
   const statusLabel = STATUS_LABELS[newStatus] ?? newStatus
 
   if (chatId) {
-    await sendMessage(chatId, `✅ Ваша заявка на <b>${internshipTitle}</b> переведена в статус: <b>${statusLabel}</b>`)
+    await sendTelegramMessage(chatId, `🔔 Статус вашего отклика на вакансию <b>${internshipTitle}</b> изменился на: <b>${statusLabel}</b>`)
   }
+}
+
+export async function notifyOnChatMessage(
+  threadId: string,
+  senderUserId: string,
+  senderName: string,
+  messageContent: string
+): Promise<void> {
+  const db = createAdminClient()
+
+  const { data: thread } = await db
+    .from("direct_threads")
+    .select("employer_id, student_id")
+    .eq("id", threadId)
+    .single()
+  if (!thread) return
+
+  const [employerRes, studentRes] = await Promise.all([
+    db.from("employers").select("user_id").eq("id", thread.employer_id).single(),
+    db.from("students").select("user_id").eq("id", thread.student_id).single(),
+  ])
+
+  const employerUserId = employerRes.data?.user_id
+  const studentUserId = studentRes.data?.user_id
+
+  // Notify whoever is NOT the sender
+  const recipientUserId = senderUserId === employerUserId ? studentUserId : employerUserId
+  if (!recipientUserId) return
+
+  const { data: profile } = await db
+    .from("profiles")
+    .select("telegram_chat_id")
+    .eq("user_id", recipientUserId)
+    .single()
+
+  const chatId = profile?.telegram_chat_id
+  if (!chatId) return
+
+  const truncated = messageContent.length > 120
+    ? messageContent.slice(0, 120) + "…"
+    : messageContent
+
+  await sendTelegramMessage(chatId, `💬 Новое сообщение от <b>${senderName}</b>:\n${truncated}`)
 }

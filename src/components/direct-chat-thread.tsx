@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Send, Loader2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { notifyOnChatMessage } from "@/app/actions/notifications"
 
 type Message = {
   id: string
@@ -67,6 +68,7 @@ export function DirectChatThread({ threadId, currentUserId, currentUserName, oth
     setMessages(prev => [...prev, data])
     setText("")
     setSending(false)
+    notifyOnChatMessage(threadId, currentUserId, currentUserName, trimmed).catch(() => {})
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {

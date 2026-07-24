@@ -3,12 +3,13 @@
 import { useState, useRef, useEffect, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { X, Send, Loader2, Sparkles } from "lucide-react"
+import ReactMarkdown from "react-markdown"
 import { askSkilly, type SkillyMessage } from "@/app/actions/skilly"
 
 const WELCOME: SkillyMessage = {
   role: "assistant",
   content:
-    "Привет! Я Skilly AI. Могу ответить на вопросы, помочь составить резюме или запустить симулятор собеседования. Чем займёмся?",
+    "Привет! 👋 Я Skilly AI, твой персональный ассистент на платформе SkillBridge.\n\nЯ помогу тебе с:\n1. **Подготовкой к собеседованиям** 🎤 — репетиция интервью и тренировка ответов\n2. **Созданием резюме** 📄 — генерация и скачивание профессионального резюме\n3. **Поиском вакансий** 💼 — помощь в поиске мест для практики\n\nПросто напиши, что тебе нужно, и я перенаправлю тебя в нужный раздел или дам совет! 😊",
 }
 
 const ROUTES: Record<string, string> = {
@@ -140,23 +141,29 @@ export function SkillyWidget() {
                   </div>
                 )}
                 <div
-                  className="max-w-[78%] px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed"
+                  className="max-w-[78%] px-3.5 py-2.5 text-[13px]"
                   style={
                     msg.role === "user"
                       ? {
                           background: "linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%)",
                           color: "#fff",
                           borderRadius: "18px 18px 4px 18px",
+                          lineHeight: "1.5",
                         }
                       : {
                           background: "rgba(255,255,255,0.06)",
-                          color: "#cbd5e1",
                           border: "1px solid rgba(255,255,255,0.08)",
                           borderRadius: "18px 18px 18px 4px",
                         }
                   }
                 >
-                  {msg.content}
+                  {msg.role === "user" ? (
+                    msg.content
+                  ) : (
+                    <div className="prose prose-sm prose-invert max-w-none leading-snug [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:mt-1 [&>ul]:mb-1 [&>ol]:mt-1 [&>ol]:mb-1 [&>ol]:pl-4 [&>ul]:pl-4 [&_li]:my-0.5 [&>h1]:text-sm [&>h2]:text-sm [&>h3]:text-sm">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

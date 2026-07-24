@@ -3,38 +3,13 @@
 import { useState, useRef } from "react"
 import Papa from "papaparse"
 import { Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
-import { uploadCollegeRoster, type RosterItem } from "../_actions"
+import { uploadCollegeRoster } from "../_actions"
 
 type Status =
   | { type: "idle" }
   | { type: "loading" }
   | { type: "success"; count: number }
   | { type: "error"; message: string }
-
-function normalizeHeader(h: string) {
-  return h.toLowerCase().trim().replace(/[\s\-\/]+/g, "")
-}
-
-const COL_MAP: Record<string, keyof RosterItem> = {
-  фио: "full_name",
-  fullname: "full_name",
-  name: "full_name",
-  имя: "full_name",
-  иин: "identifier",
-  iin: "identifier",
-  identifier: "identifier",
-  ид: "identifier",
-  id: "identifier",
-  studentid: "identifier",
-  идентификатор: "identifier",
-  номер: "identifier",
-  специальность: "specialty",
-  specialty: "specialty",
-  группа: "group_name",
-  group: "group_name",
-  groupname: "group_name",
-  группакласс: "group_name",
-}
 
 export function CsvRosterUpload() {
   const [status, setStatus] = useState<Status>({ type: "idle" })
@@ -51,43 +26,15 @@ export function CsvRosterUpload() {
       header: true,
       skipEmptyLines: true,
       complete: async (result) => {
-        const rawHeaders = result.meta.fields ?? []
-        const headerToField = new Map<string, keyof RosterItem>()
-        for (const h of rawHeaders) {
-          const field = COL_MAP[normalizeHeader(h)]
-          if (field) headerToField.set(h, field)
-        }
-
-        const vals = [...headerToField.values()]
-        if (!vals.includes("full_name") || !vals.includes("identifier")) {
-          setStatus({
-            type: "error",
-            message: `Обязательные колонки не найдены. Нужны "ФИО" и "ИИН". Найдены: ${rawHeaders.join(", ")}`,
-          })
+        if (result.data.length === 0) {
+          setStatus({ type: "error", message: "CSV файл пустой или не содержит данных" })
           return
         }
-
-        const items: RosterItem[] = result.data
-          .map((row) => {
-            const item: Partial<Record<keyof RosterItem, string>> = {}
-            for (const [col, field] of headerToField.entries()) {
-              const val = row[col]?.trim()
-              if (val) item[field] = val
-            }
-            return item as RosterItem
-          })
-          .filter((item) => item.full_name && item.identifier)
-
-        if (items.length === 0) {
-          setStatus({ type: "error", message: "CSV не содержит записей с ФИО и ИИН" })
-          return
-        }
-
-        const res = await uploadCollegeRoster(items)
+        const res = await uploadCollegeRoster(result.data)
         if (res.error) {
           setStatus({ type: "error", message: res.error })
         } else {
-          setStatus({ type: "success", count: res.count ?? items.length })
+          setStatus({ type: "success", count: res.count ?? result.data.length })
         }
       },
       error: (err) => {
@@ -140,7 +87,7 @@ export function CsvRosterUpload() {
                 <span className="text-blue-600">нажмите для выбора</span>
               </p>
               <p className="text-[10px] text-neutral-400 mt-1">
-                Колонки: ФИО, ИИН — обязательные · Специальность, Группа — опционально
+                Любой формат колонок — AI автоматически определит структуру
               </p>
             </>
           )}

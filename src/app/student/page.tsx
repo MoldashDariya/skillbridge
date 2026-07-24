@@ -8,6 +8,7 @@ import { InterviewHistory } from "./_components/interview-history"
 import type { SimRow } from "./_components/interview-history"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
+import { ResumeDownloadButton } from "./_components/resume-download-button"
 import type { Database } from "@/types/supabase"
 
 export const metadata = { title: "Кабинет студента — SkillBridge KZ" }
@@ -221,6 +222,14 @@ export default async function StudentDashboard() {
               Заполнить профиль →
             </Link>
           </div>
+        </section>
+
+        {/* AI Resume Builder */}
+        <section className="mb-8">
+          <ResumeDownloadButton
+            studentId={student?.id ?? ""}
+            disabled={!student?.id}
+          />
         </section>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">

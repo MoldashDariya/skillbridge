@@ -4,6 +4,176 @@ import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import Anthropic from "@anthropic-ai/sdk"
 
+export type ResumeData = {
+  name: string
+  contact: { email: string; phone: string; github: string; linkedin: string }
+  education: Array<{ degree: string; university: string; dates: string; gpa: string; details: string[] }>
+  skills: { languages: string[]; frameworks: string[]; tools: string[] }
+  projects: Array<{ name: string; tech_stack: string; dates: string; bullet_points: string[] }>
+  experience: Array<{ role: string; company: string; dates: string; bullet_points: string[] }>
+}
+
+export async function generateResumeData(
+  studentId: string
+): Promise<{ data?: ResumeData; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Не авторизован" }
+
+  const admin = createAdminClient()
+
+  const { data: student } = await admin
+    .from("students")
+    .select("skills, gpa, gpa_verified, specialty, college_name, course_year, bio, github_url, linkedin_url")
+    .eq("id", studentId)
+    .eq("user_id", user.id)
+    .single()
+  if (!student) return { error: "Профиль студента не найден" }
+
+  const [profileRes, certRes, portfolioRes, appRes] = await Promise.all([
+    admin.from("profiles").select("first_name, last_name, phone").eq("user_id", user.id).single(),
+    admin.from("student_certificates").select("title").eq("student_id", studentId),
+    admin.from("portfolio_items").select("title, description").eq("student_id", studentId).limit(6),
+    admin
+      .from("applications")
+      .select("status, created_at, internships(title, employers(company_name))")
+      .eq("student_id", studentId)
+      .in("status", ["hired", "completed", "accepted"]),
+  ])
+
+  const profile = profileRes.data
+  const certs = certRes.data ?? []
+  const portfolio = portfolioRes.data ?? []
+  const acceptedApps = (appRes.data ?? []) as Array<{
+    status: string
+    created_at: string | null
+    internships: { title: string; employers: { company_name: string } | null } | null
+  }>
+
+  const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Студент"
+
+  const context = `
+Имя: ${name}
+Email: ${user.email}
+Телефон: ${profile?.phone ?? "не указан"}
+Колледж: ${student.college_name ?? "не указан"}
+Специальность: ${student.specialty ?? "не указана"}
+Курс: ${student.course_year ?? "не указан"}
+GPA: ${student.gpa ?? "не указан"}${student.gpa_verified ? " (подтверждён)" : ""}
+GitHub: ${student.github_url ?? "нет"}
+LinkedIn: ${student.linkedin_url ?? "нет"}
+О себе: ${student.bio ?? "не указано"}
+Навыки: ${student.skills?.join(", ") ?? "не указаны"}
+
+Портфолио:
+${portfolio.map((p, i) => `${i + 1}. "${p.title}"${p.description ? `: ${p.description}` : ""}`).join("\n") || "Нет"}
+
+Сертификаты: ${certs.map((c) => c.title ?? "Сертификат").join(", ") || "Нет"}
+
+Опыт / практика:
+${acceptedApps.map((a) => `- ${a.internships?.title ?? "Стажёр"} в ${a.internships?.employers?.company_name ?? "Компания"}`).join("\n") || "Нет"}
+`.trim()
+
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) return { error: "AI-сервис не настроен" }
+
+  const client = new Anthropic({ apiKey })
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1500,
+      system:
+        "Ты профессиональный IT-рекрутер. На основе сырых данных о студенте, напиши сильное резюме. Сделай акцент на навыках и практике. Не выдумывай опыт, если его нет — пиши про учебные проекты. Если нет опыта работы — оставь experience пустым массивом. Если нет проектов — оставь projects пустым. Пустые поля заполняй пустой строкой.\n\nКРИТИЧНО — ЕДИНЫЙ ЯЗЫК: Определи язык резюме по данным студента (русский, английский или казахский). Используй ОДИН И ТОТ ЖЕ язык абсолютно для всего: bullet points, названия должностей, описания И даты. НЕ смешивай языки ни в одном поле. Формат дат: русский → 'Янв 2024 — Май 2025' / 'Настоящее время'; английский → 'Jan 2024 — May 2025' / 'Present'; казахский → 'Қаң 2024 — Мам 2025' / 'Қазіргі уақыт'. Разделитель дат — длинное тире '—', не дефис.",
+      tools: [
+        {
+          name: "build_resume",
+          description: "Возвращает структурированные данные резюме студента",
+          input_schema: {
+            type: "object" as const,
+            properties: {
+              name: { type: "string" },
+              contact: {
+                type: "object",
+                properties: {
+                  email: { type: "string" },
+                  phone: { type: "string" },
+                  github: { type: "string" },
+                  linkedin: { type: "string" },
+                },
+                required: ["email", "phone", "github", "linkedin"],
+              },
+              education: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    degree: { type: "string" },
+                    university: { type: "string" },
+                    dates: { type: "string" },
+                    gpa: { type: "string" },
+                    details: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["degree", "university", "dates", "gpa", "details"],
+                },
+              },
+              skills: {
+                type: "object",
+                properties: {
+                  languages: { type: "array", items: { type: "string" } },
+                  frameworks: { type: "array", items: { type: "string" } },
+                  tools: { type: "array", items: { type: "string" } },
+                },
+                required: ["languages", "frameworks", "tools"],
+              },
+              projects: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    tech_stack: { type: "string" },
+                    dates: { type: "string" },
+                    bullet_points: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["name", "tech_stack", "dates", "bullet_points"],
+                },
+              },
+              experience: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    role: { type: "string" },
+                    company: { type: "string" },
+                    dates: { type: "string" },
+                    bullet_points: { type: "array", items: { type: "string" } },
+                  },
+                  required: ["role", "company", "dates", "bullet_points"],
+                },
+              },
+            },
+            required: ["name", "contact", "education", "skills", "projects", "experience"],
+          },
+        },
+      ],
+      tool_choice: { type: "tool", name: "build_resume" },
+      messages: [
+        {
+          role: "user",
+          content: `Создай профессиональное резюме для студента из Казахстана:\n\n${context}`,
+        },
+      ],
+    })
+
+    const toolBlock = response.content.find((c) => c.type === "tool_use")
+    if (!toolBlock || toolBlock.type !== "tool_use") return { error: "AI не вернул данные резюме" }
+    return { data: toolBlock.input as ResumeData }
+  } catch (err) {
+    return { error: "Ошибка AI-генерации: " + (err instanceof Error ? err.message : "неизвестная ошибка") }
+  }
+}
+
 export async function submitEmployerReview(
   applicationId: string,
   employerId: string,

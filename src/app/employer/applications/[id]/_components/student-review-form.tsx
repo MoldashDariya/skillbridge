@@ -5,11 +5,10 @@ import { submitStudentReview } from "@/app/employer/_actions"
 
 type Props = {
   applicationId: string
-  studentId: string
   existingReview: { rating: number; comment: string | null } | null
 }
 
-export function StudentReviewForm({ applicationId, studentId, existingReview }: Props) {
+export function StudentReviewForm({ applicationId, existingReview }: Props) {
   const [rating, setRating] = useState(existingReview?.rating ?? 0)
   const [comment, setComment] = useState(existingReview?.comment ?? "")
   const [submitting, setSubmitting] = useState(false)
@@ -20,7 +19,7 @@ export function StudentReviewForm({ applicationId, studentId, existingReview }: 
     if (!rating) return
     setSubmitting(true)
     setError("")
-    const result = await submitStudentReview(applicationId, studentId, rating, comment)
+    const result = await submitStudentReview(applicationId, rating, comment)
     setSubmitting(false)
     if (result.error) {
       setError(result.error)

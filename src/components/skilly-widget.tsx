@@ -2,15 +2,11 @@
 
 import { useState, useRef, useEffect, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { X, Send, Loader2, Sparkles } from "lucide-react"
+import Image from "next/image"
+import { X, Send, Loader2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { askSkilly, type SkillyMessage } from "@/app/actions/skilly"
-
-const WELCOME: SkillyMessage = {
-  role: "assistant",
-  content:
-    "Привет! 👋 Я Skilly AI, твой персональный ассистент на платформе SkillBridge.\n\nЯ помогу тебе с:\n1. **Подготовкой к собеседованиям** 🎤 — репетиция интервью и тренировка ответов\n2. **Созданием резюме** 📄 — генерация и скачивание профессионального резюме\n3. **Поиском вакансий** 💼 — помощь в поиске мест для практики\n\nПросто напиши, что тебе нужно, и я перенаправлю тебя в нужный раздел или дам совет! 😊",
-}
+import { useTranslation } from "@/contexts/language-context"
 
 const ROUTES: Record<string, string> = {
   interview: "/student/simulator",
@@ -20,11 +16,23 @@ const ROUTES: Record<string, string> = {
 
 export function SkillyWidget() {
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<SkillyMessage[]>([WELCOME])
   const [input, setInput] = useState("")
   const [isPending, startTransition] = useTransition()
   const bottomRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const { locale, t } = useTranslation()
+
+  const [messages, setMessages] = useState<SkillyMessage[]>(() => [
+    { role: "assistant", content: t("skilly.welcome") },
+  ])
+
+  useEffect(() => {
+    setMessages((prev) => [
+      { role: "assistant", content: t("skilly.welcome") },
+      ...prev.slice(1),
+    ])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -43,14 +51,14 @@ export function SkillyWidget() {
     const apiHistory = nextMessages.slice(1)
 
     startTransition(async () => {
-      const result = await askSkilly(apiHistory)
+      const result = await askSkilly(apiHistory, locale)
 
       if (result.type === "text") {
         setMessages((prev) => [...prev, { role: "assistant", content: result.content }])
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "Перенаправляю вас..." },
+          { role: "assistant", content: t("skilly.redirecting") },
         ])
         setTimeout(() => {
           router.push(ROUTES[result.destination])
@@ -69,7 +77,7 @@ export function SkillyWidget() {
       {/* FAB */}
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Открыть Skilly AI"
+        aria-label={t("skilly.open_label")}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95"
         style={{
           background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
@@ -79,7 +87,13 @@ export function SkillyWidget() {
         {open ? (
           <X className="w-5 h-5 text-white" />
         ) : (
-          <Sparkles className="w-5 h-5 text-white" />
+          <Image
+            src="/skilly-avatar.png"
+            alt="Skilly"
+            width={36}
+            height={36}
+            className="object-contain drop-shadow-sm"
+          />
         )}
       </button>
 
@@ -100,20 +114,20 @@ export function SkillyWidget() {
             style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
           >
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
+              className="w-8 h-8 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
               style={{
                 background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
                 boxShadow: "0 4px 12px rgba(124,58,237,0.4)",
               }}
             >
-              S
+              <Image src="/skilly-avatar.png" alt="Skilly" width={32} height={32} className="object-contain" />
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-white leading-none tracking-tight">
                 Skilly AI
               </p>
               <p className="text-[10px] mt-0.5" style={{ color: "#a5b4fc" }}>
-                Персональный ассистент
+                {t("skilly.subtitle")}
               </p>
             </div>
             <div
@@ -134,10 +148,10 @@ export function SkillyWidget() {
               >
                 {msg.role === "assistant" && (
                   <div
-                    className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[9px] font-bold shrink-0 mb-0.5"
+                    className="w-6 h-6 rounded-lg overflow-hidden shrink-0 mb-0.5 flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}
                   >
-                    S
+                    <Image src="/skilly-avatar.png" alt="Skilly" width={24} height={24} className="object-contain" />
                   </div>
                 )}
                 <div
@@ -171,10 +185,10 @@ export function SkillyWidget() {
             {isPending && (
               <div className="flex items-end gap-2 justify-start">
                 <div
-                  className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[9px] font-bold shrink-0"
+                  className="w-6 h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
                   style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}
                 >
-                  S
+                  <Image src="/skilly-avatar.png" alt="Skilly" width={24} height={24} className="object-contain" />
                 </div>
                 <div
                   className="px-4 py-3 flex gap-1.5 items-center rounded-2xl"
@@ -208,7 +222,7 @@ export function SkillyWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKey}
-              placeholder="Напишите что-нибудь..."
+              placeholder={t("skilly.placeholder")}
               disabled={isPending}
               className="flex-1 rounded-xl px-3.5 py-2.5 text-[13px] focus:outline-none disabled:opacity-50 transition-colors"
               style={{

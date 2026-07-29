@@ -2,6 +2,8 @@
   "nav": {
     "brand": "SkillBridge KZ",
     "student_label": "Студент",
+    "employer_label": "Работодатель",
+    "admin_label": "Администратор",
     "sign_out": "Выйти"
   },
   "dashboard": {
@@ -55,6 +57,59 @@
     "score": "Балл",
     "feedback_label": "Обратная связь"
   },
+  "employer": {
+    "section_label": "Кабинет работодателя",
+    "company_profile": "Профиль компании",
+    "no_company_desc": "Описание компании не заполнено",
+    "no_contacts": "Контакты не заполнены",
+    "internships_label": "Места практики",
+    "no_internships_title": "Пока нет мест практики",
+    "no_internships_desc": "Нажмите «Добавить», чтобы опубликовать первое место",
+    "incoming_apps": "Входящие заявки",
+    "no_apps_title": "Нет входящих заявок",
+    "no_apps_desc": "Студенты ещё не подавали заявки",
+    "sections_internships_title": "Места практики",
+    "sections_internships_desc": "Добавьте и управляйте вакансиями для студентов",
+    "sections_applications_title": "Заявки студентов",
+    "sections_applications_desc": "Просматривайте заявки и меняйте их статус",
+    "sections_search_title": "Поиск студентов",
+    "sections_search_desc": "Найдите подходящих студентов по специальности"
+  },
+  "admin": {
+    "section_label": "Административная панель",
+    "pending_label": "Ожидают одобрения",
+    "students_label": "Студенты колледжа",
+    "applications_label": "Заявки студентов",
+    "no_students": "Студентов из этого колледжа не зарегистрировано",
+    "no_apps": "Заявок пока нет",
+    "metrics_students": "Студентов",
+    "metrics_portfolio": "С портфолио",
+    "metrics_total_apps": "Заявок подано",
+    "metrics_accepted": "Принято",
+    "approve": "Одобрить",
+    "reject": "Отклонить",
+    "employer_role": "Работодатель",
+    "student_role": "Студент",
+    "doc_missing": "Документы не загружены",
+    "photo_missing": "Фото не загружено",
+    "col_student": "Студент",
+    "col_internship": "Место практики",
+    "col_company": "Компания",
+    "col_status": "Статус",
+    "col_date": "Дата",
+    "view_chat": "Переписка"
+  },
+  "search": {
+    "title": "Поиск студентов",
+    "subtitle": "Студенты с одобренным профилем, отсортированные по готовности",
+    "tab_all": "Все",
+    "tab_saved": "Сохранённые",
+    "no_saved_title": "Нет сохранённых студентов",
+    "no_saved_desc": "Нажмите «Сохранить» на карточке студента",
+    "no_results_title": "Студенты не найдены",
+    "no_results_specialty": "Попробуйте изменить фильтр специальности",
+    "no_results_empty": "Пока нет одобренных студентов в системе"
+  },
   "common": {
     "apply": "Откликнуться",
     "already_applied": "Уже откликнулись",
@@ -63,6 +118,8 @@
     "loading": "Загрузка...",
     "save": "Сохранить",
     "cancel": "Отмена",
-    "back": "Назад"
+    "back": "Назад",
+    "telegram_connect": "Подключить Telegram",
+    "telegram_connected": "Telegram подключён"
   }
 }

@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   useTransition,
   type ReactNode,
@@ -47,15 +48,23 @@ export function LanguageProvider({
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
+  // Sync client state when server re-renders with a new locale (after router.refresh())
+  useEffect(() => {
+    setLocaleState(initialLocale)
+    setDict(initialDict)
+  }, [initialLocale])
+
   const setLocale = useCallback(
     (next: Locale) => {
       if (next === locale) return
+      // Urgent: update button highlight and cookie immediately
+      setLocaleState(next)
+      document.cookie = `lang=${next}; path=/; max-age=31536000; SameSite=Lax`
+      // Deferred: load dict and refresh server components
       startTransition(async () => {
         const { getDictionary } = await import("@/lib/i18n")
         const nextDict = await getDictionary(next)
-        setLocaleState(next)
         setDict(nextDict)
-        document.cookie = `lang=${next}; path=/; max-age=31536000; SameSite=Lax`
         router.refresh()
       })
     },

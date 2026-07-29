@@ -2,6 +2,8 @@
   "nav": {
     "brand": "SkillBridge KZ",
     "student_label": "Student",
+    "employer_label": "Employer",
+    "admin_label": "Administrator",
     "sign_out": "Sign out"
   },
   "dashboard": {
@@ -55,6 +57,59 @@
     "score": "Score",
     "feedback_label": "Feedback"
   },
+  "employer": {
+    "section_label": "Employer dashboard",
+    "company_profile": "Company profile",
+    "no_company_desc": "Company description not filled in",
+    "no_contacts": "Contacts not filled in",
+    "internships_label": "Internships",
+    "no_internships_title": "No internship listings yet",
+    "no_internships_desc": "Click «Add» to publish your first listing",
+    "incoming_apps": "Incoming applications",
+    "no_apps_title": "No incoming applications",
+    "no_apps_desc": "Students haven't submitted any applications yet",
+    "sections_internships_title": "Internships",
+    "sections_internships_desc": "Add and manage student internship listings",
+    "sections_applications_title": "Student applications",
+    "sections_applications_desc": "View applications and update their status",
+    "sections_search_title": "Student search",
+    "sections_search_desc": "Find suitable students by specialty"
+  },
+  "admin": {
+    "section_label": "Admin panel",
+    "pending_label": "Pending approval",
+    "students_label": "College students",
+    "applications_label": "Student applications",
+    "no_students": "No students from this college are registered",
+    "no_apps": "No applications yet",
+    "metrics_students": "Students",
+    "metrics_portfolio": "With portfolio",
+    "metrics_total_apps": "Applications",
+    "metrics_accepted": "Accepted",
+    "approve": "Approve",
+    "reject": "Reject",
+    "employer_role": "Employer",
+    "student_role": "Student",
+    "doc_missing": "No documents uploaded",
+    "photo_missing": "No photo uploaded",
+    "col_student": "Student",
+    "col_internship": "Internship",
+    "col_company": "Company",
+    "col_status": "Status",
+    "col_date": "Date",
+    "view_chat": "Chat"
+  },
+  "search": {
+    "title": "Student search",
+    "subtitle": "Approved student profiles, sorted by readiness",
+    "tab_all": "All",
+    "tab_saved": "Saved",
+    "no_saved_title": "No saved students",
+    "no_saved_desc": "Click «Save» on a student card",
+    "no_results_title": "No students found",
+    "no_results_specialty": "Try changing the specialty filter",
+    "no_results_empty": "No approved students in the system yet"
+  },
   "common": {
     "apply": "Apply",
     "already_applied": "Already applied",
@@ -63,6 +118,8 @@
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
-    "back": "Back"
+    "back": "Back",
+    "telegram_connect": "Connect Telegram",
+    "telegram_connected": "Telegram connected"
   }
 }

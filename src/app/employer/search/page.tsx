@@ -6,6 +6,8 @@ import Link from "next/link"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
 import { SpecialtyFilter } from "./_components/specialty-filter"
 import { StudentSearchCard } from "./_components/student-search-card"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { getPageT } from "@/lib/get-page-t"
 
 export const metadata = { title: "Поиск студентов — SkillBridge KZ" }
 
@@ -77,6 +79,7 @@ export default async function EmployerSearchPage({
       hasCertificates: certCount > 0,
       isApproved: true,
       hasBasicFields: !!(prof?.first_name && prof?.last_name && s.college_name && s.specialty && s.course_year),
+      t,
     })
     return { ...s, prof, readiness }
   })
@@ -111,6 +114,7 @@ export default async function EmployerSearchPage({
     redirect("/auth")
   }
 
+  const t = await getPageT()
   const companyName = employer?.company_name ?? "Компания"
 
   return (
@@ -125,11 +129,14 @@ export default async function EmployerSearchPage({
               <span className="text-sm font-heading font-bold tracking-wide text-neutral-900 group-hover:text-blue-700 transition-colors">SkillBridge KZ</span>
             </Link>
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
-            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Поиск студентов</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("search.title")}</span>
           </div>
-          <form action={signOut}>
-            <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">Выйти</button>
-          </form>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <form action={signOut}>
+              <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">{t("nav.sign_out")}</button>
+            </form>
+          </div>
         </div>
       </header>
 
@@ -142,10 +149,10 @@ export default async function EmployerSearchPage({
             {companyName}
           </p>
           <h1 className="text-2xl font-heading font-extrabold leading-tight text-neutral-900">
-            Поиск студентов
+            {t("search.title")}
           </h1>
           <p className="text-sm text-neutral-400 mt-1">
-            Студенты с одобренным профилем, отсортированные по готовности
+            {t("search.subtitle")}
           </p>
         </div>
 
@@ -163,7 +170,7 @@ export default async function EmployerSearchPage({
             >
               <span className="flex items-center gap-1.5">
                 <Users className="w-3 h-3" />
-                Все ({filtered.length})
+                {t("search.tab_all")} ({filtered.length})
               </span>
             </Link>
             <Link
@@ -176,7 +183,7 @@ export default async function EmployerSearchPage({
             >
               <span className="flex items-center gap-1.5">
                 <BookmarkCheck className="w-3 h-3" />
-                Сохранённые ({savedStudents.length})
+                {t("search.tab_saved")} ({savedStudents.length})
               </span>
             </Link>
           </div>
@@ -195,14 +202,14 @@ export default async function EmployerSearchPage({
               }
             </div>
             <p className="font-heading font-bold text-[15px] text-neutral-500 mb-1">
-              {tab === "saved" ? "Нет сохранённых студентов" : "Студенты не найдены"}
+              {tab === "saved" ? t("search.no_saved_title") : t("search.no_results_title")}
             </p>
             <p className="text-xs text-neutral-400">
               {tab === "saved"
-                ? "Нажмите «Сохранить» на карточке студента"
+                ? t("search.no_saved_desc")
                 : specialtyFilter
-                ? "Попробуйте изменить фильтр специальности"
-                : "Пока нет одобренных студентов в системе"
+                ? t("search.no_results_specialty")
+                : t("search.no_results_empty")
               }
             </p>
           </div>

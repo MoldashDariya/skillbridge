@@ -10,6 +10,7 @@ import { ConnectTelegramButton } from "@/components/connect-telegram-button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
 import { ResumeDownloadButton } from "./_components/resume-download-button"
+import { getPageT } from "@/lib/get-page-t"
 import type { Database } from "@/types/supabase"
 
 export const metadata = { title: "Кабинет студента — SkillBridge KZ" }
@@ -23,13 +24,6 @@ type InternshipWithEmployer = InternshipRow & {
 type ApplicationWithInternship = ApplicationRow & {
   internships: { title: string; employers: { company_name: string } | null } | null
 }
-
-const SECTIONS = [
-  { icon: BookOpen, title: "Мой профиль", desc: "Укажите колледж, специальность и навыки", href: "/student/profile" },
-  { icon: LayoutGrid, title: "Портфолио", desc: "Загрузите фотографии ваших работ", href: "/student/profile" },
-  { icon: Briefcase, title: "Места практики", desc: "Найдите подходящее место и подайте заявку", href: "#internships" },
-  { icon: Mic, title: "Симулятор собеседования", desc: "Потренируйтесь отвечать на вопросы с AI-оценкой", href: "/student/simulator" },
-]
 
 export default async function StudentDashboard() {
   const supabase = await createClient()
@@ -107,12 +101,15 @@ export default async function StudentDashboard() {
     profile.first_name && profile.last_name && profile.phone &&
     student?.college_name && student?.specialty && student?.course_year
   )
+  const t = await getPageT()
+
   const readiness = calculateProfileReadiness({
     photoUrl: profile.photo_url,
     hasPortfolio: (portfolioCountRes.count ?? 0) > 0,
     hasCertificates: (certCountRes.count ?? 0) > 0,
     isApproved: profile.approval_status === "approved",
     hasBasicFields,
+    t,
   })
 
   async function signOut() {
@@ -127,6 +124,13 @@ export default async function StudentDashboard() {
       ? `${profile.first_name} ${profile.last_name}`
       : null
 
+  const SECTIONS = [
+    { icon: BookOpen, title: t("sections.profile_title"), desc: t("sections.profile_desc"), href: "/student/profile" },
+    { icon: LayoutGrid, title: t("sections.portfolio_title"), desc: t("sections.portfolio_desc"), href: "/student/profile" },
+    { icon: Briefcase, title: t("sections.internships_title"), desc: t("sections.internships_desc"), href: "#internships" },
+    { icon: Mic, title: t("sections.simulator_title"), desc: t("sections.simulator_desc"), href: "/student/simulator" },
+  ]
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-neutral-200 bg-white shadow-sm">
@@ -137,7 +141,7 @@ export default async function StudentDashboard() {
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
-            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Студент</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.student_label")}</span>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
@@ -146,7 +150,7 @@ export default async function StudentDashboard() {
                 type="submit"
                 className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading"
               >
-                Выйти
+                {t("nav.sign_out")}
               </button>
             </form>
           </div>
@@ -157,10 +161,10 @@ export default async function StudentDashboard() {
         <div className="mb-12 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">
-            Личный кабинет
+            {t("dashboard.section_label")}
           </p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">
-            {name ?? "Добро пожаловать"}
+            {name ?? t("dashboard.section_label")}
           </h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
           {profile && (
@@ -177,7 +181,7 @@ export default async function StudentDashboard() {
               <div className="relative pl-4">
                 <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-600 rounded-full" />
                 <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                  Карьерная готовность
+                  {t("dashboard.career_readiness")}
                 </p>
               </div>
               <span className={`text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1 rounded-full border ${readiness.labelCls}`}>
@@ -206,7 +210,7 @@ export default async function StudentDashboard() {
             {readiness.missing.length === 0 ? (
               <p className="text-xs text-emerald-600 font-heading font-bold tracking-widests uppercase flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Профиль полностью заполнен
+                {t("dashboard.profile_complete")}
               </p>
             ) : (
               <div className="space-y-1.5">
@@ -223,7 +227,7 @@ export default async function StudentDashboard() {
               href="/student/profile"
               className="inline-block mt-3 text-[11px] font-heading font-bold tracking-widests text-blue-600 hover:text-blue-800 uppercase transition-colors"
             >
-              Заполнить профиль →
+              {t("dashboard.fill_profile")}
             </Link>
           </div>
         </section>
@@ -258,7 +262,7 @@ export default async function StudentDashboard() {
             <div className="relative pl-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                Доступные практики
+                {t("dashboard.available_internships")}
               </p>
               {internships.length > 0 && (
                 <p className="text-xs text-neutral-400 mt-0.5">{internships.length} открытых позиций</p>
@@ -271,8 +275,8 @@ export default async function StudentDashboard() {
               <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3">
                 <FileText className="w-5 h-5 text-blue-400" />
               </div>
-              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Пока нет открытых практик</p>
-              <p className="text-xs text-neutral-400">Работодатели ещё не добавили места практики</p>
+              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">{t("dashboard.no_internships_title")}</p>
+              <p className="text-xs text-neutral-400">{t("dashboard.no_internships_desc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -300,7 +304,7 @@ export default async function StudentDashboard() {
           <div className="relative pl-4 mb-5">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-              Мои заявки
+              {t("dashboard.my_applications")}
             </p>
             {applications.length > 0 && (
               <p className="text-xs text-neutral-400 mt-0.5">
@@ -312,7 +316,7 @@ export default async function StudentDashboard() {
 
           {applications.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-8 text-center">
-              <p className="text-sm text-neutral-400">Вы ещё не подавали заявки</p>
+              <p className="text-sm text-neutral-400">{t("dashboard.no_applications")}</p>
             </div>
           ) : (
             <div className="rounded-xl border border-neutral-200 bg-white px-5 shadow-sm">
@@ -334,7 +338,7 @@ export default async function StudentDashboard() {
             <div className="relative pl-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                История собеседований
+                {t("dashboard.interview_history")}
               </p>
               {simulations.length > 0 && (
                 <p className="text-xs text-neutral-400 mt-0.5">

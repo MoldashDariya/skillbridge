@@ -8,6 +8,8 @@ import { CreateInternshipDialog } from "./_components/create-internship-form"
 import { ApplicationCard } from "./_components/application-card"
 import { CompanyProfileDialog } from "./_components/company-profile-dialog"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { getPageT } from "@/lib/get-page-t"
 import type { Database } from "@/types/supabase"
 
 export const metadata = { title: "Кабинет работодателя — SkillBridge KZ" }
@@ -25,12 +27,6 @@ type ProfileSummary = {
   last_name: string | null
   photo_url: string | null
 }
-
-const SECTIONS = [
-  { icon: FileText, title: "Места практики",   desc: "Добавьте и управляйте вакансиями для студентов", href: null },
-  { icon: Users,    title: "Заявки студентов", desc: "Просматривайте заявки и меняйте их статус",      href: null },
-  { icon: Search,   title: "Поиск студентов",  desc: "Найдите подходящих студентов по специальности",  href: "/employer/search" },
-]
 
 export default async function EmployerDashboard() {
   const supabase = await createClient()
@@ -88,6 +84,14 @@ export default async function EmployerDashboard() {
     redirect("/auth")
   }
 
+  const t = await getPageT()
+
+  const SECTIONS = [
+    { icon: FileText, title: t("employer.sections_internships_title"), desc: t("employer.sections_internships_desc"), href: null },
+    { icon: Users,    title: t("employer.sections_applications_title"), desc: t("employer.sections_applications_desc"), href: null },
+    { icon: Search,   title: t("employer.sections_search_title"), desc: t("employer.sections_search_desc"), href: "/employer/search" },
+  ]
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-neutral-200 bg-white shadow-sm">
@@ -98,19 +102,22 @@ export default async function EmployerDashboard() {
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
-            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Работодатель</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.employer_label")}</span>
             <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="hidden sm:block object-contain ml-1" />
           </div>
-          <form action={signOut}>
-            <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">Выйти</button>
-          </form>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <form action={signOut}>
+              <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">{t("nav.sign_out")}</button>
+            </form>
+          </div>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-12 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">Кабинет работодателя</p>
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">{t("employer.section_label")}</p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">{companyName}</h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
           {profile && (
@@ -127,7 +134,7 @@ export default async function EmployerDashboard() {
               <div className="relative pl-4">
                 <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
                 <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                  Профиль компании
+                  {t("employer.company_profile")}
                 </p>
               </div>
               {employer && (
@@ -153,7 +160,7 @@ export default async function EmployerDashboard() {
             {employer?.company_description ? (
               <p className="text-sm text-neutral-600 mb-4 leading-relaxed">{employer.company_description}</p>
             ) : (
-              <p className="text-sm text-neutral-400 italic mb-4">Описание компании не заполнено</p>
+              <p className="text-sm text-neutral-400 italic mb-4">{t("employer.no_company_desc")}</p>
             )}
 
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-neutral-500">
@@ -173,7 +180,7 @@ export default async function EmployerDashboard() {
                 </span>
               )}
               {!employer?.city && !employer?.contact_email && !employer?.contact_phone && (
-                <span className="text-neutral-400">Контакты не заполнены</span>
+                <span className="text-neutral-400">{t("employer.no_contacts")}</span>
               )}
             </div>
           </div>
@@ -201,7 +208,7 @@ export default async function EmployerDashboard() {
           <div className="flex items-center justify-between mb-5">
             <div className="relative pl-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
-              <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">Места практики</p>
+              <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">{t("employer.internships_label")}</p>
               {internships && internships.length > 0 && <p className="text-xs text-neutral-400 mt-0.5">{internships.length} {internships.length === 1 ? "запись" : internships.length < 5 ? "записи" : "записей"}</p>}
             </div>
             {employer && <CreateInternshipDialog employerId={employer.id} />}
@@ -209,8 +216,8 @@ export default async function EmployerDashboard() {
           {!internships || internships.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center">
               <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3"><FileText className="w-5 h-5 text-blue-400" /></div>
-              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Пока нет мест практики</p>
-              <p className="text-xs text-neutral-400">Нажмите «Добавить», чтобы опубликовать первое место</p>
+              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">{t("employer.no_internships_title")}</p>
+              <p className="text-xs text-neutral-400">{t("employer.no_internships_desc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -222,14 +229,14 @@ export default async function EmployerDashboard() {
         <div className="mt-12 stagger-6">
           <div className="relative pl-4 mb-5">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
-            <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">Входящие заявки</p>
+            <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">{t("employer.incoming_apps")}</p>
             {applications.length > 0 && <p className="text-xs text-neutral-400 mt-0.5">{applications.length} {applications.length === 1 ? "заявка" : applications.length < 5 ? "заявки" : "заявок"}</p>}
           </div>
           {applications.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center">
               <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3"><Users className="w-5 h-5 text-blue-400" /></div>
-              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">Нет входящих заявок</p>
-              <p className="text-xs text-neutral-400">Студенты ещё не подавали заявки</p>
+              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">{t("employer.no_apps_title")}</p>
+              <p className="text-xs text-neutral-400">{t("employer.no_apps_desc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

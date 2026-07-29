@@ -2,6 +2,8 @@
   "nav": {
     "brand": "SkillBridge KZ",
     "student_label": "Студент",
+    "employer_label": "Жұмыс беруші",
+    "admin_label": "Әкімші",
     "sign_out": "Шығу"
   },
   "dashboard": {
@@ -55,6 +57,59 @@
     "score": "Ұпай",
     "feedback_label": "Кері байланыс"
   },
+  "employer": {
+    "section_label": "Жұмыс беруші кабинеті",
+    "company_profile": "Компания профилі",
+    "no_company_desc": "Компания сипаттамасы толтырылмаған",
+    "no_contacts": "Байланыс деректері толтырылмаған",
+    "internships_label": "Тәжірибе орындары",
+    "no_internships_title": "Тәжірибе орындары жоқ",
+    "no_internships_desc": "Бірінші орынды жариялау үшін «Қосу» батырмасын басыңыз",
+    "incoming_apps": "Кіріс өтінімдер",
+    "no_apps_title": "Кіріс өтінімдер жоқ",
+    "no_apps_desc": "Студенттер әлі өтінім бермеді",
+    "sections_internships_title": "Тәжірибе орындары",
+    "sections_internships_desc": "Студенттер үшін вакансияларды қосыңыз және басқарыңыз",
+    "sections_applications_title": "Студент өтінімдері",
+    "sections_applications_desc": "Өтінімдерді қараңыз және мәртебесін өзгертіңіз",
+    "sections_search_title": "Студент іздеу",
+    "sections_search_desc": "Мамандық бойынша қолайлы студенттерді табыңыз"
+  },
+  "admin": {
+    "section_label": "Әкімшілік панелі",
+    "pending_label": "Бекітуді күтуде",
+    "students_label": "Колледж студенттері",
+    "applications_label": "Студент өтінімдері",
+    "no_students": "Бұл колледждің студенттері тіркелмеген",
+    "no_apps": "Өтінімдер жоқ",
+    "metrics_students": "Студенттер",
+    "metrics_portfolio": "Портфолиосы бар",
+    "metrics_total_apps": "Өтінімдер",
+    "metrics_accepted": "Қабылданды",
+    "approve": "Бекіту",
+    "reject": "Қабылдамау",
+    "employer_role": "Жұмыс беруші",
+    "student_role": "Студент",
+    "doc_missing": "Құжаттар жүктелмеген",
+    "photo_missing": "Фото жүктелмеген",
+    "col_student": "Студент",
+    "col_internship": "Тәжірибе орны",
+    "col_company": "Компания",
+    "col_status": "Мәртебе",
+    "col_date": "Күні",
+    "view_chat": "Хат алмасу"
+  },
+  "search": {
+    "title": "Студент іздеу",
+    "subtitle": "Бекітілген студент профильдері, дайындық бойынша сұрыпталған",
+    "tab_all": "Барлығы",
+    "tab_saved": "Сақталған",
+    "no_saved_title": "Сақталған студенттер жоқ",
+    "no_saved_desc": "Студент картасындағы «Сақтау» батырмасын басыңыз",
+    "no_results_title": "Студенттер табылмады",
+    "no_results_specialty": "Мамандық сүзгісін өзгертіп көріңіз",
+    "no_results_empty": "Жүйеде бекітілген студенттер әлі жоқ"
+  },
   "common": {
     "apply": "Өтінім беру",
     "already_applied": "Өтінім берілді",
@@ -63,6 +118,8 @@
     "loading": "Жүктелуде...",
     "save": "Сақтау",
     "cancel": "Болдырмау",
-    "back": "Артқа"
+    "back": "Артқа",
+    "telegram_connect": "Telegram қосу",
+    "telegram_connected": "Telegram қосылды"
   }
 }

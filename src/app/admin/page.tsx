@@ -10,6 +10,8 @@ import {
 import { approveUser, rejectUser } from "./_actions"
 import { AdminStudentsTable, type StudentTableRow } from "./_components/admin-students-table"
 import { CsvRosterUpload } from "./_components/csv-roster-upload"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { getPageT } from "@/lib/get-page-t"
 
 export const dynamic = "force-dynamic"
 export const metadata = { title: "Кабинет администратора — SkillBridge KZ" }
@@ -207,11 +209,13 @@ export default async function AdminDashboard() {
     redirect("/auth")
   }
 
+  const t = await getPageT()
+
   const METRICS = [
-    { icon: GraduationCap, label: "Студентов",     value: totalStudents,        emerald: false },
-    { icon: ImageIcon,     label: "С портфолио",   value: studentsWithPortfolio, emerald: false },
-    { icon: Briefcase,     label: "Заявок подано", value: totalApplications,     emerald: false },
-    { icon: CheckCircle2,  label: "Принято",       value: acceptedApplications,  emerald: true  },
+    { icon: GraduationCap, label: t("admin.metrics_students"),   value: totalStudents,        emerald: false },
+    { icon: ImageIcon,     label: t("admin.metrics_portfolio"),  value: studentsWithPortfolio, emerald: false },
+    { icon: Briefcase,     label: t("admin.metrics_total_apps"), value: totalApplications,     emerald: false },
+    { icon: CheckCircle2,  label: t("admin.metrics_accepted"),   value: acceptedApplications,  emerald: true  },
   ]
 
   return (
@@ -225,13 +229,16 @@ export default async function AdminDashboard() {
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="hidden sm:block object-contain" />
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
-            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Администратор</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.admin_label")}</span>
           </div>
-          <form action={signOut}>
-            <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">
-              Выйти
-            </button>
-          </form>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <form action={signOut}>
+              <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">
+                {t("nav.sign_out")}
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
@@ -239,7 +246,7 @@ export default async function AdminDashboard() {
         {/* Title */}
         <div className="mb-10 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
-          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">Административная панель</p>
+          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">{t("admin.section_label")}</p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">{collegeName}</h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
         </div>
@@ -266,7 +273,7 @@ export default async function AdminDashboard() {
             <div className="relative pl-4 mb-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-600 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-700 tracking-[0.2em] uppercase">
-                Ожидают одобрения
+                {t("admin.pending_label")}
                 <span className="ml-2 font-normal normal-case tracking-normal text-blue-600">— {pendingProfiles.length}</span>
               </p>
             </div>
@@ -308,14 +315,14 @@ export default async function AdminDashboard() {
                           </p>
                           <p className="text-[11px] text-neutral-400 mt-0.5">
                             {isEmployer
-                              ? "Работодатель"
-                              : student?.college_name ? `Студент · ${student.college_name}` : "Студент"}
+                              ? t("admin.employer_role")
+                              : student?.college_name ? `${t("admin.student_role")} · ${student.college_name}` : t("admin.student_role")}
                             <span className="mx-1.5 text-neutral-300">·</span>
                             {date}
                           </p>
                           {/* Student: photo status */}
                           {!isEmployer && !p.photo_url && (
-                            <p className="text-[10px] text-blue-600 mt-1 font-heading font-bold tracking-widest uppercase">Фото не загружено</p>
+                            <p className="text-[10px] text-blue-600 mt-1 font-heading font-bold tracking-widest uppercase">{t("admin.photo_missing")}</p>
                           )}
                         </div>
                       </div>
@@ -325,7 +332,7 @@ export default async function AdminDashboard() {
                             type="submit"
                             className="text-[11px] font-heading font-bold tracking-widest uppercase px-3 py-1.5 rounded-lg border border-neutral-200 bg-white text-neutral-500 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-all"
                           >
-                            Отклонить
+                            {t("admin.reject")}
                           </button>
                         </form>
                         <form action={approveUser.bind(null, p.user_id)}>
@@ -333,7 +340,7 @@ export default async function AdminDashboard() {
                             type="submit"
                             className="text-[11px] font-heading font-bold tracking-widest uppercase px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white border border-emerald-500 transition-all shadow-sm shadow-emerald-500/25"
                           >
-                            Одобрить
+                            {t("admin.approve")}
                           </button>
                         </form>
                       </div>
@@ -358,7 +365,7 @@ export default async function AdminDashboard() {
                       </div>
                     )}
                     {isEmployer && docs.length === 0 && (
-                      <p className="text-[10px] text-blue-600 mt-2 font-heading font-bold tracking-widest uppercase">Документы не загружены</p>
+                      <p className="text-[10px] text-blue-600 mt-2 font-heading font-bold tracking-widest uppercase">{t("admin.doc_missing")}</p>
                     )}
                   </div>
                 )
@@ -377,14 +384,14 @@ export default async function AdminDashboard() {
           <div className="relative pl-4 mb-4">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-              Студенты колледжа
+              {t("admin.students_label")}
               <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">— {totalStudents}</span>
             </p>
           </div>
 
           {students.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-200 bg-white p-8 text-center">
-              <p className="text-sm text-neutral-400">Студентов из этого колледжа не зарегистрировано</p>
+              <p className="text-sm text-neutral-400">{t("admin.no_students")}</p>
             </div>
           ) : (
             <AdminStudentsTable rows={studentRows} rosterNames={rosterNames} />
@@ -396,14 +403,14 @@ export default async function AdminDashboard() {
           <div className="relative pl-4 mb-4">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-              Заявки студентов
+              {t("admin.applications_label")}
               <span className="ml-2 font-normal normal-case tracking-normal text-neutral-400">— {totalApplications}</span>
             </p>
           </div>
 
           {applications.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-200 bg-white p-8 text-center">
-              <p className="text-sm text-neutral-400">Заявок пока нет</p>
+              <p className="text-sm text-neutral-400">{t("admin.no_apps")}</p>
             </div>
           ) : (
             <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
@@ -411,11 +418,11 @@ export default async function AdminDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-neutral-100 bg-neutral-50/60 hover:bg-neutral-50/60">
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Студент</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Место практики</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Компания</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Статус</TableHead>
-                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Дата</TableHead>
+                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_student")}</TableHead>
+                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_internship")}</TableHead>
+                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_company")}</TableHead>
+                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_status")}</TableHead>
+                    <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_date")}</TableHead>
                     <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -445,7 +452,7 @@ export default async function AdminDashboard() {
                             className="flex items-center gap-1 text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 hover:text-blue-700 transition-colors"
                           >
                             <MessageSquare className="w-3 h-3" />
-                            Переписка
+                            {t("admin.view_chat")}
                           </Link>
                         </TableCell>
                       </TableRow>

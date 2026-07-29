@@ -7,11 +7,9 @@ type ExistingReview = { rating: number; comment: string | null }
 
 export function EmployerReviewForm({
   applicationId,
-  employerId,
   existingReview,
 }: {
   applicationId: string
-  employerId: string
   existingReview: ExistingReview | null
 }) {
   const [rating, setRating] = useState(existingReview?.rating ?? 0)
@@ -24,7 +22,7 @@ export function EmployerReviewForm({
     if (!rating) return
     setSubmitting(true)
     setError("")
-    const result = await submitEmployerReview(applicationId, employerId, rating, comment)
+    const result = await submitEmployerReview(applicationId, rating, comment)
     setSubmitting(false)
     if (result.error) {
       setError(result.error)

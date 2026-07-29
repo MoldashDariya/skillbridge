@@ -105,7 +105,7 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Специальность</label>
               <Input className={inputCls} placeholder="IT technician" {...register("specialty")} />
@@ -116,7 +116,7 @@ export function CreateInternshipDialog({ employerId }: { employerId: string }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Мест</label>
               <Input className={inputCls} type="number" min={1} placeholder="3" {...register("places_count")} />

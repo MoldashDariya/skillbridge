@@ -99,7 +99,7 @@ export function CompanyProfileDialog({ employerId, initial }: Props) {
               {...register("company_description")}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Город</label>
               <Input className={inputCls} placeholder="Алматы" {...register("city")} />

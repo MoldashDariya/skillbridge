@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { ArrowLeft, Building2 } from "lucide-react"
 import { ChatThread } from "@/components/chat-thread"
@@ -85,6 +86,7 @@ export default async function StudentApplicationChat({ params }: { params: Promi
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div className="w-px h-4 bg-neutral-200" />
+          <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="object-contain shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[11px] font-heading font-bold text-blue-600 tracking-widests uppercase truncate">
               {internship?.title ?? "Место практики"}

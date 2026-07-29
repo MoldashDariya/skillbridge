@@ -40,7 +40,7 @@ export function DirectChatDialog({
 
     setLoading(true)
     setInitError("")
-    const result = await getOrCreateDirectThread(employerId, studentId)
+    const result = await getOrCreateDirectThread(studentId)
     if (result.error || !result.threadId) {
       setInitError(result.error ?? "Ошибка")
       setLoading(false)

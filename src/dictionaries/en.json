@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "brand": "SkillBridge KZ",
+    "student_label": "Student",
+    "sign_out": "Sign out"
+  },
+  "dashboard": {
+    "section_label": "Dashboard",
+    "career_readiness": "Career readiness",
+    "fill_profile": "Complete profile →",
+    "profile_complete": "Profile is fully complete",
+    "available_internships": "Available internships",
+    "no_internships_title": "No open internships yet",
+    "no_internships_desc": "Employers haven't added any internship listings yet",
+    "my_applications": "My applications",
+    "no_applications": "You haven't submitted any applications yet",
+    "interview_history": "Interview history"
+  },
+  "sections": {
+    "profile_title": "My profile",
+    "profile_desc": "Add your college, specialty, and skills",
+    "portfolio_title": "Portfolio",
+    "portfolio_desc": "Upload photos of your work",
+    "internships_title": "Internships",
+    "internships_desc": "Find the right placement and apply",
+    "simulator_title": "Interview simulator",
+    "simulator_desc": "Practice answering questions with AI feedback"
+  },
+  "readiness": {
+    "high": "High readiness",
+    "medium": "Medium readiness",
+    "low": "Low readiness",
+    "hint_photo": "Upload a profile photo",
+    "hint_portfolio": "Add works to your portfolio",
+    "hint_certificate": "Upload a certificate",
+    "hint_approval": "Awaiting administrator approval",
+    "hint_basic_fields": "Fill in your name, college, specialty, year, and phone"
+  },
+  "skilly": {
+    "name": "Skilly AI",
+    "subtitle": "Personal assistant",
+    "open_label": "Open Skilly AI",
+    "placeholder": "Type something...",
+    "redirecting": "Redirecting you...",
+    "welcome": "Hi! 👋 I'm Skilly AI, your personal assistant on the SkillBridge platform.\n\nI can help you with:\n1. **Interview preparation** 🎤 — practice interviews and train your answers\n2. **Resume creation** 📄 — generate and download a professional resume\n3. **Job search** 💼 — find internship opportunities\n\nJust write what you need and I'll redirect you to the right section or give advice! 😊"
+  },
+  "interview": {
+    "title": "Interview simulator",
+    "subtitle": "Answer training with AI feedback",
+    "specialty_placeholder": "Enter your specialty...",
+    "start": "Start simulation",
+    "next_question": "Next question",
+    "finish": "Finish",
+    "your_answer": "Your answer",
+    "score": "Score",
+    "feedback_label": "Feedback"
+  },
+  "common": {
+    "apply": "Apply",
+    "already_applied": "Already applied",
+    "download_resume": "Download resume",
+    "generating": "Generating...",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back"
+  }
+}

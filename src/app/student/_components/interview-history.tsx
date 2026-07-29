@@ -81,7 +81,7 @@ export function InterviewHistory({ simulations }: { simulations: SimRow[] }) {
                     <p className="text-xs text-neutral-600 leading-relaxed">
                       {sim.final_feedback.overall_feedback}
                     </p>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {sim.final_feedback.strengths.length > 0 && (
                         <div>
                           <p className="text-[9px] font-heading font-bold text-emerald-600 tracking-widest uppercase mb-1.5">

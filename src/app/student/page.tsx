@@ -7,6 +7,7 @@ import { StudentApplicationRow } from "./_components/application-row"
 import { InterviewHistory } from "./_components/interview-history"
 import type { SimRow } from "./_components/interview-history"
 import { ConnectTelegramButton } from "@/components/connect-telegram-button"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
 import { ResumeDownloadButton } from "./_components/resume-download-button"
 import type { Database } from "@/types/supabase"
@@ -129,27 +130,30 @@ export default async function StudentDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-neutral-200 bg-white shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
-            <span className="text-neutral-300 text-xs mx-1">·</span>
-            <span className="text-xs text-neutral-400 tracking-widest uppercase">Студент</span>
+            <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Студент</span>
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading"
-            >
-              Выйти
-            </button>
-          </form>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading"
+              >
+                Выйти
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-12 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">

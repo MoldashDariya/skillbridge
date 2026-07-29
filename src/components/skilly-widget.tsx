@@ -78,7 +78,7 @@ export function SkillyWidget() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={t("skilly.open_label")}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-4 sm:right-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95"
         style={{
           background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
           boxShadow: "0 8px 32px rgba(124, 58, 237, 0.45)",
@@ -100,7 +100,7 @@ export function SkillyWidget() {
       {/* Chat panel */}
       {open && (
         <div
-          className="fixed bottom-24 right-6 z-50 w-[360px] flex flex-col rounded-2xl overflow-hidden border"
+          className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-[360px] flex flex-col rounded-2xl overflow-hidden border"
           style={{
             background: "linear-gradient(160deg, #0d0c18 0%, #161428 100%)",
             borderColor: "rgba(255,255,255,0.08)",

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { GraduationCap, Upload, Send, Building2, BarChart3, ArrowRight } from "lucide-react"
 
 export const metadata = { title: "SkillBridge KZ — Практика для студентов колледжей Казахстана" }
@@ -15,7 +16,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-blue-400">
       {/* Nav */}
-      <nav className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+      <nav className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 bg-neutral-900 rounded-md flex items-center justify-center">
             <span className="text-blue-400 text-[9px] font-heading font-bold">SK</span>
@@ -31,7 +32,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-24">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-16 sm:pb-24">
         <div className="inline-flex items-center gap-2 border border-neutral-900/20 bg-neutral-900/8 rounded-full px-3 py-1 mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
           <span className="text-[11px] font-heading font-bold text-neutral-900 tracking-widest uppercase">
@@ -70,11 +71,19 @@ export default function HomePage() {
             Войти
           </Link>
         </div>
+
+        <div className="flex items-center gap-3 mt-10">
+          <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={52} height={52} className="object-contain drop-shadow-md" />
+          <div>
+            <p className="text-[13px] font-heading font-bold text-neutral-900">Знакомьтесь — Skilly</p>
+            <p className="text-[11px] text-neutral-900/55">Ваш AI-ассистент на платформе</p>
+          </div>
+        </div>
       </section>
 
       {/* How it works */}
       <section className="bg-white py-20">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="relative pl-4 mb-12">
             <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
@@ -103,7 +112,7 @@ export default function HomePage() {
 
       {/* Footer CTA */}
       <div className="bg-blue-400 py-14">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-heading font-extrabold text-[18px] text-neutral-900 mb-1">Готовы начать?</p>
             <p className="text-xs text-neutral-900/50">Регистрация за 2 минуты.</p>

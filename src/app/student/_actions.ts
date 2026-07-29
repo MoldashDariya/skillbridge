@@ -174,9 +174,9 @@ ${acceptedApps.map((a) => `- ${a.internships?.title ?? "Стажёр"} в ${a.in
   }
 }
 
+// employerId is derived server-side from the application; client-provided value is never accepted
 export async function submitEmployerReview(
   applicationId: string,
-  employerId: string,
   rating: number,
   comment: string
 ): Promise<{ error?: string }> {
@@ -187,9 +187,26 @@ export async function submitEmployerReview(
   const { data: student } = await supabase.from("students").select("id").eq("user_id", user.id).single()
   if (!student) return { error: "Профиль не найден" }
 
+  // IDOR prevention: verify the application belongs to this student
+  const { data: app } = await supabase
+    .from("applications")
+    .select("internship_id")
+    .eq("id", applicationId)
+    .eq("student_id", student.id)
+    .single()
+  if (!app) return { error: "Заявка не найдена" }
+
+  // Derive employerId server-side from the internship
+  const { data: internship } = await supabase
+    .from("internships")
+    .select("employer_id")
+    .eq("id", app.internship_id)
+    .single()
+  if (!internship) return { error: "Данные не найдены" }
+
   const { error } = await supabase.from("employer_reviews").insert({
     application_id: applicationId,
-    employer_id: employerId,
+    employer_id: internship.employer_id,
     student_id: student.id,
     rating,
     comment: comment.trim() || null,
@@ -216,6 +233,16 @@ export async function analyzeSkillGap(
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { status: "error", message: "Не авторизован" }
+
+  // IDOR prevention: verify the studentId belongs to the session user
+  const { data: ownStudent } = await supabase
+    .from("students")
+    .select("id")
+    .eq("user_id", user.id)
+    .single()
+  if (!ownStudent || ownStudent.id !== studentId) {
+    return { status: "error", message: "Не авторизован" }
+  }
 
   const admin = createAdminClient()
 

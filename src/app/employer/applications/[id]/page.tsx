@@ -114,7 +114,6 @@ export default async function EmployerApplicationChat({ params }: { params: Prom
           <div className="shrink-0 border-t border-neutral-100 bg-white px-4 py-4">
             <StudentReviewForm
               applicationId={id}
-              studentId={student.id}
               existingReview={existingReview}
             />
           </div>

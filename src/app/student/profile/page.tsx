@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { ProfileForm } from "./_components/profile-form"
 import { PortfolioUploader } from "./_components/portfolio-uploader"
@@ -80,12 +81,13 @@ export default async function StudentProfilePage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-neutral-200 bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
+            <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="object-contain" />
           </div>
           <Link
             href="/student"
@@ -97,7 +99,7 @@ export default async function StudentProfilePage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-10">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {/* Page title */}
         <div className="mb-10 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />

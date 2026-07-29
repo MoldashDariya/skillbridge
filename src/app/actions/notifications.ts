@@ -1,9 +1,22 @@
 "use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
+import { createClient } from "@/lib/supabase/server"
 import { sendTelegramMessage } from "@/lib/telegram"
 
 export async function notifyEmployerOnApplication(internshipId: string, studentId: string) {
+  // Auth + ownership check: prevent impersonation of another student
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  const { data: ownStudent } = await supabase
+    .from("students")
+    .select("id")
+    .eq("user_id", user.id)
+    .single()
+  if (!ownStudent || ownStudent.id !== studentId) return
+
   const db = createAdminClient()
 
   const [internshipRes, studentRes] = await Promise.all([
@@ -43,6 +56,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export async function notifyStudentOnStatusChange(applicationId: string, newStatus: string) {
+  // Auth check: only authenticated employers may trigger status-change notifications
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
   const db = createAdminClient()
 
   const { data: app } = await db
@@ -83,6 +101,11 @@ export async function notifyOnChatMessage(
   senderName: string,
   messageContent: string
 ): Promise<void> {
+  // Auth + ownership check: sender must be the authenticated user
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || user.id !== senderUserId) return
+
   const db = createAdminClient()
 
   const { data: thread } = await db

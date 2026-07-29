@@ -9,6 +9,13 @@ const ROLE_REDIRECT: Record<string, string> = {
 
 const PROTECTED_PREFIXES = ["/student", "/employer", "/admin"]
 
+// Maps each role to the ONLY prefix it may access
+const ROLE_ALLOWED_PREFIX: Record<string, string> = {
+  student: "/student",
+  employer: "/employer",
+  college_admin: "/admin",
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -57,6 +64,12 @@ export async function middleware(request: NextRequest) {
     // Pending/rejected users can't access dashboards
     if (PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
       if (status === "pending" || status === "rejected") return redirect("/pending")
+
+      // RBAC: approved users may only access their own role's prefix
+      const allowedPrefix = ROLE_ALLOWED_PREFIX[profile.role]
+      if (allowedPrefix && !pathname.startsWith(allowedPrefix)) {
+        return redirect(ROLE_REDIRECT[profile.role] ?? "/")
+      }
     }
 
     // Approved user on /pending → send to dashboard

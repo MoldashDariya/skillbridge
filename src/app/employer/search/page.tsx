@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import Image from "next/image"
 import { Users, BookmarkCheck } from "lucide-react"
 import Link from "next/link"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
@@ -115,7 +116,7 @@ export default async function EmployerSearchPage({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-neutral-200 bg-white shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/employer" className="flex items-center gap-2 group">
               <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
@@ -123,8 +124,8 @@ export default async function EmployerSearchPage({
               </div>
               <span className="text-sm font-heading font-bold tracking-wide text-neutral-900 group-hover:text-blue-700 transition-colors">SkillBridge KZ</span>
             </Link>
-            <span className="text-neutral-300 text-xs mx-1">·</span>
-            <span className="text-xs text-neutral-400 tracking-widest uppercase">Поиск студентов</span>
+            <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">Поиск студентов</span>
           </div>
           <form action={signOut}>
             <button type="submit" className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading">Выйти</button>
@@ -132,10 +133,11 @@ export default async function EmployerSearchPage({
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-10">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {/* Title */}
         <div className="mb-8 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
+          <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={32} height={32} className="object-contain mb-2" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
             {companyName}
           </p>

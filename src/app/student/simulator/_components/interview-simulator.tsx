@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { RotateCcw, CheckCircle2, XCircle, Loader2, Mic, MicOff, PhoneOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +15,27 @@ import { Conversation } from "@11labs/client"
 import type { DisconnectionDetails } from "@11labs/client"
 import { evaluateTranscript, saveSimulation } from "../_actions"
 import type { EvaluationResult } from "../_actions"
+import { useTranslation } from "@/contexts/language-context"
+import type { Locale } from "@/lib/i18n"
+
+// ── Skilly persona system prompt ──────────────────────────────────────────────
+function buildSkillyPrompt(specialty: string, language: Locale): string {
+  const base = `You are Skilly, a friendly, encouraging, and highly professional AI interviewer. You are the official mascot of the SkillBridge platform for students in Kazakhstan.
+
+Always briefly introduce yourself as Skilly at the very start of the interview. Keep a warm, supportive tone throughout, but conduct a rigorous, professional interview.
+
+You are interviewing a candidate for the position: ${specialty}
+
+Ask 5–7 technical questions relevant to this specialty. After each candidate answer, give a brief encouraging remark before moving to the next question. Conclude by warmly thanking the candidate for their time.`
+
+  if (language === "en") {
+    return `${base}\n\nCRITICAL: Conduct the ENTIRE interview STRICTLY IN ENGLISH. Never switch to any other language.`
+  }
+  if (language === "kz") {
+    return `${base}\n\nМАҢЫЗДЫ: Тұтас сұхбатты тек ҚАЗАҚ ТІЛІНДЕ жүргіз. Ешқашан тілді ауыстырма.`
+  }
+  return `${base}\n\nВАЖНО: Веди ВСЁ собеседование СТРОГО НА РУССКОМ ЯЗЫКЕ. Никогда не переходи на другой язык.`
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Phase =
@@ -165,6 +187,27 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
             transition: "background 0.6s, box-shadow 0.12s",
           }}
         />
+        {/* Skilly avatar centered on the blob, unaffected by blob deformation */}
+        <div
+          style={{
+            position: "absolute",
+            width: 88,
+            height: 88,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1,
+          }}
+        >
+          <Image
+            src="/skilly-avatar.png"
+            alt="Skilly"
+            width={88}
+            height={88}
+            className="object-contain drop-shadow-lg"
+            priority
+          />
+        </div>
       </div>
     </>
   )
@@ -179,6 +222,8 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
   const [turnCount, setTurnCount]   = useState(0)
   const [errorMsg, setErrorMsg]     = useState("")
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
+
+  const { locale } = useTranslation()
 
   const conversationRef = useRef<Conversation | null>(null)
   const transcriptRef   = useRef<TranscriptEntry[]>([])
@@ -233,7 +278,7 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       .join("\n")
 
     setPhase("evaluating")
-    const result = await evaluateTranscript(transcriptText, specialty)
+    const result = await evaluateTranscript(transcriptText, specialty, locale)
     if ("error" in result) {
       setErrorMsg(result.error)
       setPhase("error")
@@ -294,7 +339,12 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       const conv = await Conversation.startSession({
         agentId,
         connectionType: "webrtc",
-        dynamicVariables: { specialty },
+        dynamicVariables: { specialty, language: locale },
+        overrides: {
+          agent: {
+            prompt: { prompt: buildSkillyPrompt(specialty, locale) },
+          },
+        },
         onConnect: () => {
           phaseRef.current = "speaking"
           setPhase("speaking")
@@ -553,11 +603,11 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       {/* Turn counter — visible during active voice session */}
       {isActive && (
         <div className="flex items-center justify-between">
-          <div className="flex gap-1.5">
+          <div className="flex gap-1 sm:gap-1.5">
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className={`h-1.5 w-6 rounded-full transition-all duration-300 ${
+                className={`h-1.5 w-4 sm:w-6 rounded-full transition-all duration-300 ${
                   i < turnCount
                     ? "bg-blue-600"
                     : i === turnCount

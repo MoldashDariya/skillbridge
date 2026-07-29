@@ -9,20 +9,21 @@ import {
 import {
   Dialog, DialogContent, DialogTitle,
 } from "@/components/ui/dialog"
+import { useTranslation } from "@/contexts/language-context"
 
-const APP_STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
-  pending:      { label: "На рассмотрении",       cls: "text-blue-700 border-blue-300 bg-blue-50" },
-  at_interview: { label: "На собеседовании",       cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  interviewing: { label: "Проходит собеседование", cls: "text-violet-600 border-violet-300 bg-violet-50" },
-  accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  hired:        { label: "Принят",                  cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  rejected:     { label: "Отклонено",              cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
+const APP_STATUS_CONFIG: Record<string, { labelKey: string; cls: string }> = {
+  pending:      { labelKey: "admin.app_status_pending",      cls: "text-blue-700 border-blue-300 bg-blue-50" },
+  at_interview: { labelKey: "admin.app_status_at_interview", cls: "text-blue-600 border-blue-300 bg-blue-50" },
+  interviewing: { labelKey: "admin.app_status_interviewing", cls: "text-violet-600 border-violet-300 bg-violet-50" },
+  accepted:     { labelKey: "admin.app_status_accepted",     cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  hired:        { labelKey: "admin.app_status_accepted",     cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  rejected:     { labelKey: "admin.app_status_rejected",     cls: "text-neutral-500 border-neutral-200 bg-neutral-50" },
 }
 
 const CURRENT_STATUS_CONFIG = {
-  accepted:     { label: "Принят",                 cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
-  interviewing: { label: "На собеседовании",        cls: "text-blue-600 border-blue-300 bg-blue-50" },
-  searching:    { label: "Ищет практику",           cls: "text-neutral-400 border-neutral-200 bg-neutral-50" },
+  accepted:     { labelKey: "admin.current_status_accepted",     cls: "text-emerald-600 border-emerald-300 bg-emerald-50" },
+  interviewing: { labelKey: "admin.current_status_interviewing", cls: "text-blue-600 border-blue-300 bg-blue-50" },
+  searching:    { labelKey: "admin.current_status_searching",    cls: "text-neutral-400 border-neutral-200 bg-neutral-50" },
 } as const
 
 export type StudentTableRow = {
@@ -54,6 +55,7 @@ function normalizeName(s: string) {
 }
 
 export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTableRow[]; rosterNames?: string[] }) {
+  const { t } = useTranslation()
   const rosterSet = new Set(rosterNames)
   const [selected, setSelected] = useState<StudentTableRow | null>(null)
   const [gpaVerified, setGpaVerified] = useState(false)
@@ -86,11 +88,11 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-100 bg-neutral-50/60 hover:bg-neutral-50/60">
-              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Студент</TableHead>
-              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Специальность</TableHead>
-              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Курс</TableHead>
-              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Портфолио</TableHead>
-              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">Текущий статус</TableHead>
+              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.col_student")}</TableHead>
+              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.table_col_specialty")}</TableHead>
+              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.table_col_course")}</TableHead>
+              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.table_col_portfolio")}</TableHead>
+              <TableHead className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase">{t("admin.table_col_status")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,11 +112,11 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                       </span>
                       {isVerified ? (
                         <span className="text-[9px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border border-emerald-300 bg-emerald-50 text-emerald-600 shrink-0">
-                          В реестре
+                          {t("admin.roster_verified")}
                         </span>
                       ) : rosterNames.length > 0 ? (
                         <span className="text-[9px] font-heading font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border border-amber-300 bg-amber-50 text-amber-600 shrink-0">
-                          Не найден
+                          {t("admin.roster_not_found")}
                         </span>
                       ) : null}
                     </div>
@@ -123,14 +125,14 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                   <TableCell className="text-[13px] text-neutral-500">{row.courseYear ?? "—"}</TableCell>
                   <TableCell>
                     {row.hasPortfolio ? (
-                      <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-emerald-600 border border-emerald-300 bg-emerald-50 px-2 py-0.5 rounded-full">Есть</span>
+                      <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-emerald-600 border border-emerald-300 bg-emerald-50 px-2 py-0.5 rounded-full">{t("admin.portfolio_yes")}</span>
                     ) : (
-                      <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 border border-neutral-200 bg-neutral-50 px-2 py-0.5 rounded-full">Нет</span>
+                      <span className="text-[10px] font-heading font-bold tracking-widests uppercase text-neutral-400 border border-neutral-200 bg-neutral-50 px-2 py-0.5 rounded-full">{t("admin.portfolio_no")}</span>
                     )}
                   </TableCell>
                   <TableCell>
                     <span className={`text-[10px] font-heading font-bold tracking-widests uppercase px-2 py-0.5 rounded-full border ${cs.cls}`}>
-                      {cs.label}
+                      {t(cs.labelKey)}
                     </span>
                   </TableCell>
                 </TableRow>
@@ -164,7 +166,7 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                     <div className="flex items-center gap-1.5 mt-1">
                       <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
                       <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.18em] uppercase">
-                        {[selected.specialty, selected.courseYear ? `${selected.courseYear} курс` : null].filter(Boolean).join(" · ")}
+                        {[selected.specialty, selected.courseYear ? `${selected.courseYear} ${t("admin.dialog_course")}` : null].filter(Boolean).join(" · ")}
                       </p>
                     </div>
                   )}
@@ -174,14 +176,14 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
               <div className="space-y-5 pt-1">
                 {selected.bio && (
                   <div>
-                    <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-1.5">О себе</p>
+                    <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-1.5">{t("admin.dialog_about")}</p>
                     <p className="text-sm text-neutral-600 leading-relaxed">{selected.bio}</p>
                   </div>
                 )}
 
                 {selected.skills && selected.skills.length > 0 && (
                   <div>
-                    <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-1.5">Навыки</p>
+                    <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase mb-1.5">{t("admin.dialog_skills")}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {selected.skills.map((skill) => (
                         <span key={skill} className="text-[11px] font-heading font-bold text-blue-800 bg-blue-50 border border-blue-200 rounded-md px-2.5 py-1">
@@ -192,11 +194,9 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                   </div>
                 )}
 
-                {/* Passport — admin editable */}
                 <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-4">
-                  <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase">Паспорт студента</p>
+                  <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase">{t("admin.dialog_passport")}</p>
 
-                  {/* GPA + verified toggle */}
                   <div className="flex items-center gap-4 flex-wrap">
                     <div>
                       <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1">GPA</p>
@@ -213,17 +213,16 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                       </div>
                       <span className="text-xs text-neutral-600 font-heading font-bold flex items-center gap-1">
                         {gpaVerified && <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />}
-                        {gpaVerified ? "Верифицирован" : "Не верифицирован"}
+                        {gpaVerified ? t("admin.dialog_gpa_verified") : t("admin.dialog_gpa_not_verified")}
                       </span>
                       {isPending && <Loader2 className="w-3 h-3 animate-spin text-neutral-400" />}
                     </label>
                   </div>
 
-                  {/* Attendance */}
                   <div>
                     <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5 flex items-center gap-1.5">
                       <BarChart2 className="w-3 h-3" />
-                      Посещаемость (%)
+                      {t("admin.dialog_attendance")}
                     </p>
                     <div className="flex items-center gap-2">
                       <input
@@ -236,14 +235,13 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                         placeholder="0–100"
                         className="h-8 w-24 px-2.5 rounded-md border border-neutral-200 bg-white text-sm text-neutral-800 focus:outline-none focus:border-blue-400 transition-colors"
                       />
-                      {attendanceInput && <span className="text-xs text-neutral-400">Сохранится при потере фокуса</span>}
+                      {attendanceInput && <span className="text-xs text-neutral-400">{t("admin.dialog_attendance_hint")}</span>}
                     </div>
                   </div>
 
-                  {/* Links */}
                   {Object.values(selected.links).some(Boolean) && (
                     <div>
-                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">Ссылки</p>
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">{t("admin.dialog_links")}</p>
                       <div className="flex flex-wrap gap-2">
                         {[
                           { url: selected.links.github,   label: "GitHub" },
@@ -267,10 +265,9 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                     </div>
                   )}
 
-                  {/* Certificates */}
                   {selected.certificates.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">Сертификаты</p>
+                      <p className="text-[10px] font-heading font-bold text-neutral-400 tracking-widests uppercase mb-1.5">{t("admin.dialog_certificates")}</p>
                       <div className="space-y-1">
                         {selected.certificates.map(cert => (
                           <a
@@ -281,7 +278,7 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                             className="flex items-center gap-2 text-[12px] text-neutral-600 hover:text-blue-700 transition-colors"
                           >
                             <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                            {cert.title ?? "Сертификат"}
+                            {cert.title ?? t("admin.dialog_certificate_default")}
                           </a>
                         ))}
                       </div>
@@ -293,13 +290,13 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                   <div className="flex items-center gap-1.5 mb-2">
                     <Briefcase className="w-3.5 h-3.5 text-neutral-400" />
                     <p className="text-[11px] font-heading font-bold text-neutral-400 tracking-[0.18em] uppercase">
-                      История заявок
+                      {t("admin.dialog_app_history")}
                       {selected.applications.length > 0 && ` — ${selected.applications.length}`}
                     </p>
                   </div>
                   {selected.applications.length === 0 ? (
                     <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-5 text-center">
-                      <p className="text-sm text-neutral-400">Заявок нет</p>
+                      <p className="text-sm text-neutral-400">{t("admin.dialog_no_apps")}</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -315,7 +312,7 @@ export function AdminStudentsTable({ rows, rosterNames = [] }: { rows: StudentTa
                               <p className="text-[11px] text-neutral-400">{app.companyName} · {date}</p>
                             </div>
                             <span className={`shrink-0 text-[10px] font-heading font-bold tracking-widests uppercase px-2 py-0.5 rounded-full border ${badge.cls}`}>
-                              {badge.label}
+                              {t(badge.labelKey)}
                             </span>
                           </div>
                         )

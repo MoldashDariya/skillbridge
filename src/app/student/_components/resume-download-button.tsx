@@ -5,6 +5,7 @@ import { Loader2, Sparkles, CheckCircle2, AlertCircle } from "lucide-react"
 import { generateResumeData } from "../_actions"
 import type { ResumeData } from "../_actions"
 import { ResumeTemplate } from "./resume-template"
+import { useTranslation } from "@/contexts/language-context"
 
 type Phase = "idle" | "ai" | "pdf" | "done" | "error"
 
@@ -15,10 +16,13 @@ export function ResumeDownloadButton({
   studentId: string
   disabled?: boolean
 }) {
+  const { t } = useTranslation()
   const [phase, setPhase] = useState<Phase>("idle")
   const [errorMsg, setErrorMsg] = useState("")
   const [resumeData, setResumeData] = useState<ResumeData | null>(null)
   const templateRef = useRef<HTMLDivElement>(null)
+  const tRef = useRef(t)
+  tRef.current = t
 
   useEffect(() => {
     if (phase !== "pdf" || !resumeData) return
@@ -68,8 +72,8 @@ export function ResumeDownloadButton({
       } catch (err) {
         if (!cancelled) {
           setErrorMsg(
-            "Ошибка создания PDF: " +
-              (err instanceof Error ? err.message : "попробуйте ещё раз")
+            tRef.current("resume.error_pdf_prefix") +
+              (err instanceof Error ? err.message : tRef.current("resume.error_pdf_fallback"))
           )
           setPhase("error")
         }
@@ -88,7 +92,7 @@ export function ResumeDownloadButton({
 
     const result = await generateResumeData(studentId)
     if (result.error || !result.data) {
-      setErrorMsg(result.error ?? "Ошибка генерации резюме")
+      setErrorMsg(result.error ?? t("resume.error_generation"))
       setPhase("error")
       return
     }
@@ -131,7 +135,7 @@ export function ResumeDownloadButton({
               </span>
             </div>
             <p className="text-sm font-heading font-bold text-neutral-900">
-              Резюме в стиле Jake&#39;s Resume
+              {t("resume.title")}
             </p>
             <p className="text-xs text-neutral-400 mt-0.5 leading-relaxed">
               {phase === "error" ? (
@@ -140,9 +144,9 @@ export function ResumeDownloadButton({
                   {errorMsg}
                 </span>
               ) : phase === "done" ? (
-                <span className="text-emerald-600">Файл сохранён в папке Загрузки</span>
+                <span className="text-emerald-600">{t("resume.saved")}</span>
               ) : (
-                "AI составит PDF-резюме на основе вашего профиля и портфолио"
+                t("resume.subtitle")
               )}
             </p>
           </div>
@@ -155,22 +159,22 @@ export function ResumeDownloadButton({
             {phase === "done" ? (
               <>
                 <CheckCircle2 className="w-4 h-4" />
-                Готово!
+                {t("resume.btn_done")}
               </>
             ) : phase === "ai" ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                AI генерирует...
+                {t("resume.btn_generating")}
               </>
             ) : phase === "pdf" ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Создание PDF...
+                {t("resume.btn_creating")}
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Скачать PDF
+                {t("resume.btn_download")}
               </>
             )}
           </button>
@@ -181,7 +185,7 @@ export function ResumeDownloadButton({
             onClick={() => setPhase("idle")}
             className="mt-2 text-[11px] text-neutral-400 hover:text-neutral-600 font-heading font-bold tracking-widest uppercase transition-colors"
           >
-            Попробовать снова
+            {t("resume.retry")}
           </button>
         )}
       </div>

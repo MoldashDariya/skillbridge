@@ -9,25 +9,19 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CertificateUploader } from "./certificate-uploader"
+import { useTranslation } from "@/contexts/language-context"
 import type { Database } from "@/types/supabase"
 
 type Certificate = Database["public"]["Tables"]["student_certificates"]["Row"]
 
-const urlOrEmpty = z.string().refine(
-  v => v === "" || /^https?:\/\/.+/.test(v),
-  { message: "Введите корректный URL (https://...)" }
-)
-
-const schema = z.object({
-  gpa: z.string().optional(),
-  github_url: urlOrEmpty.optional(),
-  linkedin_url: urlOrEmpty.optional(),
-  behance_url: urlOrEmpty.optional(),
-  dribbble_url: urlOrEmpty.optional(),
-  figma_url: urlOrEmpty.optional(),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = {
+  gpa?: string
+  github_url?: string
+  linkedin_url?: string
+  behance_url?: string
+  dribbble_url?: string
+  figma_url?: string
+}
 
 type ReviewRow = {
   id: string
@@ -57,8 +51,25 @@ const LINK_FIELDS = [
 ]
 
 export function PassportSection({ userId, studentId, initial, certificates, reviews }: Props) {
+  const { t, locale } = useTranslation()
   const [saved, setSaved] = useState(false)
   const [serverError, setServerError] = useState("")
+
+  const localeCode = locale === "ru" ? "ru-RU" : locale === "kz" ? "kk-KZ" : "en-US"
+
+  const urlOrEmpty = z.string().refine(
+    v => v === "" || /^https?:\/\/.+/.test(v),
+    { message: t("profile.url_invalid") }
+  )
+
+  const schema = z.object({
+    gpa: z.string().optional(),
+    github_url: urlOrEmpty.optional(),
+    linkedin_url: urlOrEmpty.optional(),
+    behance_url: urlOrEmpty.optional(),
+    dribbble_url: urlOrEmpty.optional(),
+    figma_url: urlOrEmpty.optional(),
+  })
 
   const {
     register,
@@ -105,12 +116,12 @@ export function PassportSection({ userId, studentId, initial, certificates, revi
             placeholder="4.50"
             {...register("gpa")}
           />
-          <p className="text-[11px] text-neutral-400 mt-1">Шкала 0.00 — 5.00</p>
+          <p className="text-[11px] text-neutral-400 mt-1">{t("profile.gpa_scale")}</p>
         </div>
 
         {/* External links */}
         <div className="border-t border-neutral-100 pt-5">
-          <p className={`${labelCls} mb-3`}>Внешние ссылки</p>
+          <p className={`${labelCls} mb-3`}>{t("profile.links_label")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {LINK_FIELDS.map(({ name, label, placeholder }) => (
               <div key={name}>
@@ -137,13 +148,13 @@ export function PassportSection({ userId, studentId, initial, certificates, revi
             className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widests uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/25"
           >
             {isSubmitting
-              ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Сохранение...</>
-              : "Сохранить"}
+              ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{t("profile.saving")}</>
+              : t("common.save")}
           </Button>
           {saved && (
             <span className="flex items-center gap-1 text-xs text-emerald-600 font-heading font-bold tracking-widests uppercase animate-fade-in">
               <Check className="w-3.5 h-3.5" />
-              Сохранено
+              {t("profile.saved")}
             </span>
           )}
         </div>
@@ -151,20 +162,20 @@ export function PassportSection({ userId, studentId, initial, certificates, revi
 
       {/* Certificates */}
       <div className="border-t border-neutral-100 pt-5">
-        <p className={`${labelCls} mb-3`}>Сертификаты</p>
+        <p className={`${labelCls} mb-3`}>{t("profile.certificates_label")}</p>
         <CertificateUploader userId={userId} studentId={studentId} items={certificates} />
       </div>
 
       {/* Employer reviews */}
       {reviews.length > 0 && (
         <div className="border-t border-neutral-100 pt-5">
-          <p className={`${labelCls} mb-3`}>Отзывы работодателей</p>
+          <p className={`${labelCls} mb-3`}>{t("profile.reviews_label")}</p>
           <div className="space-y-3">
             {reviews.map((review) => (
               <div key={review.id} className="rounded-xl border border-neutral-100 bg-neutral-50 p-4 space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-heading font-bold text-neutral-700">
-                    {review.employers?.company_name ?? "Компания"}
+                    {review.employers?.company_name ?? t("profile.company_fallback")}
                   </span>
                   <div className="flex gap-0.5">
                     {[1, 2, 3, 4, 5].map((s) => (
@@ -177,7 +188,7 @@ export function PassportSection({ userId, studentId, initial, certificates, revi
                 )}
                 {review.created_at && (
                   <p className="text-[11px] text-neutral-400">
-                    {new Date(review.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+                    {new Date(review.created_at).toLocaleDateString(localeCode, { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                 )}
               </div>

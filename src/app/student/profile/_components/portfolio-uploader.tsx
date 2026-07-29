@@ -9,15 +9,15 @@ import { Upload, Loader2, Trash2, ImageOff, X, ChevronLeft, ChevronRight, Video,
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/contexts/language-context"
 import type { Database } from "@/types/supabase"
 
 type PortfolioItem = Database["public"]["Tables"]["portfolio_items"]["Row"]
 
-const schema = z.object({
-  title: z.string().min(1, "Укажите название"),
-  description: z.string().optional(),
-})
-type FormValues = z.infer<typeof schema>
+type FormValues = {
+  title: string
+  description?: string
+}
 
 const inputCls =
   "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
@@ -35,6 +35,7 @@ function isVideo(item: PortfolioItem) {
 }
 
 export function PortfolioUploader({ userId, studentId, items: initialItems }: Props) {
+  const { t } = useTranslation()
   const [items, setItems] = useState(initialItems)
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -49,6 +50,11 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
   const prevItem = useCallback(() => setLightboxIndex(i => i !== null ? (i - 1 + items.length) % items.length : null), [items.length])
   const nextItem = useCallback(() => setLightboxIndex(i => i !== null ? (i + 1) % items.length : null), [items.length])
+
+  const schema = z.object({
+    title: z.string().min(1, t("profile.portfolio_title_required")),
+    description: z.string().optional(),
+  })
 
   const {
     register,
@@ -78,7 +84,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
   }
 
   async function onSubmit(values: FormValues) {
-    if (!file) { setUploadError("Выберите файл"); return }
+    if (!file) { setUploadError(t("profile.error_select_file")); return }
     setUploadError("")
     const supabase = createClient()
 
@@ -142,7 +148,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
       {/* Upload form */}
       <form onSubmit={handleSubmit(onSubmit)} className="rounded-xl border border-dashed border-blue-300 bg-blue-50/40 p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-[11px] font-heading font-bold tracking-widest text-blue-700 uppercase">Добавить работу</p>
+          <p className="text-[11px] font-heading font-bold tracking-widest text-blue-700 uppercase">{t("profile.portfolio_add")}</p>
           {/* Image / Video toggle */}
           <div className="flex rounded-lg border border-neutral-200 bg-white overflow-hidden">
             <button
@@ -150,14 +156,14 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
               onClick={() => switchMode("image")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "image" ? "bg-blue-600 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
             >
-              <Image className="w-3 h-3" />Фото
+              <Image className="w-3 h-3" />{t("profile.portfolio_photo")}
             </button>
             <button
               type="button"
               onClick={() => switchMode("video")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-heading font-bold tracking-widests uppercase transition-colors ${uploadMode === "video" ? "bg-blue-600 text-white" : "text-neutral-400 hover:text-neutral-600"}`}
             >
-              <Video className="w-3 h-3" />Видео
+              <Video className="w-3 h-3" />{t("profile.portfolio_video")}
             </button>
           </div>
         </div>
@@ -177,7 +183,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
             <div className="h-32 flex flex-col items-center justify-center gap-2 text-neutral-400 hover:text-blue-600 transition-colors">
               {uploadMode === "video" ? <Video className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
               <span className="text-xs font-heading tracking-widests uppercase">
-                {uploadMode === "video" ? "Выберите видео (MP4, WebM)" : "Выберите изображение"}
+                {uploadMode === "video" ? t("profile.portfolio_select_video") : t("profile.portfolio_select_image")}
               </span>
             </div>
           )}
@@ -186,13 +192,13 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>Название *</label>
-            <Input className={inputCls} placeholder="Мой проект" {...register("title")} />
+            <label className={labelCls}>{t("profile.portfolio_field_title")}</label>
+            <Input className={inputCls} placeholder={t("profile.portfolio_title_placeholder")} {...register("title")} />
             {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
           </div>
           <div>
-            <label className={labelCls}>Описание</label>
-            <Input className={inputCls} placeholder="Коротко о работе" {...register("description")} />
+            <label className={labelCls}>{t("profile.portfolio_field_desc")}</label>
+            <Input className={inputCls} placeholder={t("profile.portfolio_desc_placeholder")} {...register("description")} />
           </div>
         </div>
 
@@ -206,9 +212,9 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
           className="h-9 px-5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-heading font-bold text-xs tracking-widests uppercase shadow-sm shadow-blue-600/25 transition-all"
         >
           {isSubmitting ? (
-            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Загрузка...</>
+            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{t("profile.uploading")}</>
           ) : (
-            <><Upload className="w-3.5 h-3.5 mr-1.5" />Загрузить</>
+            <><Upload className="w-3.5 h-3.5 mr-1.5" />{t("profile.upload_btn")}</>
           )}
         </Button>
       </form>
@@ -219,7 +225,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
           <div className="w-10 h-10 rounded-lg bg-neutral-50 border border-neutral-200 flex items-center justify-center mx-auto mb-3">
             <ImageOff className="w-5 h-5 text-neutral-300" />
           </div>
-          <p className="text-sm text-neutral-400">Пока нет загруженных работ</p>
+          <p className="text-sm text-neutral-400">{t("profile.portfolio_empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -254,7 +260,7 @@ export function PortfolioUploader({ userId, studentId, items: initialItems }: Pr
                 {vid && (
                   <div className="absolute top-2 left-2 bg-black/50 rounded-md px-1.5 py-0.5 flex items-center gap-1 pointer-events-none">
                     <Video className="w-2.5 h-2.5 text-white" />
-                    <span className="text-[9px] text-white font-heading font-bold uppercase">Видео</span>
+                    <span className="text-[9px] text-white font-heading font-bold uppercase">{t("profile.portfolio_video_badge")}</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-start justify-end p-3 pointer-events-none">

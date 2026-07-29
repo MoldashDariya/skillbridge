@@ -16,14 +16,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useTranslation } from "@/contexts/language-context"
 
-const schema = z.object({
-  company_description: z.string().optional(),
-  city: z.string().optional(),
-  contact_email: z.string().email("Некорректный email").optional().or(z.literal("")),
-  contact_phone: z.string().optional(),
-})
-type FormValues = z.infer<typeof schema>
+type FormValues = {
+  company_description?: string
+  city?: string
+  contact_email?: string
+  contact_phone?: string
+}
 
 const inputCls =
   "h-10 bg-white border-neutral-200 hover:border-neutral-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20 rounded-md text-[14px] placeholder:text-neutral-400 transition-colors shadow-sm"
@@ -41,9 +41,17 @@ type Props = {
 }
 
 export function CompanyProfileDialog({ employerId, initial }: Props) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [serverError, setServerError] = useState("")
   const router = useRouter()
+
+  const schema = z.object({
+    company_description: z.string().optional(),
+    city: z.string().optional(),
+    contact_email: z.string().email(t("employer.dialog_email_invalid") || "Invalid email").optional().or(z.literal("")),
+    contact_phone: z.string().optional(),
+  })
 
   const {
     register,
@@ -81,31 +89,31 @@ export function CompanyProfileDialog({ employerId, initial }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="inline-flex items-center gap-1.5 text-[11px] font-heading font-bold tracking-widest uppercase text-blue-700 hover:text-blue-600 transition-colors">
-          <Pencil className="w-3 h-3" /> Редактировать
+          <Pencil className="w-3 h-3" /> {t("employer.edit_btn")}
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading font-extrabold text-[17px] text-neutral-900">
-            Профиль компании
+            {t("employer.company_profile")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
           <div>
-            <label className={labelCls}>О компании</label>
+            <label className={labelCls}>{t("employer.dialog_about_company")}</label>
             <textarea
               className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 shadow-sm transition-colors"
-              placeholder="Коротко о вашей компании..."
+              placeholder={t("employer.dialog_about_placeholder")}
               {...register("company_description")}
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>Город</label>
+              <label className={labelCls}>{t("employer.dialog_field_city")}</label>
               <Input className={inputCls} placeholder="Алматы" {...register("city")} />
             </div>
             <div>
-              <label className={labelCls}>Телефон</label>
+              <label className={labelCls}>{t("employer.dialog_field_phone")}</label>
               <Input className={inputCls} placeholder="+7 701 000 00 00" {...register("contact_phone")} />
             </div>
           </div>
@@ -135,9 +143,9 @@ export function CompanyProfileDialog({ employerId, initial }: Props) {
               className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widest uppercase shadow-sm shadow-blue-600/25 transition-all"
             >
               {isSubmitting ? (
-                <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Сохранение...</>
+                <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{t("employer.dialog_saving")}</>
               ) : (
-                <><Check className="w-3.5 h-3.5 mr-1.5" />Сохранить</>
+                <><Check className="w-3.5 h-3.5 mr-1.5" />{t("common.save")}</>
               )}
             </Button>
           </div>

@@ -5,6 +5,7 @@ import { Upload, Loader2, Trash2, FileText, ExternalLink } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/contexts/language-context"
 import type { Database } from "@/types/supabase"
 
 type Certificate = Database["public"]["Tables"]["student_certificates"]["Row"]
@@ -19,6 +20,9 @@ const inputCls = "h-10 bg-white border-neutral-200 hover:border-neutral-300 focu
 const labelCls = "block text-[11px] font-heading font-bold tracking-[0.18em] text-neutral-500 uppercase mb-1.5"
 
 export function CertificateUploader({ userId, studentId, items: initialItems }: Props) {
+  const { t, locale } = useTranslation()
+  const localeCode = locale === "ru" ? "ru-RU" : locale === "kz" ? "kk-KZ" : "en-US"
+
   const [items, setItems] = useState(initialItems)
   const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState("")
@@ -33,7 +37,7 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
   }
 
   async function handleUpload() {
-    if (!file) { setError("Выберите файл"); return }
+    if (!file) { setError(t("profile.error_select_file")); return }
     setUploading(true)
     setError("")
     const supabase = createClient()
@@ -80,25 +84,25 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-dashed border-blue-300 bg-blue-50/40 p-4 space-y-3">
-        <p className="text-[11px] font-heading font-bold tracking-widests text-blue-700 uppercase">Добавить сертификат</p>
+        <p className="text-[11px] font-heading font-bold tracking-widests text-blue-700 uppercase">{t("profile.cert_add")}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>Название</label>
+            <label className={labelCls}>{t("profile.cert_field_title")}</label>
             <Input
               className={inputCls}
-              placeholder="Сертификат по Python"
+              placeholder={t("profile.cert_placeholder_title")}
               value={title}
               onChange={e => setTitle(e.target.value)}
             />
           </div>
           <div>
-            <label className={labelCls}>Файл (PDF, JPG, PNG)</label>
+            <label className={labelCls}>{t("profile.cert_field_file")}</label>
             <div
               onClick={() => fileRef.current?.click()}
               className="h-10 cursor-pointer flex items-center gap-2 px-3 rounded-md border border-neutral-200 bg-white hover:border-blue-400 transition-colors text-[14px] text-neutral-400 shadow-sm"
             >
               <Upload className="w-4 h-4 shrink-0" />
-              <span className="truncate">{file ? file.name : "Выберите файл..."}</span>
+              <span className="truncate">{file ? file.name : t("profile.cert_select_file")}</span>
             </div>
             <input
               ref={fileRef}
@@ -119,8 +123,8 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
           className="h-9 px-5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-heading font-bold text-xs tracking-widests uppercase shadow-sm shadow-blue-600/25"
         >
           {uploading
-            ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Загрузка...</>
-            : <><Upload className="w-3.5 h-3.5 mr-1.5" />Загрузить</>}
+            ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{t("profile.uploading")}</>
+            : <><Upload className="w-3.5 h-3.5 mr-1.5" />{t("profile.upload_btn")}</>}
         </Button>
       </div>
 
@@ -131,10 +135,10 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
               <div className="flex items-center gap-2 min-w-0">
                 <FileText className="w-4 h-4 text-blue-400 shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-[13px] font-heading font-bold text-neutral-800 truncate">{cert.title ?? "Сертификат"}</p>
+                  <p className="text-[13px] font-heading font-bold text-neutral-800 truncate">{cert.title ?? t("profile.cert_default_title")}</p>
                   {cert.created_at && (
                     <p className="text-[11px] text-neutral-400">
-                      {new Date(cert.created_at).toLocaleDateString("ru-RU", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(cert.created_at).toLocaleDateString(localeCode, { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   )}
                 </div>
@@ -147,7 +151,7 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
                   className="text-[10px] font-heading font-bold tracking-widests uppercase text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1"
                 >
                   <ExternalLink className="w-3 h-3" />
-                  Открыть
+                  {t("profile.cert_open")}
                 </a>
                 <button
                   onClick={() => handleDelete(cert)}
@@ -164,7 +168,7 @@ export function CertificateUploader({ userId, studentId, items: initialItems }: 
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-neutral-200 bg-white p-6 text-center">
-          <p className="text-sm text-neutral-400">Нет загруженных сертификатов</p>
+          <p className="text-sm text-neutral-400">{t("profile.cert_empty")}</p>
         </div>
       )}
     </div>

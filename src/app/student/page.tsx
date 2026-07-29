@@ -101,16 +101,6 @@ export default async function StudentDashboard() {
     profile.first_name && profile.last_name && profile.phone &&
     student?.college_name && student?.specialty && student?.course_year
   )
-  const t = await getPageT()
-
-  const readiness = calculateProfileReadiness({
-    photoUrl: profile.photo_url,
-    hasPortfolio: (portfolioCountRes.count ?? 0) > 0,
-    hasCertificates: (certCountRes.count ?? 0) > 0,
-    isApproved: profile.approval_status === "approved",
-    hasBasicFields,
-    t,
-  })
 
   async function signOut() {
     "use server"
@@ -119,16 +109,27 @@ export default async function StudentDashboard() {
     redirect("/auth")
   }
 
+  const pt = await getPageT()
+
+  const readiness = calculateProfileReadiness({
+    photoUrl: profile.photo_url,
+    hasPortfolio: (portfolioCountRes.count ?? 0) > 0,
+    hasCertificates: (certCountRes.count ?? 0) > 0,
+    isApproved: profile.approval_status === "approved",
+    hasBasicFields,
+    t: pt,
+  })
+
   const name =
     profile.first_name && profile.last_name
       ? `${profile.first_name} ${profile.last_name}`
       : null
 
   const SECTIONS = [
-    { icon: BookOpen, title: t("sections.profile_title"), desc: t("sections.profile_desc"), href: "/student/profile" },
-    { icon: LayoutGrid, title: t("sections.portfolio_title"), desc: t("sections.portfolio_desc"), href: "/student/profile" },
-    { icon: Briefcase, title: t("sections.internships_title"), desc: t("sections.internships_desc"), href: "#internships" },
-    { icon: Mic, title: t("sections.simulator_title"), desc: t("sections.simulator_desc"), href: "/student/simulator" },
+    { icon: BookOpen, title: pt("sections.profile_title"), desc: pt("sections.profile_desc"), href: "/student/profile" },
+    { icon: LayoutGrid, title: pt("sections.portfolio_title"), desc: pt("sections.portfolio_desc"), href: "/student/profile" },
+    { icon: Briefcase, title: pt("sections.internships_title"), desc: pt("sections.internships_desc"), href: "#internships" },
+    { icon: Mic, title: pt("sections.simulator_title"), desc: pt("sections.simulator_desc"), href: "/student/simulator" },
   ]
 
   return (
@@ -141,7 +142,7 @@ export default async function StudentDashboard() {
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
-            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.student_label")}</span>
+            <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{pt("nav.student_label")}</span>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
@@ -150,7 +151,7 @@ export default async function StudentDashboard() {
                 type="submit"
                 className="text-xs text-neutral-400 hover:text-neutral-700 transition-colors tracking-widest uppercase font-heading"
               >
-                {t("nav.sign_out")}
+                {pt("nav.sign_out")}
               </button>
             </form>
           </div>
@@ -161,10 +162,10 @@ export default async function StudentDashboard() {
         <div className="mb-12 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-2">
-            {t("dashboard.section_label")}
+            {pt("dashboard.section_label")}
           </p>
           <h1 className="text-3xl font-heading font-extrabold leading-tight text-neutral-900">
-            {name ?? t("dashboard.section_label")}
+            {name ?? pt("dashboard.section_label")}
           </h1>
           <p className="text-sm text-neutral-400 mt-1">{user.email}</p>
           {profile && (
@@ -181,7 +182,7 @@ export default async function StudentDashboard() {
               <div className="relative pl-4">
                 <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-600 rounded-full" />
                 <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                  {t("dashboard.career_readiness")}
+                  {pt("dashboard.career_readiness")}
                 </p>
               </div>
               <span className={`text-[11px] font-heading font-bold tracking-widests uppercase px-3 py-1 rounded-full border ${readiness.labelCls}`}>
@@ -210,7 +211,7 @@ export default async function StudentDashboard() {
             {readiness.missing.length === 0 ? (
               <p className="text-xs text-emerald-600 font-heading font-bold tracking-widests uppercase flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                {t("dashboard.profile_complete")}
+                {pt("dashboard.profile_complete")}
               </p>
             ) : (
               <div className="space-y-1.5">
@@ -227,7 +228,7 @@ export default async function StudentDashboard() {
               href="/student/profile"
               className="inline-block mt-3 text-[11px] font-heading font-bold tracking-widests text-blue-600 hover:text-blue-800 uppercase transition-colors"
             >
-              {t("dashboard.fill_profile")}
+              {pt("dashboard.fill_profile")}
             </Link>
           </div>
         </section>
@@ -262,10 +263,10 @@ export default async function StudentDashboard() {
             <div className="relative pl-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                {t("dashboard.available_internships")}
+                {pt("dashboard.available_internships")}
               </p>
               {internships.length > 0 && (
-                <p className="text-xs text-neutral-400 mt-0.5">{internships.length} открытых позиций</p>
+                <p className="text-xs text-neutral-400 mt-0.5">{internships.length} {pt("dashboard.open_positions")}</p>
               )}
             </div>
           </div>
@@ -275,8 +276,8 @@ export default async function StudentDashboard() {
               <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-3">
                 <FileText className="w-5 h-5 text-blue-400" />
               </div>
-              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">{t("dashboard.no_internships_title")}</p>
-              <p className="text-xs text-neutral-400">{t("dashboard.no_internships_desc")}</p>
+              <p className="font-heading font-bold text-[15px] mb-1 text-neutral-500">{pt("dashboard.no_internships_title")}</p>
+              <p className="text-xs text-neutral-400">{pt("dashboard.no_internships_desc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -304,19 +305,19 @@ export default async function StudentDashboard() {
           <div className="relative pl-4 mb-5">
             <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
             <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-              {t("dashboard.my_applications")}
+              {pt("dashboard.my_applications")}
             </p>
             {applications.length > 0 && (
               <p className="text-xs text-neutral-400 mt-0.5">
                 {applications.length}{" "}
-                {applications.length === 1 ? "заявка" : applications.length < 5 ? "заявки" : "заявок"}
+                {applications.length === 1 ? pt("dashboard.applications_one") : applications.length < 5 ? pt("dashboard.applications_few") : pt("dashboard.applications_many")}
               </p>
             )}
           </div>
 
           {applications.length === 0 ? (
             <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-8 text-center">
-              <p className="text-sm text-neutral-400">{t("dashboard.no_applications")}</p>
+              <p className="text-sm text-neutral-400">{pt("dashboard.no_applications")}</p>
             </div>
           ) : (
             <div className="rounded-xl border border-neutral-200 bg-white px-5 shadow-sm">
@@ -325,7 +326,7 @@ export default async function StudentDashboard() {
                   key={item.id}
                   item={item}
                   currentUserId={user.id}
-                  currentUserName={name ?? user.email ?? "Студент"}
+                  currentUserName={name ?? user.email ?? pt("nav.student_label")}
                 />
               ))}
             </div>
@@ -338,12 +339,12 @@ export default async function StudentDashboard() {
             <div className="relative pl-4">
               <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
               <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-                {t("dashboard.interview_history")}
+                {pt("dashboard.interview_history")}
               </p>
               {simulations.length > 0 && (
                 <p className="text-xs text-neutral-400 mt-0.5">
                   {simulations.length}{" "}
-                  {simulations.length === 1 ? "сессия" : simulations.length < 5 ? "сессии" : "сессий"}
+                  {simulations.length === 1 ? pt("dashboard.sessions_one") : simulations.length < 5 ? pt("dashboard.sessions_few") : pt("dashboard.sessions_many")}
                 </p>
               )}
             </div>

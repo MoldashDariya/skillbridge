@@ -7,6 +7,8 @@ import { ProfileForm } from "./_components/profile-form"
 import { PortfolioUploader } from "./_components/portfolio-uploader"
 import { PassportSection } from "./_components/passport-section"
 import type { Database } from "@/types/supabase"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { getPageT } from "@/lib/get-page-t"
 
 export const metadata = { title: "Профиль — SkillBridge KZ" }
 
@@ -77,9 +79,10 @@ export default async function StudentProfilePage() {
     figma_url: student.figma_url ?? "",
   }
 
+  const t = await getPageT()
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-neutral-200 bg-white shadow-sm">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -89,34 +92,35 @@ export default async function StudentProfilePage() {
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="object-contain" />
           </div>
-          <Link
-            href="/student"
-            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-700 transition-colors font-heading tracking-widest uppercase"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Назад
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <Link
+              href="/student"
+              className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-700 transition-colors font-heading tracking-widest uppercase"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              {t("common.back")}
+            </Link>
+          </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        {/* Page title */}
         <div className="mb-10 stagger-1 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
-            Личный кабинет
+            {t("dashboard.section_label")}
           </p>
           <h1 className="text-2xl font-heading font-extrabold leading-tight text-neutral-900">
-            Мой профиль
+            {t("sections.profile_title")}
           </h1>
           <p className="text-sm text-neutral-400 mt-0.5">{user.email}</p>
         </div>
 
-        {/* Profile form */}
         <section className="stagger-2 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
-            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Личные данные</h2>
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">{t("profile.personal_data")}</h2>
           </div>
           <ProfileForm
             userId={user.id}
@@ -125,13 +129,12 @@ export default async function StudentProfilePage() {
           />
         </section>
 
-        {/* Portfolio */}
         <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
-            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Портфолио</h2>
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">{t("sections.portfolio_title")}</h2>
             {portfolioItems.length > 0 && (
-              <span className="ml-auto text-xs text-neutral-400">{portfolioItems.length} работ</span>
+              <span className="ml-auto text-xs text-neutral-400">{portfolioItems.length} {t("profile.portfolio_works")}</span>
             )}
           </div>
           <PortfolioUploader
@@ -141,11 +144,10 @@ export default async function StudentProfilePage() {
           />
         </section>
 
-        {/* Passport */}
         <section className="stagger-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
-            <h2 className="font-heading font-bold text-[16px] text-neutral-900">Паспорт студента</h2>
+            <h2 className="font-heading font-bold text-[16px] text-neutral-900">{t("profile.passport_title")}</h2>
           </div>
           <PassportSection
             userId={user.id}

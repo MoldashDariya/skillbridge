@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import Papa from "papaparse"
 import { Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
 import { uploadCollegeRoster } from "../_actions"
+import { useTranslation } from "@/contexts/language-context"
 
 type Status =
   | { type: "idle" }
@@ -12,12 +13,13 @@ type Status =
   | { type: "error"; message: string }
 
 export function CsvRosterUpload() {
+  const { t } = useTranslation()
   const [status, setStatus] = useState<Status>({ type: "idle" })
   const inputRef = useRef<HTMLInputElement>(null)
 
   function processFile(file: File) {
     if (!file.name.toLowerCase().endsWith(".csv")) {
-      setStatus({ type: "error", message: "Выберите файл в формате .csv" })
+      setStatus({ type: "error", message: t("admin.csv_error_format") })
       return
     }
     setStatus({ type: "loading" })
@@ -27,7 +29,7 @@ export function CsvRosterUpload() {
       skipEmptyLines: true,
       complete: async (result) => {
         if (result.data.length === 0) {
-          setStatus({ type: "error", message: "CSV файл пустой или не содержит данных" })
+          setStatus({ type: "error", message: t("admin.csv_error_empty") })
           return
         }
         const res = await uploadCollegeRoster(result.data)
@@ -38,7 +40,7 @@ export function CsvRosterUpload() {
         }
       },
       error: (err) => {
-        setStatus({ type: "error", message: "Ошибка чтения файла: " + err.message })
+        setStatus({ type: "error", message: t("admin.csv_error_read_prefix") + err.message })
       },
     })
   }
@@ -48,10 +50,10 @@ export function CsvRosterUpload() {
       <div className="relative pl-4 mb-4">
         <div className="absolute left-0 top-0.5 bottom-0.5 w-[3px] bg-blue-400 rounded-full" />
         <p className="text-[11px] font-heading font-bold text-neutral-500 tracking-[0.2em] uppercase">
-          Реестр студентов
+          {t("admin.csv_title")}
         </p>
         <p className="text-xs text-neutral-400 mt-0.5">
-          Загрузите CSV для верификации зарегистрированных студентов
+          {t("admin.csv_subtitle")}
         </p>
       </div>
 
@@ -68,11 +70,11 @@ export function CsvRosterUpload() {
 
         <div className="text-center">
           {status.type === "loading" && (
-            <p className="text-xs text-neutral-500 font-heading font-bold">Обработка...</p>
+            <p className="text-xs text-neutral-500 font-heading font-bold">{t("admin.csv_processing")}</p>
           )}
           {status.type === "success" && (
             <p className="text-xs text-emerald-600 font-heading font-bold">
-              Загружено {status.count} записей — страница обновлена
+              {t("admin.csv_success_prefix")} {status.count} {t("admin.csv_success_suffix")}
             </p>
           )}
           {status.type === "error" && (
@@ -83,11 +85,11 @@ export function CsvRosterUpload() {
           {status.type === "idle" && (
             <>
               <p className="text-xs text-neutral-500 font-heading font-bold">
-                Перетащите .csv или{" "}
-                <span className="text-blue-600">нажмите для выбора</span>
+                {t("admin.csv_drop")}{" "}
+                <span className="text-blue-600">{t("admin.csv_click")}</span>
               </p>
               <p className="text-[10px] text-neutral-400 mt-1">
-                Любой формат колонок — AI автоматически определит структуру
+                {t("admin.csv_hint")}
               </p>
             </>
           )}
@@ -112,7 +114,7 @@ export function CsvRosterUpload() {
           onClick={() => setStatus({ type: "idle" })}
           className="mt-2 text-[11px] text-neutral-400 hover:text-neutral-600 font-heading font-bold tracking-widest uppercase transition-colors"
         >
-          Загрузить другой файл
+          {t("admin.csv_upload_another")}
         </button>
       )}
     </div>

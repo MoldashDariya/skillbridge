@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTranslation } from "@/contexts/language-context"
 
 const COLLEGES = [
   "Талгарский Политехнический",
@@ -23,19 +24,17 @@ const COLLEGES = [
   "Шелекский политехнический колледж",
 ] as const
 
-const schema = z.object({
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
-  phone: z.string().optional(),
-  city: z.string().optional(),
-  college_name: z.string().min(1, "Укажите колледж"),
-  specialty: z.string().optional(),
-  course_year: z.string().optional(),
-  bio: z.string().optional(),
-  skills: z.string().optional(),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = {
+  first_name?: string
+  last_name?: string
+  phone?: string
+  city?: string
+  college_name: string
+  specialty?: string
+  course_year?: string
+  bio?: string
+  skills?: string
+}
 
 type Props = {
   userId: string
@@ -49,9 +48,22 @@ const labelCls =
   "block text-[11px] font-heading font-bold tracking-[0.18em] text-neutral-500 uppercase mb-1.5"
 
 export function ProfileForm({ userId, studentId, initial }: Props) {
+  const { t } = useTranslation()
   const [saved, setSaved] = useState(false)
   const [serverError, setServerError] = useState("")
   const router = useRouter()
+
+  const schema = z.object({
+    first_name: z.string().optional(),
+    last_name: z.string().optional(),
+    phone: z.string().optional(),
+    city: z.string().optional(),
+    college_name: z.string().min(1, t("profile.college_required")),
+    specialty: z.string().optional(),
+    course_year: z.string().optional(),
+    bio: z.string().optional(),
+    skills: z.string().optional(),
+  })
 
   const {
     register,
@@ -99,7 +111,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
     ])
 
     if (profileRes.error || studentRes.error) {
-      setServerError(profileRes.error?.message ?? studentRes.error?.message ?? "Ошибка сохранения")
+      setServerError(profileRes.error?.message ?? studentRes.error?.message ?? t("profile.error_save"))
       return
     }
 
@@ -113,19 +125,19 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
       {/* Personal */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelCls}>Имя</label>
+          <label className={labelCls}>{t("profile.field_first_name")}</label>
           <Input className={inputCls} placeholder="Дарын" {...register("first_name")} />
         </div>
         <div>
-          <label className={labelCls}>Фамилия</label>
+          <label className={labelCls}>{t("profile.field_last_name")}</label>
           <Input className={inputCls} placeholder="Молдаш" {...register("last_name")} />
         </div>
         <div>
-          <label className={labelCls}>Телефон</label>
+          <label className={labelCls}>{t("profile.field_phone")}</label>
           <Input className={inputCls} placeholder="+7 701 000 00 00" {...register("phone")} />
         </div>
         <div>
-          <label className={labelCls}>Город</label>
+          <label className={labelCls}>{t("profile.field_city")}</label>
           <Input className={inputCls} placeholder="Талгар" {...register("city")} />
         </div>
       </div>
@@ -133,7 +145,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
       <div className="border-t border-neutral-100 pt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelCls}>
-            Колледж <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
+            {t("profile.field_college")} <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
           <Controller
             control={control}
@@ -141,7 +153,7 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value ?? ""}>
                 <SelectTrigger className={inputCls}>
-                  <SelectValue placeholder="Выберите колледж" />
+                  <SelectValue placeholder={t("profile.college_placeholder")} />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-neutral-200 shadow-lg">
                   {COLLEGES.map((c) => (
@@ -156,29 +168,29 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
           )}
         </div>
         <div>
-          <label className={labelCls}>Специальность</label>
+          <label className={labelCls}>{t("profile.field_specialty")}</label>
           <Input className={inputCls} placeholder="IT technician" {...register("specialty")} />
         </div>
         <div>
-          <label className={labelCls}>Курс</label>
+          <label className={labelCls}>{t("profile.field_course")}</label>
           <Input className={inputCls} type="number" min={1} max={4} placeholder="2" {...register("course_year")} />
         </div>
       </div>
 
       <div className="border-t border-neutral-100 pt-5">
         <div className="mb-4">
-          <label className={labelCls}>О себе</label>
+          <label className={labelCls}>{t("profile.field_about")}</label>
           <textarea
             className="w-full min-h-[80px] resize-y rounded-md px-3 py-2 text-[14px] bg-white border border-neutral-200 hover:border-neutral-300 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 placeholder:text-neutral-400 shadow-sm transition-colors"
-            placeholder="Коротко о себе и своих целях..."
+            placeholder={t("profile.about_placeholder")}
             {...register("bio")}
           />
         </div>
         <div>
           <label className={labelCls}>
-            Навыки{" "}
+            {t("profile.field_skills")}{" "}
             <span className="normal-case text-neutral-400 tracking-normal font-normal">
-              (через запятую)
+              {t("profile.skills_hint")}
             </span>
           </label>
           <Input
@@ -202,15 +214,15 @@ export function ProfileForm({ userId, studentId, initial }: Props) {
           className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs tracking-widest uppercase transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm shadow-blue-600/25"
         >
           {isSubmitting ? (
-            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Сохранение...</>
+            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />{t("profile.saving")}</>
           ) : (
-            "Сохранить"
+            t("common.save")
           )}
         </Button>
         {saved && (
           <span className="flex items-center gap-1 text-xs text-emerald-600 font-heading font-bold tracking-widest uppercase animate-fade-in">
             <Check className="w-3.5 h-3.5" />
-            Сохранено
+            {t("profile.saved")}
           </span>
         )}
       </div>

@@ -1,6 +1,6 @@
 import Link from "next/link"
-import Image from "next/image"
 import { GraduationCap, Upload, Send, Building2, BarChart3, ArrowRight } from "lucide-react"
+import { SkillyMascot } from "@/components/skilly-mascot"
 
 export const metadata = { title: "SkillBridge KZ — Практика для студентов колледжей Казахстана" }
 
@@ -72,11 +72,16 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3 mt-10">
-          <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={52} height={52} className="object-contain drop-shadow-md" />
-          <div>
-            <p className="text-[13px] font-heading font-bold text-neutral-900">Знакомьтесь — Skilly</p>
-            <p className="text-[11px] text-neutral-900/55">Ваш AI-ассистент на платформе</p>
+        <div className="mt-12 flex items-end gap-6">
+          <SkillyMascot className="w-52 h-52 sm:w-64 sm:h-64 lg:w-72 lg:h-72 shrink-0" pointerEventsNone />
+          <div className="pb-4 sm:pb-6">
+            <div className="relative bg-white/70 backdrop-blur-sm border border-neutral-900/10 rounded-2xl rounded-bl-sm px-4 py-3 sm:px-5 sm:py-4 max-w-[220px] shadow-sm mb-2">
+              <p className="text-[13px] sm:text-sm font-heading font-bold text-neutral-900 leading-snug">
+                Привет! Я Скилли — ваш AI-помощник на платформе
+              </p>
+              <div className="absolute -bottom-2 left-4 w-3 h-3 bg-white/70 border-r border-b border-neutral-900/10 rotate-45" />
+            </div>
+            <p className="text-[11px] text-neutral-900/55 pl-1">AI-ассистент SkillBridge KZ</p>
           </div>
         </div>
       </section>

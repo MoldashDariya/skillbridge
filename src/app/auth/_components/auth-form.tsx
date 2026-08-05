@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -311,7 +311,7 @@ export default function AuthForm() {
           <div className="px-8 pt-8 pb-9">
             {/* Brand */}
             <div className="flex items-center gap-3 mb-7 stagger-1">
-              <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={40} height={40} className="object-contain shrink-0" />
+              <SkillyMascot className="w-10 h-10 shrink-0" />
               <div>
                 <p className="text-[15px] font-heading font-bold leading-none tracking-wide text-neutral-900">
                   SkillBridge KZ

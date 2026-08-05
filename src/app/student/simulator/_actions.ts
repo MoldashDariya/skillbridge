@@ -5,6 +5,23 @@ import { createClient } from "@/lib/supabase/server"
 import type { Locale } from "@/lib/i18n"
 import { containsProfanity, getProfanityWarning } from "@/lib/profanityFilter"
 
+export async function getElevenLabsSignedUrl(): Promise<{ url: string } | { error: string }> {
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID
+  const apiKey  = process.env.ELEVENLABS_API_KEY
+  if (!agentId || !apiKey) return { error: "ElevenLabs не настроен" }
+  try {
+    const res = await fetch(
+      `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`,
+      { headers: { "xi-api-key": apiKey } }
+    )
+    if (!res.ok) return { error: `ElevenLabs API: ${res.status}` }
+    const { signed_url } = await res.json()
+    return { url: signed_url }
+  } catch {
+    return { error: "Не удалось получить доступ к AI-интервьюеру" }
+  }
+}
+
 export type QAndAItem = {
   question: string
   answer: string
@@ -12,17 +29,23 @@ export type QAndAItem = {
   explanation: string
 }
 
-export type FinalFeedback = {
-  strengths: string[]
-  weaknesses: string[]
-  overall_feedback: string
+export type StructuredFeedback = {
+  strengths: string
+  improvements: string
+  confidence_score: string
+  completeness: string
+  recommendations: string
+  overall_result: string
 }
 
 export type EvaluationResult = {
   q_and_a: QAndAItem[]
-  strengths: string[]
-  weaknesses: string[]
-  overall_feedback: string
+  strengths: string
+  improvements: string
+  confidence_score: string
+  completeness: string
+  recommendations: string
+  overall_result: string
 }
 
 function parseJSON<T>(text: string): T {
@@ -44,39 +67,54 @@ const EVAL_FAIL: Record<Locale, string> = {
 
 function buildEvalSystem(language: Locale): string {
   if (language === "en") {
-    return `You are an experienced HR analyst. You are given a transcript of a voice interview between HR and a candidate.
+    return `You are an experienced HR analyst. You are given a transcript of a practice voice interview between an AI interviewer (Skilly) and a candidate.
 
 Your tasks:
-1. Extract only the technical questions and answers (exclude greetings, small talk, and farewells from q_and_a).
-2. Rate each technical answer on a scale of 1–10.
-3. Identify the candidate's strengths and weaknesses based on the full interview.
-4. Write a brief overall feedback IN ENGLISH.
+1. Extract substantive questions and answers (skip greetings, reactions like "Thanks!", and farewells from q_and_a).
+2. Rate each answer on a scale of 1–10.
+3. Prepare structured feedback:
+   - strengths: one paragraph describing the candidate's strong points
+   - improvements: one paragraph describing areas to develop
+   - confidence_score: candidate's confidence level as "X/10"
+   - completeness: how completely they answered questions as "X%"
+   - recommendations: 2–3 specific, actionable recommendations for a real interview
+   - overall_result: brief verdict, e.g. "Ready for a real interview" or "Needs more preparation"
 
 Respond ONLY with JSON, no extra text:
-{"q_and_a":[{"question":"...","answer":"...","score":1-10,"explanation":"brief explanation"}],"strengths":["..."],"weaknesses":["..."],"overall_feedback":"..."}`
+{"q_and_a":[{"question":"...","answer":"...","score":1,"explanation":"..."}],"strengths":"...","improvements":"...","confidence_score":"X/10","completeness":"X%","recommendations":"...","overall_result":"..."}`
   }
   if (language === "kz") {
-    return `Сен тәжірибелі HR-аналитиксің. Сізге HR мен үміткер арасындағы дауыстық сұхбаттың транскрипті берілген.
+    return `Сен тәжірибелі HR-аналитиксің. Сізге AI-интервьюер (Скилли) мен үміткер арасындағы оқу дауыстық сұхбаттың транскрипті берілген.
 
 Міндетің:
-1. Тек техникалық сұрақтар мен жауаптарды бөліп ал (сәлемдесуді, бөтен сөздерді q_and_a-дан алып тастаңыз).
-2. Әр техникалық жауапты 1–10 шкала бойынша бағала.
-3. Бүкіл сұхбат негізінде үміткердің күшті және әлсіз тұстарын анықта.
-4. ҚАЗАҚ ТІЛІНДЕ қысқаша қорытынды пікір жаз.
+1. Маңызды сұрақтар мен жауаптарды бөліп ал (сәлемдесу, "Рахмет!" сияқты реакциялар және қоштасуды q_and_a-дан алып тастаңыз).
+2. Әр жауапты 1–10 шкала бойынша бағала.
+3. Құрылымдалған кері байланыс дайында:
+   - strengths: үміткердің күшті тұстарын бір абзацта сипатта
+   - improvements: дамыту қажет бағыттарды бір абзацта сипатта
+   - confidence_score: үміткердің сенімділік деңгейі "X/10" форматында
+   - completeness: сұрақтарға жауап толықтығы "X%" форматында
+   - recommendations: нақты сұхбатқа арналған 2–3 нақты ұсыныс
+   - overall_result: қысқаша үкім, мысалы "Нақты сұхбатқа дайын" немесе "Қосымша дайындық қажет"
 
 Тек JSON форматында жауап бер, түсіндірмесіз:
-{"q_and_a":[{"question":"...","answer":"...","score":1-10,"explanation":"қысқаша түсіндірме"}],"strengths":["..."],"weaknesses":["..."],"overall_feedback":"..."}`
+{"q_and_a":[{"question":"...","answer":"...","score":1,"explanation":"..."}],"strengths":"...","improvements":"...","confidence_score":"X/10","completeness":"X%","recommendations":"...","overall_result":"..."}`
   }
-  return `Ты опытный HR-аналитик. Тебе предоставлена расшифровка голосового собеседования между HR и кандидатом.
+  return `Ты опытный HR-аналитик. Тебе предоставлена расшифровка учебного голосового собеседования между AI-интервьюером (Скилли) и кандидатом.
 
 Твоя задача:
-1. Выдели только технические вопросы и ответы на них (исключи приветствие, светскую беседу и прощание из q_and_a).
-2. Оцени каждый технический ответ по шкале 1-10.
-3. Определи сильные и слабые стороны кандидата на основе всего собеседования.
-4. Дай краткий итоговый фидбэк на русском языке.
+1. Выдели содержательные вопросы и ответы (исключи приветствие, реакции типа "Спасибо за ответ!" и прощание из q_and_a).
+2. Оцени каждый ответ по шкале 1-10.
+3. Подготовь структурированную обратную связь:
+   - strengths: одним абзацем опиши сильные стороны кандидата
+   - improvements: одним абзацем опиши зоны роста
+   - confidence_score: уровень уверенности кандидата в формате "X/10"
+   - completeness: насколько полно были даны ответы в формате "X%"
+   - recommendations: 2–3 конкретные рекомендации для подготовки к настоящему собеседованию
+   - overall_result: краткий вердикт, например "Готов к реальному собеседованию" или "Нужна дополнительная подготовка"
 
 Отвечай ТОЛЬКО JSON без пояснений:
-{"q_and_a":[{"question":"...","answer":"...","score":1-10,"explanation":"краткое объяснение оценки"}],"strengths":["..."],"weaknesses":["..."],"overall_feedback":"..."}`
+{"q_and_a":[{"question":"...","answer":"...","score":1,"explanation":"..."}],"strengths":"...","improvements":"...","confidence_score":"X/10","completeness":"X%","recommendations":"...","overall_result":"..."}`
 }
 
 export async function evaluateTranscript(
@@ -120,7 +158,7 @@ export async function saveSimulation(
   specialty: string,
   qAndA: QAndAItem[],
   averageScore: number,
-  finalFeedback?: FinalFeedback
+  finalFeedback?: StructuredFeedback
 ): Promise<{ id?: string; error?: string }> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

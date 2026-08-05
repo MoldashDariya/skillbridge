@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import Image from "next/image"
 import { Users, BookmarkCheck } from "lucide-react"
 import Link from "next/link"
 import { calculateProfileReadiness } from "@/lib/profile-readiness"
@@ -144,7 +143,6 @@ export default async function EmployerSearchPage({
         {/* Title */}
         <div className="mb-8 relative pl-4">
           <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-blue-600 rounded-full" />
-          <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={32} height={32} className="object-contain mb-2" />
           <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase mb-1">
             {companyName}
           </p>

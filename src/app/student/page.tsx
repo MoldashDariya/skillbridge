@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { BookOpen, Briefcase, LayoutGrid, FileText, CheckCircle2, Mic } from "lucide-react"
 import Link from "next/link"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { InternshipCard } from "./_components/internship-card"
 import { StudentApplicationRow } from "./_components/application-row"
 import { InterviewHistory } from "./_components/interview-history"
@@ -174,6 +175,32 @@ export default async function StudentDashboard() {
             </div>
           )}
         </div>
+
+        {/* Skilly greeting widget */}
+        <section className="mb-8 stagger-2">
+          <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 flex items-center gap-4 shadow-sm relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.06),transparent_60%)] pointer-events-none" />
+            <SkillyMascot className="w-20 h-20 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[10px] font-heading font-bold text-blue-500 tracking-[0.2em] uppercase mb-1">
+                Скилли — AI-ассистент
+              </p>
+              <p className="text-[15px] font-heading font-bold text-neutral-900 leading-snug mb-1">
+                Привет{name ? `, ${name.split(" ")[0]}` : ""}! Рад тебя видеть.
+              </p>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                Я помогу подготовиться к собеседованию и найти подходящую практику. Загляни в симулятор — там жду!
+              </p>
+              <Link
+                href="/student/simulator"
+                className="inline-flex items-center gap-1.5 mt-2.5 text-[11px] font-heading font-bold text-blue-600 hover:text-blue-800 tracking-widest uppercase transition-colors"
+              >
+                <Mic className="w-3 h-3" />
+                Пройти тренировку
+              </Link>
+            </div>
+          </div>
+        </section>
 
         {/* Career Readiness */}
         <section className="mb-8 stagger-2">

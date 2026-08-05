@@ -79,7 +79,6 @@ export default async function AdminStudentView({ params }: { params: Promise<{ i
             <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shadow-blue-600/30">
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
-            <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="object-contain" />
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
           </div>
         </div>

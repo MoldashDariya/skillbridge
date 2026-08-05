@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { RotateCcw, CheckCircle2, XCircle, Loader2, Mic, MicOff, PhoneOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,21 +20,129 @@ import type { Locale } from "@/lib/i18n"
 
 // ── Skilly persona system prompt ──────────────────────────────────────────────
 function buildSkillyPrompt(specialty: string, language: Locale): string {
-  const base = `You are Skilly, a friendly, encouraging, and highly professional AI interviewer. You are the official mascot of the SkillBridge platform for students in Kazakhstan.
-
-Always briefly introduce yourself as Skilly at the very start of the interview. Keep a warm, supportive tone throughout, but conduct a rigorous, professional interview.
-
-You are interviewing a candidate for the position: ${specialty}
-
-Ask 5–7 technical questions relevant to this specialty. After each candidate answer, give a brief encouraging remark before moving to the next question. Conclude by warmly thanking the candidate for their time.`
-
   if (language === "en") {
-    return `${base}\n\nCRITICAL: Conduct the ENTIRE interview STRICTLY IN ENGLISH. Never switch to any other language.`
+    return `You are Skilly, a friendly, encouraging, and professional AI interviewer — the official mascot of the SkillBridge platform for students in Kazakhstan.
+
+SPECIALTY LOCK: You are interviewing ONLY for the position: "${specialty}".
+Allowed specialties: Software Engineering (IT), Nursing, Catering (Chef), Construction.
+NEVER mix professions. If specialty is Construction, NEVER ask about code. If Nursing, never ask about cooking.
+
+OPENING — say exactly:
+"Hi! I'm Skilly, the AI interviewer for SkillBridge. I'll be conducting a practice interview with you for ${specialty}. Let's begin!"
+
+CONDUCT EXACTLY 6–7 QUESTIONS in this order:
+
+STAGE 1 — Introduction (2 questions, NO professional jargon):
+Q1: "Tell me a bit about yourself — who you are, where you're from, what you enjoy."
+Q2: "Why did you choose ${specialty}? What attracted you to this field?"
+
+STAGE 2 — Soft Skills (2 questions):
+Q3: "How do you usually work in a team? Tell me about your experience collaborating with others."
+Q4: "What do you do when you face something new or difficult you haven't encountered before?"
+
+STAGE 3 — Professional Knowledge (generate 2 questions STRICTLY about ${specialty}):
+- Software Engineering: programming languages, debugging, algorithms, version control, tools, projects
+- Nursing: patient care, vital signs, clinical procedures, medical knowledge
+- Catering (Chef): cooking techniques, food safety, HACCP, kitchen equipment, recipes
+- Construction: building materials, safety regulations, tools, measurements, project workflow
+
+STAGE 4 — Situational (1 question):
+Describe a realistic problem scenario for ${specialty} and ask how the candidate would handle it.
+
+RULES:
+1. REACTION (REQUIRED): Before each question Q2–Q7, give a short natural reaction to the previous answer. Vary phrases: "Thanks!", "Great, let's continue.", "Interesting!", "Got it, that's important.", "Good, I heard you."
+2. SHORT ANSWER: If the answer is very brief (under 2 sentences), ask once: "Could you tell me a bit more about that?"
+3. UNKNOWN: If they say they don't know or aren't sure, respond EXACTLY: "No worries. This is a practice interview. Try to reason through it in your own words."
+4. ONE QUESTION PER TURN: Never ask more than one question at once. Always wait for the answer.
+
+CLOSING — after the candidate answers the final (6th or 7th) question, say EXACTLY:
+"Thank you! The practice interview is complete. You did well. I'll now prepare some brief feedback and recommendations to help you feel more confident in a real interview."
+Then end the conversation.
+
+CRITICAL: Conduct the ENTIRE interview STRICTLY IN ENGLISH. Never switch languages.`
   }
+
   if (language === "kz") {
-    return `${base}\n\nМАҢЫЗДЫ: Тұтас сұхбатты тек ҚАЗАҚ ТІЛІНДЕ жүргіз. Ешқашан тілді ауыстырма.`
+    return `Сен Скилли — SkillBridge платформасының AI-интервьюері және маскоты. Қазақстандағы студенттерге арналған платформаның ресми өкілісің.
+
+МАМАНДЫҚ ШЕГІ: Сен тек "${specialty}" лауазымына үміткермен сұхбат жүргізесің.
+Рұқсат етілген мамандықтар: Software Engineering (IT), Nursing (Медбике), Catering (Аспаз), Construction (Құрылысшы).
+ЕШҚАШАН мамандықтарды араластырма. Егер Construction болса — код туралы СҰРАМА. Егер Nursing болса — тамақ туралы сұрама.
+
+АШЫЛУ — дәлме-дәл айт:
+"Сәлем! Мен Скилли — SkillBridge платформасының AI-интервьюері. Сенімен ${specialty} мамандығы бойынша оқу сұхбатын жүргіземін. Бастайық!"
+
+ДӘЛМЕ-ДӘЛ 6–7 СҰРАҚ қой, осы ретпен:
+
+1-КЕЗЕҢ — Таныстыру (2 сұрақ, кәсіби терминсіз):
+С1: "Өзің туралы айтшы — кімсің, қайдансың, нені ұнататынсың?"
+С2: "Неліктен ${specialty} мамандығын таңдадың? Бұл саланы не тартты?"
+
+2-КЕЗЕҢ — Жұмсақ дағдылар (2 сұрақ):
+С3: "Топта қалай жұмыс жасайсың? Бірлескен жұмыс тәжірибең туралы айт."
+С4: "Жаңа немесе күрделі нәрсеге тап болғанда не жасайсың?"
+
+3-КЕЗЕҢ — Кәсіби білім (${specialty} бойынша 2 сұрақ ойлап тап):
+- Software Engineering: бағдарламалау тілдері, отладка, алгоритмдер, құралдар
+- Nursing: науқасқа күтім, маңызды белгілер, клиникалық рәсімдер
+- Catering (Аспаз): пісіру техникасы, тамақ қауіпсіздігі, HACCP
+- Construction: материалдар, қауіпсіздік ережелері, құралдар, жұмыс кезеңдері
+
+4-КЕЗЕҢ — Жағдайлық сұрақ (1 сұрақ):
+${specialty} бойынша нақты проблемалық жағдай сипатта.
+
+ЕРЕЖЕЛЕР:
+1. РЕАКЦИЯ (МІНДЕТТІ): С2–С7 алдында алдыңғы жауапқа қысқаша жауап бер. Тіркестерді ауыстыр: "Рахмет!", "Жарайды, жалғасайық.", "Қызықты!", "Түсінікті.", "Жақсы, естідім."
+2. ҚЫСҚА ЖАУАП: Жауап өте қысқа болса, бір рет: "Осы туралы толығырақ айта аласың ба?"
+3. БІЛМЕЙДІ: Дәлме-дәл: "Ештеңе емес. Бұл оқу сұхбаты. Өз сөзіңмен пайымдап көр."
+4. БІР СҰРАҚ: Бір кезекте бір ғана сұрақ қой. Жауапты күт.
+
+ЖАБЫЛУ — соңғы (6-ші немесе 7-ші) сұраққа жауап алғаннан кейін дәлме-дәл:
+"Рахмет! Оқу сұхбаты аяқталды. Сен жақсы жасадың. Қазір нақты сұхбатта өзіңді сенімдірек сезінуге көмектесетін қысқаша кері байланыс пен ұсыныстар дайындаймын."
+Содан кейін сұхбатты аяқта.
+
+МАҢЫЗДЫ: Тұтас сұхбатты тек ҚАЗАҚ ТІЛІНДЕ жүргіз. Тілді ешқашан ауыстырма.`
   }
-  return `${base}\n\nВАЖНО: Веди ВСЁ собеседование СТРОГО НА РУССКОМ ЯЗЫКЕ. Никогда не переходи на другой язык.`
+
+  return `Ты Скилли — дружелюбный, поддерживающий и профессиональный AI-интервьюер, официальный маскот платформы SkillBridge для студентов Казахстана.
+
+БЛОКИРОВКА СПЕЦИАЛЬНОСТИ: Ты проводишь собеседование ТОЛЬКО на позицию: "${specialty}".
+Допустимые специальности: Software Engineering (IT), Nursing (Медсестра/Медик), Catering (Повар), Construction (Строитель).
+НИКОГДА не смешивай профессии. Если специальность — Строитель, НИКОГДА не спрашивай про код. Если Медсестра — не спрашивай про готовку.
+
+ВСТУПЛЕНИЕ — скажи ДОСЛОВНО:
+"Привет! Меня зовут Скилли, я AI-интервьюер платформы SkillBridge. Я проведу с тобой тренировочное собеседование по специальности ${specialty}. Давай начнём!"
+
+ЗАДАЙ РОВНО 6–7 ВОПРОСОВ в следующем порядке:
+
+ЭТАП 1 — Знакомство (2 вопроса, БЕЗ профессиональных терминов):
+В1: "Расскажи немного о себе — кто ты, откуда родом, чем увлекаешься?"
+В2: "Почему ты выбрал специальность ${specialty}? Что тебя привлекло в этой профессии?"
+
+ЭТАП 2 — Гибкие навыки / Мотивация (2 вопроса):
+В3: "Как ты обычно работаешь в команде? Расскажи о своём опыте совместной работы."
+В4: "Что ты делаешь, когда сталкиваешься с чем-то новым или сложным, с чем раньше не встречался?"
+
+ЭТАП 3 — Профессиональные знания (придумай 2 вопроса СТРОГО по специальности ${specialty}):
+- Software Engineering: языки программирования, отладка, алгоритмы, инструменты разработчика, контроль версий
+- Nursing (Медицина): уход за пациентами, жизненные показатели, клинические процедуры, медицинские знания
+- Catering (Повар): техники приготовления, пищевая безопасность, HACCP, кухонное оборудование
+- Construction (Строитель): строительные материалы, техника безопасности, инструменты, измерения, этапы работ
+
+ЭТАП 4 — Ситуационный вопрос (1 вопрос):
+Опиши реалистичную проблемную ситуацию, характерную ТОЛЬКО для ${specialty}, и спроси как кандидат с ней справится.
+
+ПРАВИЛА ПОВЕДЕНИЯ:
+1. РЕАКЦИЯ (ОБЯЗАТЕЛЬНО): Перед каждым следующим вопросом (В2–В7) дай короткую естественную реакцию на предыдущий ответ. Используй разные фразы: "Спасибо за ответ!", "Отлично, давай продолжим.", "Интересно!", "Понятно, это важно.", "Хорошо, я услышал."
+2. КОРОТКИЙ ОТВЕТ: Если ответ кандидата очень короткий (менее 2 предложений), один раз попроси: "Можешь немного подробнее рассказать об этом?"
+3. НЕ ЗНАЮ: Если кандидат говорит что не знает или не уверен, ответь ДОСЛОВНО: "Ничего страшного. Это тренировочное собеседование. Попробуй рассуждать своими словами."
+4. ОДИН ВОПРОС ЗА ХОД: Никогда не задавай более одного вопроса в одном сообщении. Жди ответа перед следующим вопросом.
+
+ЗАВЕРШЕНИЕ — после ответа на последний (6-й или 7-й) вопрос скажи ДОСЛОВНО:
+"Спасибо! Тренировочное собеседование завершено. Ты хорошо справился. Сейчас я подготовлю для тебя небольшую обратную связь и рекомендации, которые помогут увереннее пройти настоящее собеседование."
+После этого заверши разговор.
+
+ВАЖНО: Веди ВСЁ собеседование СТРОГО НА РУССКОМ ЯЗЫКЕ. Никогда не переходи на другой язык.`
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -112,9 +220,9 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
   const orbA = isSpeaking ? "#3b82f6" : isListening ? "#10b981" : isThinking ? "#8b5cf6" : "#60a5fa"
   const orbB = isSpeaking ? "#93c5fd" : isListening ? "#6ee7b7" : isThinking ? "#c4b5fd" : "#bfdbfe"
 
-  // Volume drives glow intensity
-  const baseSize = isSpeaking ? 70 : isListening ? 70 : isThinking ? 60 : 40
-  const dynSize = baseSize + volume * 50
+  // Volume drives glow intensity — scaled 1.4× from original values
+  const baseSize = isSpeaking ? 98 : isListening ? 98 : isThinking ? 84 : 56
+  const dynSize = baseSize + volume * 70
   const baseAlpha = isSpeaking ? 0.55 : isListening ? 0.50 : isThinking ? 0.45 : 0.30
   const dynAlpha = Math.min(1, baseAlpha + volume * 0.4)
 
@@ -123,8 +231,8 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
     : isListening
     ? `0 0 ${dynSize}px rgba(5,150,105,${dynAlpha}),0 0 ${dynSize * 2}px rgba(16,185,129,${dynAlpha * 0.5})`
     : isThinking
-    ? "0 0 60px rgba(124,58,237,0.65),0 0 120px rgba(139,92,246,0.28)"
-    : "0 0 40px rgba(59,130,246,0.40),0 0 80px rgba(147,197,253,0.20)"
+    ? "0 0 84px rgba(124,58,237,0.65),0 0 168px rgba(139,92,246,0.28)"
+    : "0 0 56px rgba(59,130,246,0.40),0 0 112px rgba(147,197,253,0.20)"
 
   const mainAnim = isSpeaking
     ? "blob-speak 2s ease-in-out infinite"
@@ -143,8 +251,8 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
       <div
         style={{
           position: "relative",
-          width: 200,
-          height: 200,
+          width: 280,
+          height: 280,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -153,11 +261,11 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
         <div
           style={{
             position: "absolute",
-            width: 160,
-            height: 160,
+            width: 224,
+            height: 224,
             background: orbA,
             borderRadius: "50%",
-            filter: "blur(38px)",
+            filter: "blur(52px)",
             opacity: 0.4,
             animation: `orb-a ${dA} ease-in-out infinite`,
             transition: "background 0.6s",
@@ -166,11 +274,11 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
         <div
           style={{
             position: "absolute",
-            width: 110,
-            height: 110,
+            width: 154,
+            height: 154,
             background: orbB,
             borderRadius: "50%",
-            filter: "blur(26px)",
+            filter: "blur(36px)",
             opacity: 0.38,
             animation: `orb-b ${dB} ease-in-out infinite`,
             transition: "background 0.6s",
@@ -179,8 +287,8 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
         <div
           style={{
             position: "relative",
-            width: 128,
-            height: 128,
+            width: 180,
+            height: 180,
             background: mainGrad,
             boxShadow: glow,
             animation: mainAnim,
@@ -191,22 +299,15 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
         <div
           style={{
             position: "absolute",
-            width: 88,
-            height: 88,
+            width: 124,
+            height: 124,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 1,
           }}
         >
-          <Image
-            src="/skilly-avatar.png"
-            alt="Skilly"
-            width={88}
-            height={88}
-            className="object-contain drop-shadow-lg"
-            priority
-          />
+          <SkillyMascot className="w-36 h-36" />
         </div>
       </div>
     </>
@@ -217,20 +318,22 @@ function MorphingBlob({ phase, volume = 0 }: { phase: Phase; volume?: number }) 
 type Props = { studentId: string; specialty: string }
 
 export function InterviewSimulator({ studentId, specialty }: Props) {
-  const [phase, setPhase]           = useState<Phase>("idle")
-  const [volume, setVolume]         = useState(0)
-  const [turnCount, setTurnCount]   = useState(0)
-  const [errorMsg, setErrorMsg]     = useState("")
-  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
+  const [phase, setPhase]               = useState<Phase>("idle")
+  const [volume, setVolume]             = useState(0)
+  const [turnCount, setTurnCount]       = useState(0)
+  const [errorMsg, setErrorMsg]         = useState("")
+  const [evaluation, setEvaluation]     = useState<EvaluationResult | null>(null)
+  const [lastAIMessage, setLastAIMessage] = useState("")
+  const [showLastQ, setShowLastQ]       = useState(false)
 
   const { locale } = useTranslation()
 
-  const conversationRef = useRef<Conversation | null>(null)
-  const transcriptRef   = useRef<TranscriptEntry[]>([])
-  const phaseRef        = useRef<Phase>("idle")
-  const evaluatingRef   = useRef(false)
-  const isMountedRef    = useRef(true)
-
+  const conversationRef  = useRef<Conversation | null>(null)
+  const transcriptRef    = useRef<TranscriptEntry[]>([])
+  const phaseRef         = useRef<Phase>("idle")
+  const evaluatingRef    = useRef(false)
+  const isMountedRef     = useRef(true)
+  const userEndedRef     = useRef(false)
   useEffect(() => { phaseRef.current = phase }, [phase])
 
   // Volume polling — 80 ms interval, only while connected
@@ -267,12 +370,22 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
     evaluatingRef.current = true
 
     const transcript = transcriptRef.current
-    if (!transcript.length) {
-      setPhase("idle")
+    const hasUserMessages = transcript.some(e => e.role === "user")
+
+    if (!hasUserMessages) {
+      const wasIntentional = userEndedRef.current
+      userEndedRef.current = false
       evaluatingRef.current = false
+      if (wasIntentional) {
+        setPhase("idle")
+      } else {
+        setErrorMsg("Соединение с AI-интервьюером прервалось. Проверьте подключение и попробуйте снова.")
+        setPhase("error")
+      }
       return
     }
 
+    userEndedRef.current = false
     const transcriptText = transcript
       .map(e => `${e.role === "ai" ? "HR" : "Кандидат"}: ${e.message}`)
       .join("\n")
@@ -297,8 +410,11 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
 
     const saved = await saveSimulation(studentId, specialty, result.q_and_a, avg, {
       strengths: result.strengths,
-      weaknesses: result.weaknesses,
-      overall_feedback: result.overall_feedback,
+      improvements: result.improvements,
+      confidence_score: result.confidence_score,
+      completeness: result.completeness,
+      recommendations: result.recommendations,
+      overall_result: result.overall_result,
     })
 
     if (saved.error) {
@@ -321,6 +437,18 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       setPhase("mic-error")
       return
     }
+    transcriptRef.current = []
+    evaluatingRef.current = false
+    userEndedRef.current = false
+    setTurnCount(0)
+    setEvaluation(null)
+    setLastAIMessage("")
+    setShowLastQ(false)
+    connectToElevenLabs()
+  }
+
+  async function connectToElevenLabs() {
+    setPhase("connecting")
 
     const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID
     if (!agentId) {
@@ -329,33 +457,25 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       return
     }
 
-    transcriptRef.current = []
-    evaluatingRef.current = false
-    setTurnCount(0)
-    setEvaluation(null)
-    setPhase("connecting")
-
     try {
       const conv = await Conversation.startSession({
         agentId,
         connectionType: "webrtc",
         dynamicVariables: { specialty, language: locale },
-        overrides: {
-          agent: {
-            prompt: { prompt: buildSkillyPrompt(specialty, locale) },
-          },
-        },
         onConnect: () => {
+          console.log("[Skilly] WebRTC connected — LiveKit room joined")
           phaseRef.current = "speaking"
           setPhase("speaking")
         },
-        onDisconnect: (_details: DisconnectionDetails) => {
+        onDisconnect: (details: DisconnectionDetails) => {
+          console.log("[Skilly] disconnected", details)
           conversationRef.current = null
           handleConversationEnd()
         },
         onMessage: ({ message, source }) => {
           transcriptRef.current.push({ role: source, message })
           if (source === "user") setTurnCount(c => c + 1)
+          if (source === "ai") setLastAIMessage(message)
         },
         onModeChange: ({ mode }) => {
           const p: Phase = mode === "speaking" ? "speaking" : "listening"
@@ -363,18 +483,21 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
           setPhase(p)
         },
         onError: (msg) => {
+          console.error("[Skilly] onError:", msg)
           setErrorMsg(typeof msg === "string" ? msg : "Ошибка соединения")
           setPhase("error")
         },
       })
       conversationRef.current = conv
-    } catch {
+    } catch (e) {
+      console.error("[Skilly] startSession threw:", e)
       setErrorMsg("Не удалось подключиться к AI-интервьюеру")
       setPhase("error")
     }
   }
 
   async function endInterview() {
+    userEndedRef.current = true
     const conv = conversationRef.current
     conversationRef.current = null
     try {
@@ -386,8 +509,8 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
 
   const statusLabel: Partial<Record<Phase, string>> = {
     "requesting-mic": "Запрашиваю микрофон...",
-    connecting:       "Подключение к AI-интервьюеру...",
-    speaking:         "HR говорит...",
+    connecting:       "Подключение к Скилли...",
+    speaking:         "Скилли говорит...",
     listening:        "Говорите...",
     evaluating:       "Анализирую собеседование...",
     saving:           "Сохранение...",
@@ -418,7 +541,7 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
           className="h-12 px-10 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-sm tracking-widest uppercase shadow-md shadow-blue-600/30 rounded-xl"
         >
           <Mic className="w-4 h-4 mr-2" />
-          Начать интервью
+          Начать собеседование
         </Button>
       </div>
     )
@@ -433,9 +556,8 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
           <p className="text-sm font-heading font-bold text-neutral-800">
             Доступ к микрофону запрещён
           </p>
-          <p className="text-xs text-neutral-500 max-w-xs">
-            Разрешите доступ к микрофону в настройках браузера и обновите
-            страницу.
+          <p className="text-xs text-neutral-500 max-w-xs leading-relaxed">
+            Для прохождения AI-собеседования разрешите доступ к микрофону в настройках браузера.
           </p>
         </div>
         <Button
@@ -475,60 +597,68 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
         : 0
 
     return (
-      <div className="space-y-6">
-        {/* Score header */}
-        <div className="text-center py-8">
-          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+      <div className="space-y-5">
+        {/* Header */}
+        <div className="text-center py-6">
+          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
           <p className="text-[11px] font-heading font-bold tracking-[0.2em] text-neutral-400 uppercase mb-2">
             Симуляция завершена
           </p>
-          <p className="text-5xl font-heading font-extrabold text-neutral-900 leading-none">
-            {avg.toFixed(1)}
-            <span className="text-2xl text-neutral-400">/10</span>
+          <p className="text-xl font-heading font-extrabold text-neutral-900 leading-snug max-w-xs mx-auto">
+            {evaluation.overall_result}
           </p>
-          <p className="text-sm text-neutral-500 mt-2">Средний балл</p>
         </div>
 
-        {/* Final feedback */}
-        <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-3">
-          <p className="text-[11px] font-heading font-bold text-blue-600 tracking-[0.2em] uppercase">
-            Итоговый фидбэк HR
-          </p>
-          <p className="text-sm text-neutral-700 leading-relaxed">
-            {evaluation.overall_feedback}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {evaluation.strengths.length > 0 && (
-              <div>
-                <p className="text-[10px] font-heading font-bold text-emerald-600 tracking-widest uppercase mb-1.5">
-                  Сильные стороны
-                </p>
-                <ul className="space-y-1">
-                  {evaluation.strengths.map((s, i) => (
-                    <li key={i} className="flex items-start gap-1.5">
-                      <span className="text-emerald-500 font-bold text-xs mt-0.5">✓</span>
-                      <span className="text-xs text-neutral-600">{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {evaluation.weaknesses.length > 0 && (
-              <div>
-                <p className="text-[10px] font-heading font-bold text-red-500 tracking-widest uppercase mb-1.5">
-                  Зоны роста
-                </p>
-                <ul className="space-y-1">
-                  {evaluation.weaknesses.map((w, i) => (
-                    <li key={i} className="flex items-start gap-1.5">
-                      <span className="text-red-400 font-bold text-xs mt-0.5">→</span>
-                      <span className="text-xs text-neutral-600">{w}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-neutral-100 bg-neutral-50 p-3 text-center">
+            <p className="text-2xl font-heading font-extrabold text-neutral-900 leading-none">
+              {avg.toFixed(1)}<span className="text-base text-neutral-400">/10</span>
+            </p>
+            <p className="text-[9px] font-heading font-bold text-neutral-400 uppercase tracking-widest mt-1.5">
+              Средний балл
+            </p>
           </div>
+          <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-3 text-center">
+            <p className="text-2xl font-heading font-extrabold text-blue-600 leading-none">
+              {evaluation.confidence_score}
+            </p>
+            <p className="text-[9px] font-heading font-bold text-blue-400 uppercase tracking-widest mt-1.5">
+              Уверенность
+            </p>
+          </div>
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 text-center">
+            <p className="text-2xl font-heading font-extrabold text-emerald-600 leading-none">
+              {evaluation.completeness}
+            </p>
+            <p className="text-[9px] font-heading font-bold text-emerald-400 uppercase tracking-widest mt-1.5">
+              Полнота
+            </p>
+          </div>
+        </div>
+
+        {/* Strengths / Improvements */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-4">
+            <p className="text-[10px] font-heading font-bold text-emerald-600 tracking-widest uppercase mb-2">
+              Сильные стороны
+            </p>
+            <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.strengths}</p>
+          </div>
+          <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-4">
+            <p className="text-[10px] font-heading font-bold text-amber-600 tracking-widest uppercase mb-2">
+              Зоны роста
+            </p>
+            <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.improvements}</p>
+          </div>
+        </div>
+
+        {/* Recommendations */}
+        <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4">
+          <p className="text-[10px] font-heading font-bold text-blue-600 tracking-widest uppercase mb-2">
+            Рекомендации
+          </p>
+          <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.recommendations}</p>
         </div>
 
         {/* Q&A Accordion */}
@@ -600,9 +730,9 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
   // ── ACTIVE / LOADING STATES ───────────────────────────────────────────────
   return (
     <div className="flex flex-col gap-5">
-      {/* Turn counter — visible during active voice session */}
+      {/* Turn counter + repeat button */}
       {isActive && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex gap-1 sm:gap-1.5">
             {Array.from({ length: 10 }).map((_, i) => (
               <div
@@ -617,17 +747,25 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
               />
             ))}
           </div>
-          <span className="text-[11px] font-heading font-bold text-neutral-400 tracking-widest uppercase">
+          <span className="text-[11px] font-heading font-bold text-neutral-400 tracking-widest uppercase shrink-0">
             {turnCount} реплик
           </span>
         </div>
       )}
 
-      {/* Blob stage */}
-      <div className="rounded-2xl bg-neutral-950 px-6 py-8 flex flex-col items-center gap-4">
+      {/* Last question display (toggle) */}
+      {isActive && showLastQ && lastAIMessage && (
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3">
+          <p className="text-[10px] font-heading font-bold text-blue-500 tracking-widest uppercase mb-1">Последний вопрос</p>
+          <p className="text-sm text-neutral-700 leading-relaxed">{lastAIMessage.replace(/\[[^\]]*\]/g, "").trim()}</p>
+        </div>
+      )}
+
+      {/* Blob stage — light gradient background */}
+      <div className="rounded-2xl bg-gradient-to-b from-slate-50 to-blue-50/40 border border-neutral-100 px-6 py-8 flex flex-col items-center gap-4">
         <MorphingBlob phase={phase} volume={volume} />
 
-        <p className="text-xs font-heading font-bold text-white/60 tracking-widest uppercase">
+        <p className="text-xs font-heading font-bold text-neutral-500 tracking-widest uppercase">
           {statusLabel[phase] ?? ""}
         </p>
 
@@ -635,18 +773,27 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
           phase === "saving" ||
           phase === "connecting" ||
           phase === "requesting-mic") && (
-          <Loader2 className="w-4 h-4 text-white/40 animate-spin" />
+          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
         )}
 
-        {/* Hang-up button — only during live interview */}
+        {/* Controls — only during live interview */}
         {isActive && (
-          <button
-            onClick={endInterview}
-            className="mt-1 flex items-center gap-2 h-10 px-5 rounded-xl bg-red-500/15 border border-red-500/25 text-red-400 text-xs font-heading font-bold tracking-widest uppercase hover:bg-red-500/25 transition-all"
-          >
-            <PhoneOff className="w-3.5 h-3.5" />
-            Завершить
-          </button>
+          <div className="flex items-center gap-3 mt-1 flex-wrap justify-center">
+            <button
+              onClick={() => setShowLastQ(v => !v)}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-xl bg-white border border-neutral-200 text-neutral-500 text-[10px] font-heading font-bold tracking-widest uppercase hover:border-blue-300 hover:text-blue-600 transition-all"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Повторить вопрос
+            </button>
+            <button
+              onClick={endInterview}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-xl bg-red-50 border border-red-200 text-red-500 text-[10px] font-heading font-bold tracking-widest uppercase hover:bg-red-100 transition-all"
+            >
+              <PhoneOff className="w-3 h-3" />
+              Завершить
+            </button>
+          </div>
         )}
       </div>
     </div>

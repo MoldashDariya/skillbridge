@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { createClient } from "@/lib/supabase/server"
 import { ProfileForm } from "./_components/profile-form"
 import { PortfolioUploader } from "./_components/portfolio-uploader"
@@ -90,7 +90,6 @@ export default async function StudentProfilePage() {
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
-            <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="object-contain" />
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
@@ -117,7 +116,19 @@ export default async function StudentProfilePage() {
           <p className="text-sm text-neutral-400 mt-0.5">{user.email}</p>
         </div>
 
-        <section className="stagger-2 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
+        <div className="mb-8 stagger-2 flex items-center gap-5 sm:gap-7 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/60 to-white p-5 sm:p-7 shadow-sm">
+          <SkillyMascot className="w-36 h-36 sm:w-44 sm:h-44 shrink-0" triggerWave />
+          <div className="min-w-0">
+            <p className="text-[10px] font-heading font-bold text-blue-500 tracking-[0.2em] uppercase mb-1.5">
+              Скилли — AI-ассистент
+            </p>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed">
+              Привет! Я Скилли. Помогу подготовиться к собеседованию и найти подходящую практику.
+            </p>
+          </div>
+        </div>
+
+        <section className="stagger-3 rounded-2xl border border-neutral-200 bg-white p-6 mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-[3px] h-5 bg-blue-600 rounded-full" />
             <h2 className="font-heading font-bold text-[16px] text-neutral-900">{t("profile.personal_data")}</h2>

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { X, Send, Loader2 } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import { askSkilly, type SkillyMessage } from "@/app/actions/skilly"
@@ -87,13 +87,7 @@ export function SkillyWidget() {
         {open ? (
           <X className="w-5 h-5 text-white" />
         ) : (
-          <Image
-            src="/skilly-avatar.png"
-            alt="Skilly"
-            width={36}
-            height={36}
-            className="object-contain drop-shadow-sm"
-          />
+          <SkillyMascot className="w-9 h-9" />
         )}
       </button>
 
@@ -120,7 +114,7 @@ export function SkillyWidget() {
                 boxShadow: "0 4px 12px rgba(124,58,237,0.4)",
               }}
             >
-              <Image src="/skilly-avatar.png" alt="Skilly" width={32} height={32} className="object-contain" />
+              <SkillyMascot className="w-8 h-8" />
             </div>
             <div className="min-w-0">
               <p className="text-[13px] font-semibold text-white leading-none tracking-tight">
@@ -151,7 +145,7 @@ export function SkillyWidget() {
                     className="w-6 h-6 rounded-lg overflow-hidden shrink-0 mb-0.5 flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}
                   >
-                    <Image src="/skilly-avatar.png" alt="Skilly" width={24} height={24} className="object-contain" />
+                    <span className="text-white text-[9px] font-bold leading-none">S</span>
                   </div>
                 )}
                 <div
@@ -188,7 +182,7 @@ export function SkillyWidget() {
                   className="w-6 h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
                   style={{ background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)" }}
                 >
-                  <Image src="/skilly-avatar.png" alt="Skilly" width={24} height={24} className="object-contain" />
+                  <span className="text-white text-[9px] font-bold leading-none">S</span>
                 </div>
                 <div
                   className="px-4 py-3 flex gap-1.5 items-center rounded-2xl"

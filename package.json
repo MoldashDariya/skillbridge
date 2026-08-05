@@ -12,6 +12,7 @@
     "@11labs/client": "^0.2.0",
     "@anthropic-ai/sdk": "^0.112.1",
     "@hookform/resolvers": "^5.4.0",
+    "@rive-app/react-canvas": "^4.30.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
     "@tailwindcss/typography": "^0.5.20",

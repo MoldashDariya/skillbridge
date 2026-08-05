@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import Image from "next/image"
 import { GraduationCap, Briefcase, CheckCircle2, ImageIcon, UserCheck, Building2, FileText, ExternalLink, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import {
@@ -227,7 +226,6 @@ export default async function AdminDashboard() {
               <span className="text-white text-[10px] font-heading font-bold">SK</span>
             </div>
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
-            <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="hidden sm:block object-contain" />
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
             <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.admin_label")}</span>
           </div>

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import Image from "next/image"
+import { SkillyMascot } from "@/components/skilly-mascot"
 import { Clock, XCircle } from "lucide-react"
 import { StudentPhotoUpload } from "./_components/student-photo-upload"
 import { EmployerDocsUpload } from "./_components/employer-docs-upload"
@@ -61,7 +61,7 @@ export default async function PendingPage() {
           <div className="px-8 pt-8 pb-8">
             {/* Header */}
             <div className="flex justify-center mb-5">
-              <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={56} height={56} className="object-contain" />
+              <SkillyMascot className="w-14 h-14" />
             </div>
             <div className="flex items-start gap-4 mb-6">
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isRejected ? "bg-red-50 border border-red-200" : "bg-blue-50 border border-blue-200"}`}>

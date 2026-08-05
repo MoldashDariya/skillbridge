@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import Image from "next/image"
 import { Building2, FileText, Users, MapPin, Phone, Mail, Search } from "lucide-react"
 import Link from "next/link"
 import { InternshipCard } from "./_components/internship-card"
@@ -103,7 +102,6 @@ export default async function EmployerDashboard() {
             <span className="text-sm font-heading font-bold tracking-wide text-neutral-900">SkillBridge KZ</span>
             <span className="hidden sm:inline text-neutral-300 text-xs mx-1">·</span>
             <span className="hidden sm:inline text-xs text-neutral-400 tracking-widest uppercase">{t("nav.employer_label")}</span>
-            <Image src="/skilly-avatar.png" alt="Skilly AI Assistant" width={24} height={24} className="hidden sm:block object-contain ml-1" />
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />

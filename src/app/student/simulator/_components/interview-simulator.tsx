@@ -498,6 +498,8 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
 
   async function endInterview() {
     userEndedRef.current = true
+    phaseRef.current = "evaluating"
+    setPhase("evaluating")
     const conv = conversationRef.current
     conversationRef.current = null
     try {
@@ -756,7 +758,7 @@ export function InterviewSimulator({ studentId, specialty }: Props) {
       {/* Last question display (toggle) */}
       {isActive && showLastQ && lastAIMessage && (
         <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3">
-          <p className="text-[10px] font-heading font-bold text-blue-500 tracking-widest uppercase mb-1">Последний вопрос</p>
+          <p className="text-[10px] font-heading font-bold text-blue-500 tracking-widest uppercase mb-1">Вопрос Скилли</p>
           <p className="text-sm text-neutral-700 leading-relaxed">{lastAIMessage.replace(/\[[^\]]*\]/g, "").trim()}</p>
         </div>
       )}

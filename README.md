@@ -2,13 +2,13 @@
 
 **A social-tech platform that helps young people aged 16–24 in Kazakhstan, especially college students and youth from smaller towns, find safe internships, practice placements and first jobs.**
 
-**Link for reference:** https://skillbridge-dev-red.vercel.app **
+**Link for reference:** https://skillbridge-dev-red.vercel.app 
 
 
-**Live demo:** https://skillbridge-black-delta.vercel.app **
+**Live demo:** https://skillbridge-black-delta.vercel.app 
 
 
-**Video:** https://drive.google.com/drive/my-drive?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto **
+**Video:** https://drive.google.com/drive/my-drive?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto
 ---
 
 ## 1. About the project

@@ -8,7 +8,7 @@
 **Live demo:** https://skillbridge-black-delta.vercel.app 
 
 
-**Video:** https://drive.google.com/drive/my-drive?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto
+**Video explanation :** https://drive.google.com/drive/my-drive?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto
 ---
 
 ## 1. About the project

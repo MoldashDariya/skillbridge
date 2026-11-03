@@ -2,13 +2,9 @@
 
 **A social-tech platform that helps young people aged 16–24 in Kazakhstan, especially college students and youth from smaller towns, find safe internships, practice placements and first jobs.**
 
-**Link for reference:** https://skillbridge-dev-red.vercel.app 
-
-
 **Live demo:** https://skillbridge-black-delta.vercel.app 
 
 
-**Video explanation :** https://drive.google.com/drive/my-drive?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto
 ---
 
 ## 1. About the project
@@ -27,10 +23,10 @@ SkillBridge KZ brings together **students, employers and colleges**:
 
 | Metric | Value |
 |---|---|
-| Young people in the pilot | 85+ |
-| Employers | 12+ |
+| Students onboarded (two polytechnic colleges, Apr–May 2026) | 100+ |
+| Students who secured internships | 12+ |
+| Employers who joined | 11+ |
 | Interviews conducted | 22 |
-| Placements and internships | 11+ |
 
 **Recognition:** finalist of Tech for Impact; presented at UNICEF Almaty Youth Forum 2026.
 
@@ -225,7 +221,21 @@ CRON_SECRET=
 
 ## 9. Screenshots
 
-<!-- Add 3–5 screenshots here: landing page, student dashboard, interview simulator, employer dashboard, college panel. -->
+**Student dashboard:** career readiness, AI resume builder and quick access to profile, portfolio, internships and the interview simulator.
+
+![Student dashboard](screenshots/student-dashboard.png)
+
+**Available internships** from verified employers.
+
+![Available internships](screenshots/internships.png)
+
+**AI interview simulator feedback:** overall score, strengths, areas for improvement and a per-question breakdown.
+
+![Interview feedback](screenshots/interview-feedback.png)
+
+**Skilly AI**, the personal assistant that helps with interview preparation, resume creation and job search.
+
+<img src="screenshots/ai-assistant.png" alt="Skilly AI assistant" width="400">
 
 ---
 
@@ -233,3 +243,11 @@ CRON_SECRET=
 
 Dariya, author and developer of the project.
 GitHub: [MoldashDariya](https://github.com/MoldashDariya)
+
+## Team
+
+- Dariya Moldash: founder, lead engineer
+- Adeliya Abytalim: design
+- Zhaniya Koshkimbayeva: business development, college partnerships
+- Amir Anuar: project coordination, user feedback
+- Rahymzhan Moldash: database migrations, Supabase

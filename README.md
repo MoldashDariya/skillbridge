@@ -3,6 +3,7 @@
 **A social-tech platform that helps young people aged 16–24 in Kazakhstan, especially college students and youth from smaller towns, find safe internships, practice placements and first jobs.**
 
 **Live demo:** https://skillbridge-black-delta.vercel.app 
+**site:** https://skillbridge-kz-demo.vercel.app/
 
 
 ---

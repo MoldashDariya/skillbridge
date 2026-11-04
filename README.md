@@ -29,7 +29,7 @@ SkillBridge KZ brings together **students, employers and colleges**:
 | Employers who joined | 11+ |
 | Interviews conducted | 22 |
 
-**Recognition:** finalist of Tech for Impact; presented at UNICEF Almaty Youth Forum 2026.
+**Recognition:** winner of Tech for Impact by TechnoWomen, the only project out of 110+ to receive funding (700,000 ₸); presented at UNICEF Almaty Youth Forum 2026.
 
 ### The problem
 

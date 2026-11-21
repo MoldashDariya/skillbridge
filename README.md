@@ -24,12 +24,12 @@ SkillBridge KZ brings together **students, employers and colleges**:
 
 | Metric | Value |
 |---|---|
-| Students onboarded (two polytechnic colleges, Apr–May 2026) | 100+ |
+| Students onboarded (two polytechnic colleges, Apr–May 2026) | 110+ |
 | Students who secured internships | 12+ |
 | Employers who joined | 11+ |
-| Interviews conducted | 22 |
+| Interview answers collected by Skilly | 85+ |
 
-**Recognition:** winner of Tech for Impact by TechnoWomen, the only project out of 110+ to receive funding (700,000 ₸); presented at UNICEF Almaty Youth Forum 2026.
+**Recognition:** winner of 5 Regional Initiatives: Tech for Impact by TechnoWomen, the only project out of 110+ to receive funding (700,000 ₸); presented at UNICEF Almaty Youth Forum 2026.
 
 ### The problem
 
